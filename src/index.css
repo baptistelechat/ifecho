@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --color-heat-50: #fff7ed;
+  --color-heat-100: #ffedd5;
+  --color-heat-200: #fed7aa;
+  --color-heat-300: #fdba74;
+  --color-heat-400: #fb923c;
+  --color-heat-500: #f97316;
+  --color-heat-600: #ea580c;
+  --color-heat-700: #c2410c;
+  --color-heat-800: #9a3412;
+  --color-heat-900: #7c2d12;
+
+  --color-cool-50: #eff6ff;
+  --color-cool-100: #dbeafe;
+  --color-cool-200: #bfdbfe;
+  --color-cool-400: #60a5fa;
+  --color-cool-500: #3b82f6;
+  --color-cool-600: #2563eb;
+
+  --color-fresh-50: #f0fdf4;
+  --color-fresh-400: #4ade80;
+  --color-fresh-500: #22c55e;
+  --color-fresh-600: #16a34a;
+
+  /* Palette thermique jour d'été */
+  --color-sky: #3b82f6;
+  --color-ember: #ea580c;
+  --color-verdict-good: #22c55e;
+  --color-verdict-bad: #ef4444;
+  --color-verdict-wait: #f59e0b;
+}
+
+@layer base {
+  :root {
+    --background: #fff8f4;
+    --foreground: #292524;
+    --card: #ffffff;
+    --card-foreground: #292524;
+    --popover: #ffffff;
+    --popover-foreground: #292524;
+    --primary: #ea580c;
+    --primary-foreground: #ffffff;
+    --secondary: #fff3e8;
+    --secondary-foreground: #7c2d12;
+    --muted: #fef6ef;
+    --muted-foreground: #78716c;
+    --accent: #fff3e8;
+    --accent-foreground: #ea580c;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #fddcbb;
+    --input: #ffffff;
+    --ring: #ea580c;
+    --radius: 0.875rem;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--background);
+  min-height: 100dvh;
+  @apply text-foreground antialiased;
+}
+
+input[type="range"] {
+  accent-color: #ea580c;
+}
