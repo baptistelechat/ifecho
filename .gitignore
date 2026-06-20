@@ -1,0 +1,25 @@
+# Dépendances
+node_modules/
+
+# Build
+dist/
+build/
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Obsidian vault
+**/.obsidian/
+.claude/memory/dashboard.md
