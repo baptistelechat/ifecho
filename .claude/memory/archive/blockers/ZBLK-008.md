@@ -1,0 +1,16 @@
+---
+id: ZBLK-008
+type: blocker
+date: 2026-06-20
+tags: [edit-tool, compaction, session, claude-code, read-state, context]
+---
+
+# ZBLK-008 — Edit "File has not been read yet" post-compaction
+
+| Friction                                                                                                      | Cause réelle                                                                      | Solution                                                                | Statut |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------ |
+| Edit refusé sur `src/data/tips.ts` et `src/components/VentilationTimeline/index.tsx` malgré lecture préalable | Compaction automatique reset l'état interne de tracking des lectures du Edit tool | Re-Read chaque fichier ciblé avant tout Edit en session post-compaction | résolu |
+
+## Références
+
+- voir aussi GLRN-124
