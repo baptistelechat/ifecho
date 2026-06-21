@@ -17,6 +17,7 @@ import {
   ThermometerSun,
   Wind,
 } from "lucide-react";
+import { LazyMotion, MotionConfig, domAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY_TEMP = "ifecho_indoor_temp";
@@ -106,120 +107,124 @@ const App = () => {
   const hasContent = weather && !isLoadingWeather && location;
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      {/* Header */}
-      <header className="pb-4 pt-10 text-center">
-        <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
-          <ThermometerSun className="size-6" />
-          <span className="text-2xl font-bold tracking-wide">Ifecho</span>
-        </div>
-        <h1 className="flex items-center justify-center gap-2 text-2xl font-black text-foreground">
-          Quand aérer&nbsp;?
-          <Wind className="size-5 text-ember" />
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {formatDate(now)} · {formatTime(now)}
-        </p>
-      </header>
-
-      {/* Content */}
-      <main className="flex flex-1 flex-col px-4 pb-4">
-        <div
-          className={`mx-auto flex w-full max-w-sm flex-col gap-3${!hasContent ? " my-auto" : ""}`}
-        >
-          {/* Recherche de commune */}
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <LocationSearch
-              location={location}
-              isDetecting={isDetecting}
-              error={locationError}
-              onDetect={detectLocation}
-              onSelect={setFromCommune}
-            />
-          </div>
-
-          {/* Chargement meteo */}
-          {isLoadingWeather && (
-            <div className="flex items-center justify-center gap-3 rounded-2xl border border-border bg-card p-8 shadow-sm">
-              <Loader2 className="size-4 animate-spin text-ember" />
-              <p className="text-sm text-muted-foreground">
-                Récupération de la météo…
-              </p>
+    <LazyMotion features={domAnimation}>
+      <MotionConfig reducedMotion="user">
+        <div className="flex min-h-dvh flex-col">
+          {/* Header */}
+          <header className="pb-4 pt-10 text-center">
+            <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
+              <ThermometerSun className="size-6" />
+              <span className="text-2xl font-bold tracking-wide">Ifecho</span>
             </div>
-          )}
+            <h1 className="flex items-center justify-center gap-2 text-2xl font-black text-foreground">
+              Quand aérer&nbsp;?
+              <Wind className="size-5 text-ember" />
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {formatDate(now)} · {formatTime(now)}
+            </p>
+          </header>
 
-          {/* Erreur meteo */}
-          {weatherError && (
-            <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
-              <AlertCircle className="size-4 shrink-0 text-verdict-bad" />
-              <p className="text-sm text-red-700">{weatherError}</p>
-            </div>
-          )}
-
-          {/* Contenu principal */}
-          {hasContent && (
-            <>
-              <RecommendCard
-                currentScore={currentScore}
-                indoorTemp={indoorTemp}
-                onTempChange={handleTempChange}
-                comfortLevel={comfortLevel}
-                onComfortChange={handleComfortChange}
-                scores={scores}
-                cityName={location.city}
-              />
-
+          {/* Content */}
+          <main className="flex flex-1 flex-col px-4 pb-4">
+            <div
+              className={`mx-auto flex w-full max-w-sm flex-col gap-3${!hasContent ? " my-auto" : ""}`}
+            >
+              {/* Recherche de commune */}
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                <VentilationTimeline scores={scores} bestHour={bestHour} />
+                <LocationSearch
+                  location={location}
+                  isDetecting={isDetecting}
+                  error={locationError}
+                  onDetect={detectLocation}
+                  onSelect={setFromCommune}
+                />
               </div>
 
-              {bestHour && (
-                <CalendarLink bestHour={bestHour} city={location.city} />
+              {/* Chargement meteo */}
+              {isLoadingWeather && (
+                <div className="flex items-center justify-center gap-3 rounded-2xl border border-border bg-card p-8 shadow-sm">
+                  <Loader2 className="size-4 animate-spin text-ember" />
+                  <p className="text-sm text-muted-foreground">
+                    Récupération de la météo…
+                  </p>
+                </div>
               )}
 
-              <TipsSection />
-            </>
-          )}
-        </div>
-      </main>
+              {/* Erreur meteo */}
+              {weatherError && (
+                <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <AlertCircle className="size-4 shrink-0 text-verdict-bad" />
+                  <p className="text-sm text-red-700">{weatherError}</p>
+                </div>
+              )}
 
-      {/* Footer */}
-      <footer className="py-4 text-center text-xs text-muted-foreground">
-        <p className="mt-1 flex items-center justify-center gap-1">
-          <ThermometerSun className="size-3 text-ember" />
-          Ifecho • Made by{" "}
-          <a
-            href="https://baptistelechat.vercel.app/"
-            className="underline transition-colors hover:text-ember"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            @baptistelechat
-          </a>{" "}
-          with <Heart className="size-3 fill-ember text-ember" />
-        </p>
-        <p>
-          Données :{" "}
-          <a
-            href="https://open-meteo.com"
-            className="underline transition-colors hover:text-ember"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open-Meteo
-          </a>
-          {" · "}
-          <a
-            href="https://adresse.data.gouv.fr"
-            className="underline transition-colors hover:text-ember"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            API Adresse
-          </a>
-        </p>
-      </footer>
-    </div>
+              {/* Contenu principal */}
+              {hasContent && (
+                <>
+                  <RecommendCard
+                    currentScore={currentScore}
+                    indoorTemp={indoorTemp}
+                    onTempChange={handleTempChange}
+                    comfortLevel={comfortLevel}
+                    onComfortChange={handleComfortChange}
+                    scores={scores}
+                    cityName={location.city}
+                  />
+
+                  <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                    <VentilationTimeline scores={scores} bestHour={bestHour} />
+                  </div>
+
+                  {bestHour && (
+                    <CalendarLink bestHour={bestHour} city={location.city} />
+                  )}
+
+                  <TipsSection />
+                </>
+              )}
+            </div>
+          </main>
+
+          {/* Footer */}
+          <footer className="py-4 text-center text-xs text-muted-foreground">
+            <p className="mt-1 flex items-center justify-center gap-1">
+              <ThermometerSun className="size-3 text-ember" />
+              Ifecho • Made by{" "}
+              <a
+                href="https://baptistelechat.vercel.app/"
+                className="underline transition-colors hover:text-ember"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                @baptistelechat
+              </a>{" "}
+              with <Heart className="size-3 fill-ember text-ember" />
+            </p>
+            <p>
+              Données :{" "}
+              <a
+                href="https://open-meteo.com"
+                className="underline transition-colors hover:text-ember"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open-Meteo
+              </a>
+              {" · "}
+              <a
+                href="https://adresse.data.gouv.fr"
+                className="underline transition-colors hover:text-ember"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                API Adresse
+              </a>
+            </p>
+          </footer>
+        </div>
+      </MotionConfig>
+    </LazyMotion>
   );
 };
 

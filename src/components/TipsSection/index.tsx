@@ -18,7 +18,7 @@ import {
   Pause,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { TIPS } from "@/data/tips";
 
@@ -109,7 +109,7 @@ const TipsSection = () => {
         onPointerDown={handlePointerDown}
         onPointerUp={handlePointerUp}
       >
-        <motion.div
+        <m.div
           className="flex"
           animate={{ x: `-${index * 100}%` }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
@@ -133,11 +133,12 @@ const TipsSection = () => {
               </div>
             );
           })}
-        </motion.div>
+        </m.div>
       </div>
 
       <div className="flex items-center justify-center gap-2">
         <button
+          type="button"
           aria-label="Conseil précédent"
           onClick={prev}
           className="text-muted-foreground/50 hover:text-muted-foreground transition-colors"
@@ -148,6 +149,7 @@ const TipsSection = () => {
         <div className="flex items-center gap-1.5">
           {TIPS.map((t, i) => (
             <button
+              type="button"
               key={t.id}
               aria-label={`Conseil ${i + 1} : ${t.title}`}
               onClick={() => {
@@ -164,6 +166,7 @@ const TipsSection = () => {
         </div>
 
         <button
+          type="button"
           aria-label="Conseil suivant"
           onClick={next}
           className="text-muted-foreground/50 hover:text-muted-foreground transition-colors"
@@ -174,6 +177,7 @@ const TipsSection = () => {
         <div className="w-px h-3 bg-border mx-1" />
 
         <button
+          type="button"
           aria-label={isPaused ? "Reprendre le défilement" : "Mettre en pause"}
           onClick={togglePause}
           className="text-muted-foreground/50 hover:text-muted-foreground transition-colors"

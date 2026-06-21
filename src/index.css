@@ -30,6 +30,8 @@
   --color-verdict-good: #22c55e;
   --color-verdict-bad: #ef4444;
   --color-verdict-wait: #f59e0b;
+
+  --animate-nudge: nudge 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
 @layer base {
@@ -90,4 +92,14 @@ body {
   background: var(--background);
   min-height: 100dvh;
   @apply text-foreground antialiased;
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
 }

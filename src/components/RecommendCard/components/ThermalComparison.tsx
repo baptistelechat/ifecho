@@ -143,6 +143,7 @@ const ThermalComparison = ({
               </>
             ) : (
               <button
+                type="button"
                 onClick={startEditing}
                 className="cursor-text p-0 transition-opacity hover:opacity-70"
                 aria-label={`Température intérieure ${indoorTemp}. Cliquer pour modifier.`}

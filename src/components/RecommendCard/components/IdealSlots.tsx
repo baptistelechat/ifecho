@@ -74,20 +74,20 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
 
   const now = Date.now();
 
-  return groups
-    .map((group) => {
-      const first = group[0]!;
-      const last = group[group.length - 1]!;
-      const startMs = localIsoToMs(first.time);
-      const endMs = localIsoToMs(last.time) + 3_600_000;
-      const startHour = parseDateHour(first.time).hour;
-      const endHour = (parseDateHour(last.time).hour + 1) % 24;
-      const isNow = now >= startMs && now < endMs;
-      const crossesMidnight =
-        parseDateHour(first.time).date !== parseDateHour(last.time).date ||
-        endHour === 0;
-
-      return {
+  return groups.flatMap((group) => {
+    const first = group[0]!;
+    const last = group[group.length - 1]!;
+    const startMs = localIsoToMs(first.time);
+    const endMs = localIsoToMs(last.time) + 3_600_000;
+    if (endMs <= now) return [];
+    const startHour = parseDateHour(first.time).hour;
+    const endHour = (parseDateHour(last.time).hour + 1) % 24;
+    const isNow = now >= startMs && now < endMs;
+    const crossesMidnight =
+      parseDateHour(first.time).date !== parseDateHour(last.time).date ||
+      endHour === 0;
+    return [
+      {
         startHour,
         endHour,
         startMs,
@@ -95,9 +95,9 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
         baseLabel: getSlotLabel(startHour),
         isNow,
         crossesMidnight,
-      };
-    })
-    .filter((slot) => slot.endMs > now);
+      },
+    ];
+  });
 };
 
 interface IdealSlotsProps {

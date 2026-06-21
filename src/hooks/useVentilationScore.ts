@@ -48,44 +48,43 @@ export const useVentilationScore = (
     const nowHour = new Date().getHours();
     const nowDate = localDateString();
 
-    return weather.hours
-      .filter((h) => {
-        const { date, hour } = parseDateHour(h.time);
-        if (date === nowDate) return hour >= nowHour;
-        if (date > nowDate) {
-          // J+1 : garder uniquement les heures qui restent dans la fenêtre 24h
-          return 24 - nowHour + hour < 24;
-        }
-        return false;
-      })
-      .map((hour) => {
-        const feltIndoor = indoorTemp + comfortBias;
-        const deltaT = feltIndoor - hour.apparentTemperature;
-        const bonusNight = isNightHour(
-          hour.time,
-          weather.sunrise,
-          weather.sunset,
-          weather.sunrise2,
-          weather.sunset2,
-        )
-          ? 1
-          : 0;
-        const score = deltaT + bonusNight;
+    return weather.hours.flatMap((h) => {
+      const { date, hour: hourNum } = parseDateHour(h.time);
+      const keep =
+        (date === nowDate && hourNum >= nowHour) ||
+        // J+1 : garder uniquement les heures qui restent dans la fenêtre 24h
+        (date > nowDate && 24 - nowHour + hourNum < 24);
+      if (!keep) return [];
 
-        return {
-          hour: parseDateHour(hour.time).hour,
-          time: hour.time,
-          temperature: hour.temperature,
-          humidity: hour.humidity,
-          apparentTemperature: hour.apparentTemperature,
-          windspeed: hour.windspeed,
-          uvIndex: hour.uvIndex,
+      const feltIndoor = indoorTemp + comfortBias;
+      const deltaT = feltIndoor - h.apparentTemperature;
+      const bonusNight = isNightHour(
+        h.time,
+        weather.sunrise,
+        weather.sunset,
+        weather.sunrise2,
+        weather.sunset2,
+      )
+        ? 1
+        : 0;
+      const score = deltaT + bonusNight;
+
+      return [
+        {
+          hour: hourNum,
+          time: h.time,
+          temperature: h.temperature,
+          humidity: h.humidity,
+          apparentTemperature: h.apparentTemperature,
+          windspeed: h.windspeed,
+          uvIndex: h.uvIndex,
           score,
           deltaT,
           bonusNight,
           isFavorable: score > 2,
-        };
-      });
+        },
+      ];
+    });
   }, [weather, indoorTemp, comfortBias]);
 };
 

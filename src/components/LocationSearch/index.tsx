@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MapPin, Loader2, Navigation } from "lucide-react";
+import { MapPin, Loader2, Navigation, Locate } from "lucide-react";
 import { searchCommunes } from "@/hooks/useLocation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,8 @@ const LocationSearch = ({
   const [showResults, setShowResults] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevErrorRef = useRef<string | null>(null);
+  const hapticsErrorRef = useRef(haptics.error);
+  hapticsErrorRef.current = haptics.error;
 
   useEffect(() => {
     if (query.length < 2) {
@@ -66,9 +68,8 @@ const LocationSearch = ({
   }, [query]);
 
   useEffect(() => {
-    if (error && !prevErrorRef.current) haptics.error();
+    if (error && !prevErrorRef.current) hapticsErrorRef.current();
     prevErrorRef.current = error;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   useEffect(() => {
@@ -114,6 +115,7 @@ const LocationSearch = ({
             className="h-auto p-0 text-[10px] font-semibold uppercase tracking-widest text-ember"
             aria-label="Utiliser ma position GPS"
           >
+            <Locate className="!size-3" />
             Me localiser
           </Button>
         )}

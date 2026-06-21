@@ -124,7 +124,7 @@ const VentilationTimeline = ({
                       >
                         <ArrowDown
                           className={cn(
-                            "size-3 animate-bounce",
+                            "size-3 animate-nudge",
                             s <= -2 ? "text-red-500" : "text-amber-400",
                           )}
                         />
@@ -136,7 +136,7 @@ const VentilationTimeline = ({
                         className="absolute left-1/2 -translate-x-1/2"
                         style={{ top: `${ARROW_BOTTOM_Y}px` }}
                       >
-                        <ArrowUp className="size-3 animate-bounce text-verdict-good" />
+                        <ArrowUp className="size-3 animate-nudge text-verdict-good" />
                       </div>
                     )}
 
