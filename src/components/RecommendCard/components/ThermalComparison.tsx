@@ -23,6 +23,7 @@ interface ThermalComparisonProps {
   onTempChange: (value: number) => void;
   comfortLevel: ComfortLevel;
   onComfortChange: (level: ComfortLevel) => void;
+  cityName: string;
 }
 
 const COMFORT_ICONS: Record<ComfortLevel, LucideIcon> = {
@@ -39,6 +40,7 @@ const ThermalComparison = ({
   onTempChange,
   comfortLevel,
   onComfortChange,
+  cityName,
 }: ThermalComparisonProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -103,6 +105,9 @@ const ThermalComparison = ({
             UV {Math.round(currentScore.uvIndex)}
           </p>
         </div>
+        <p className="mt-2 truncate text-[10px] font-medium text-muted-foreground/60">
+          {cityName}
+        </p>
       </div>
 
       {/* Intérieur */}

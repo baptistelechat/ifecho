@@ -1,4 +1,4 @@
-import { Check, X } from "lucide-react";
+import { ArrowUpDown, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 
@@ -17,9 +17,12 @@ const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Écart thermique
-        </p>
+        <div className="flex items-center gap-1.5">
+          <ArrowUpDown className="size-3.5 text-muted-foreground" />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Écart thermique
+          </p>
+        </div>
         <span
           className={cn(
             "text-sm font-bold",

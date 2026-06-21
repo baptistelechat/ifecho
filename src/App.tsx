@@ -156,6 +156,7 @@ const App = () => {
                 comfortLevel={comfortLevel}
                 onComfortChange={handleComfortChange}
                 scores={scores}
+                cityName={location.city}
               />
 
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">

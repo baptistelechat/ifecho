@@ -11,6 +11,7 @@ interface RecommendCardProps {
   comfortLevel: ComfortLevel;
   onComfortChange: (level: ComfortLevel) => void;
   scores: HourlyScore[];
+  cityName: string;
 }
 
 const RecommendCard = ({
@@ -20,6 +21,7 @@ const RecommendCard = ({
   comfortLevel,
   onComfortChange,
   scores,
+  cityName,
 }: RecommendCardProps) => {
   if (!currentScore) return null;
 
@@ -32,6 +34,7 @@ const RecommendCard = ({
         onTempChange={onTempChange}
         comfortLevel={comfortLevel}
         onComfortChange={onComfortChange}
+        cityName={cityName}
       />
       <ThermalDelta currentScore={currentScore} />
       <IdealSlots scores={scores} />

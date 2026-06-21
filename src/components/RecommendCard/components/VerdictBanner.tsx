@@ -112,7 +112,6 @@ const VerdictBanner = ({ currentScore }: VerdictBannerProps) => {
   return (
     <div className={cn("rounded-2xl border p-4", config.border, config.bg)}>
       <div className="flex items-start gap-3">
-        <span className={cn("mt-1 size-2 shrink-0 rounded-full", config.dot)} />
         <Icon className={cn("mt-0.5 size-4 shrink-0", config.iconColor)} />
         <div className="flex-1">
           <p className={cn("text-sm font-bold", config.titleColor)}>
