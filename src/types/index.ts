@@ -42,7 +42,7 @@ export interface HourlyScore {
   uvIndex: number;
   score: number;
   deltaT: number;
-  bonusNight: number;
+  uvPenalty: number;
   isFavorable: boolean;
 }
 

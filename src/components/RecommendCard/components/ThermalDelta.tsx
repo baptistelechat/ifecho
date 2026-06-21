@@ -60,8 +60,12 @@ const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
 
       <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
         <div
-          className={cn("h-full rounded-full transition-all", styles.bar)}
-          style={{ width: `${barWidth}%` }}
+          className={cn("h-full rounded-full", styles.bar)}
+          style={{
+            width: `${barWidth}%`,
+            transition:
+              "width 300ms cubic-bezier(0.23, 1, 0.32, 1), background-color 200ms ease-out",
+          }}
         />
       </div>
 

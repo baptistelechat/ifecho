@@ -9,24 +9,12 @@ const parseDateHour = (isoTime: string): { date: string; hour: number } => {
   return { date: datePart ?? "", hour };
 };
 
-const isNightHour = (
-  time: string,
-  sunrise: string,
-  sunset: string,
-  sunrise2: string,
-  sunset2: string,
-): boolean => {
-  const { date: timeDate, hour: timeHour } = parseDateHour(time);
-  const { date: srDate, hour: sunriseHour } = parseDateHour(sunrise);
-
-  if (timeDate === srDate) {
-    const sunsetHour = parseDateHour(sunset).hour;
-    return timeHour >= sunsetHour || timeHour < sunriseHour;
-  }
-
-  const sunriseHour2 = parseDateHour(sunrise2).hour;
-  const sunsetHour2 = parseDateHour(sunset2).hour;
-  return timeHour >= sunsetHour2 || timeHour < sunriseHour2;
+// Malus UV : réduit le score si le soleil entre par les vitres pendant l'aération
+const computeUvPenalty = (uvIndex: number): number => {
+  if (uvIndex >= 6) return 1.5;
+  if (uvIndex >= 3) return 1;
+  if (uvIndex >= 1) return 0.5;
+  return 0;
 };
 
 const localDateString = (): string => {
@@ -58,16 +46,8 @@ export const useVentilationScore = (
 
       const feltIndoor = indoorTemp + comfortBias;
       const deltaT = feltIndoor - h.apparentTemperature;
-      const bonusNight = isNightHour(
-        h.time,
-        weather.sunrise,
-        weather.sunset,
-        weather.sunrise2,
-        weather.sunset2,
-      )
-        ? 1
-        : 0;
-      const score = deltaT + bonusNight;
+      const uvPenalty = computeUvPenalty(h.uvIndex);
+      const score = deltaT - uvPenalty;
 
       return [
         {
@@ -80,7 +60,7 @@ export const useVentilationScore = (
           uvIndex: h.uvIndex,
           score,
           deltaT,
-          bonusNight,
+          uvPenalty,
           isFavorable: score > 2,
         },
       ];

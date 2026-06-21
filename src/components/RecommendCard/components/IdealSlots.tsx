@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import { AnimatePresence, m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { AlarmClock, ArrowDown, ArrowUp, Moon, Sun } from "lucide-react";
 
@@ -104,6 +105,8 @@ interface IdealSlotsProps {
   scores: HourlyScore[];
 }
 
+const SLOT_EASING: [number, number, number, number] = [0.23, 1, 0.32, 1];
+
 const IdealSlots = ({ scores }: IdealSlotsProps) => {
   const slots = getIdealSlots(scores);
 
@@ -116,16 +119,28 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
         </p>
       </div>
 
-      {slots.length === 0 ? (
-        <div className="px-4 pb-4">
-          <p className="text-sm text-muted-foreground">
-            Aucun créneau favorable dans les 24 prochaines heures. Gardez les
-            fenêtres fermées.
-          </p>
-        </div>
-      ) : (
-        <div className="divide-y divide-border">
-          {slots.map((slot) => {
+      {/*
+        Structure plate : empty et slots partagent le même AnimatePresence.
+        Chaque élément anime height 0→auto + opacity pour éviter le flash
+        et le snap brutal du conteneur parent.
+      */}
+      <AnimatePresence initial={false}>
+        {slots.length === 0 ? (
+          <m.div
+            key="empty"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.22, ease: SLOT_EASING }}
+            className="overflow-hidden"
+          >
+            <p className="px-4 pb-4 text-sm text-muted-foreground">
+              Aucun créneau favorable dans les 24 prochaines heures. Gardez les
+              fenêtres fermées.
+            </p>
+          </m.div>
+        ) : (
+          slots.map((slot, index) => {
             const meta = TIME_OF_DAY_META[slot.baseLabel] ?? {
               icon: Sun,
               color: "text-muted-foreground",
@@ -136,60 +151,73 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
               : slot.baseLabel;
 
             return (
-              <div
-                key={`${slot.startMs}-${slot.endMs}`}
-                className={cn(
-                  "flex items-end justify-between px-4 py-3",
-                  slot.isNow && "bg-ember/5",
-                )}
+              <m.div
+                key={slot.startMs}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{
+                  duration: 0.28,
+                  delay: index * 0.06,
+                  ease: SLOT_EASING,
+                }}
+                className="overflow-hidden"
               >
-                <p
+                <div
                   className={cn(
-                    "tabular-nums text-4xl font-black leading-none",
-                    slot.isNow ? "text-ember" : "text-foreground",
+                    "flex items-end justify-between px-4 py-3",
+                    index > 0 && "border-t border-border",
+                    slot.isNow && "bg-ember/5",
                   )}
                 >
-                  {formatH(slot.startHour)} – {formatH(slot.endHour)}
-                </p>
-                <div className="flex items-center gap-1">
-                  <span className="flex items-center">
-                    {meta.chevron === "up" && (
-                      <ArrowUp
-                        className={cn(
-                          "mr-0.5 size-2.5",
-                          slot.isNow ? "text-ember" : meta.color,
-                        )}
-                      />
-                    )}
-                    {meta.chevron === "down" && (
-                      <ArrowDown
-                        className={cn(
-                          "mr-0.5 size-2.5",
-                          slot.isNow ? "text-ember" : meta.color,
-                        )}
-                      />
-                    )}
-                    <Icon
-                      className={cn(
-                        "size-3",
-                        slot.isNow ? "text-ember" : meta.color,
-                      )}
-                    />
-                  </span>
-                  <span
+                  <p
                     className={cn(
-                      "text-xs",
-                      slot.isNow ? "font-medium text-ember" : meta.color,
+                      "tabular-nums text-4xl font-black leading-none",
+                      slot.isNow ? "text-ember" : "text-foreground",
                     )}
                   >
-                    {displayLabel}
-                  </span>
+                    {formatH(slot.startHour)} – {formatH(slot.endHour)}
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <span className="flex items-center">
+                      {meta.chevron === "up" && (
+                        <ArrowUp
+                          className={cn(
+                            "mr-0.5 size-2.5",
+                            slot.isNow ? "text-ember" : meta.color,
+                          )}
+                        />
+                      )}
+                      {meta.chevron === "down" && (
+                        <ArrowDown
+                          className={cn(
+                            "mr-0.5 size-2.5",
+                            slot.isNow ? "text-ember" : meta.color,
+                          )}
+                        />
+                      )}
+                      <Icon
+                        className={cn(
+                          "size-3",
+                          slot.isNow ? "text-ember" : meta.color,
+                        )}
+                      />
+                    </span>
+                    <span
+                      className={cn(
+                        "text-xs",
+                        slot.isNow ? "font-medium text-ember" : meta.color,
+                      )}
+                    >
+                      {displayLabel}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </m.div>
             );
-          })}
-        </div>
-      )}
+          })
+        )}
+      </AnimatePresence>
     </div>
   );
 };

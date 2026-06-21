@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import { m, useInView } from "framer-motion";
 import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -35,6 +36,8 @@ const VentilationTimeline = ({
 }: VentilationTimelineProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentHourRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: true, margin: "-60px" });
 
   const currentHour = new Date().getHours();
   const nowDate = (() => {
@@ -55,7 +58,7 @@ const VentilationTimeline = ({
   if (scores.length === 0) return null;
 
   return (
-    <div className="space-y-3">
+    <div ref={containerRef} className="space-y-3">
       <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
         <BarChart2 className="size-3.5" />
         Prochaines 24h
@@ -144,32 +147,37 @@ const VentilationTimeline = ({
                       className="flex items-end justify-center"
                       style={{ height: `${ZONE_POSITIVE}px` }}
                     >
-                      {positiveHeight > 0 && (
-                        <div
-                          className={cn(
-                            "w-5 rounded-t transition-all",
-                            getBarColor(s, isBest),
-                          )}
-                          style={{ height: `${positiveHeight}px` }}
-                          title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
-                        />
-                      )}
+                      <m.div
+                        initial={{ height: 0 }}
+                        animate={{ height: isInView ? positiveHeight : 0 }}
+                        transition={{
+                          duration: 0.6,
+                          delay: index * 0.018,
+                          ease: [0.23, 1, 0.32, 1],
+                        }}
+                        className={cn("w-5 rounded-t", getBarColor(s, isBest))}
+                        title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
+                      />
                     </div>
 
                     <div
                       className="flex items-start justify-center"
                       style={{ height: `${ZONE_NEGATIVE}px` }}
                     >
-                      {negativeHeight > 0 && (
-                        <div
-                          className={cn(
-                            "w-5 rounded-b transition-all",
-                            s <= -2 ? "bg-red-500/70" : "bg-amber-400/70",
-                          )}
-                          style={{ height: `${negativeHeight}px` }}
-                          title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
-                        />
-                      )}
+                      <m.div
+                        initial={{ height: 0 }}
+                        animate={{ height: isInView ? negativeHeight : 0 }}
+                        transition={{
+                          duration: 0.6,
+                          delay: index * 0.018,
+                          ease: [0.23, 1, 0.32, 1],
+                        }}
+                        className={cn(
+                          "w-5 rounded-b",
+                          s <= -2 ? "bg-red-500/70" : "bg-amber-400/70",
+                        )}
+                        title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
+                      />
                     </div>
                   </div>
 

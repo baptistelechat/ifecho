@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import { AnimatePresence, m } from "framer-motion";
 import { Ban, CheckCircle, Clock, Wind } from "lucide-react";
 
 interface VerdictBannerProps {
@@ -15,10 +16,11 @@ interface Verdict {
   message: string;
 }
 
-const getVerdict = (score: HourlyScore): Verdict => {
-  const delta = score.deltaT;
+const getVerdict = (hourlyScore: HourlyScore): Verdict => {
+  const s = hourlyScore.score;
+  const delta = hourlyScore.deltaT;
 
-  if (delta >= 4) {
+  if (s >= 4) {
     return {
       key: "good",
       Icon: CheckCircle,
@@ -26,7 +28,18 @@ const getVerdict = (score: HourlyScore): Verdict => {
       message: `L'extérieur est ${delta.toFixed(1)}°C plus frais - excellent moment pour ventiler.`,
     };
   }
-  if (delta >= 1) {
+  if (s > 2) {
+    return {
+      key: "good",
+      Icon: Wind,
+      title: "Bon moment pour aérer",
+      message:
+        hourlyScore.uvPenalty > 0
+          ? `Écart de ${delta.toFixed(1)}°C  favorable malgré l'ensoleillement.`
+          : `Écart de ${delta.toFixed(1)}°C  bon moment pour ventiler.`,
+    };
+  }
+  if (s > 0) {
     return {
       key: "neutral",
       Icon: Wind,
@@ -34,7 +47,7 @@ const getVerdict = (score: HourlyScore): Verdict => {
       message: `Écart de ${delta.toFixed(1)}°C - aérer renouvelle l'air sans refroidir vraiment.`,
     };
   }
-  if (delta < -3) {
+  if (s < -2) {
     return {
       key: "bad",
       Icon: Ban,
@@ -42,7 +55,7 @@ const getVerdict = (score: HourlyScore): Verdict => {
       message: `L'extérieur est ${Math.abs(delta).toFixed(1)}°C plus chaud. Ouvrir les fenêtres réchaufferait votre intérieur.`,
     };
   }
-  if (delta < 0) {
+  if (s <= 0) {
     return {
       key: "wait",
       Icon: Clock,
@@ -110,19 +123,30 @@ const VerdictBanner = ({ currentScore }: VerdictBannerProps) => {
   const { Icon } = verdict;
 
   return (
-    <div className={cn("rounded-2xl border p-4", config.border, config.bg)}>
-      <div className="flex items-start gap-3">
-        <Icon className={cn("mt-0.5 size-4 shrink-0", config.iconColor)} />
-        <div className="flex-1">
-          <p className={cn("text-sm font-bold", config.titleColor)}>
-            {verdict.title}
-          </p>
-          <p className={cn("mt-0.5 text-sm leading-relaxed", config.textColor)}>
-            {verdict.message}
-          </p>
+    <AnimatePresence mode="wait" initial={false}>
+      <m.div
+        key={verdict.title}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+        className={cn("rounded-2xl border p-4", config.border, config.bg)}
+      >
+        <div className="flex items-start gap-3">
+          <Icon className={cn("mt-0.5 size-4 shrink-0", config.iconColor)} />
+          <div className="flex-1">
+            <p className={cn("text-sm font-bold", config.titleColor)}>
+              {verdict.title}
+            </p>
+            <p
+              className={cn("mt-0.5 text-sm leading-relaxed", config.textColor)}
+            >
+              {verdict.message}
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
+      </m.div>
+    </AnimatePresence>
   );
 };
 

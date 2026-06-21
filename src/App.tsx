@@ -10,19 +10,21 @@ import {
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
 import { COMFORT_LEVELS, type ComfortLevel } from "@/types";
+import { AlertCircle, Heart, ThermometerSun, Wind } from "lucide-react";
 import {
-  AlertCircle,
-  Heart,
-  Loader2,
-  ThermometerSun,
-  Wind,
-} from "lucide-react";
-import { LazyMotion, MotionConfig, domAnimation } from "framer-motion";
+  AnimatePresence,
+  LazyMotion,
+  MotionConfig,
+  domAnimation,
+  m,
+} from "framer-motion";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY_TEMP = "ifecho_indoor_temp";
 const STORAGE_KEY_COMFORT = "ifecho_comfort_level";
 const DEFAULT_INDOOR_TEMP = 26;
+
+const CONTENT_EASING: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
 const loadIndoorTemp = (): number => {
   try {
@@ -127,9 +129,7 @@ const App = () => {
 
           {/* Content */}
           <main className="flex flex-1 flex-col px-4 pb-4">
-            <div
-              className={`mx-auto flex w-full max-w-sm flex-col gap-3${!hasContent ? " my-auto" : ""}`}
-            >
+            <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
               {/* Recherche de commune */}
               <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                 <LocationSearch
@@ -141,48 +141,59 @@ const App = () => {
                 />
               </div>
 
-              {/* Chargement meteo */}
-              {isLoadingWeather && (
-                <div className="flex items-center justify-center gap-3 rounded-2xl border border-border bg-card p-8 shadow-sm">
-                  <Loader2 className="size-4 animate-spin text-ember" />
-                  <p className="text-sm text-muted-foreground">
-                    Récupération de la météo…
-                  </p>
-                </div>
-              )}
-
               {/* Erreur meteo */}
-              {weatherError && (
-                <div className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
-                  <AlertCircle className="size-4 shrink-0 text-verdict-bad" />
-                  <p className="text-sm text-red-700">{weatherError}</p>
-                </div>
-              )}
+              <AnimatePresence>
+                {weatherError && (
+                  <m.div
+                    key="error"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4"
+                  >
+                    <AlertCircle className="size-4 shrink-0 text-verdict-bad" />
+                    <p className="text-sm text-red-700">{weatherError}</p>
+                  </m.div>
+                )}
+              </AnimatePresence>
 
               {/* Contenu principal */}
-              {hasContent && (
-                <>
-                  <RecommendCard
-                    currentScore={currentScore}
-                    indoorTemp={indoorTemp}
-                    onTempChange={handleTempChange}
-                    comfortLevel={comfortLevel}
-                    onComfortChange={handleComfortChange}
-                    scores={scores}
-                    cityName={location.city}
-                  />
+              <AnimatePresence>
+                {hasContent && (
+                  <m.div
+                    key="content"
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.4, ease: CONTENT_EASING }}
+                    className="flex flex-col gap-3"
+                  >
+                    <RecommendCard
+                      currentScore={currentScore}
+                      indoorTemp={indoorTemp}
+                      onTempChange={handleTempChange}
+                      comfortLevel={comfortLevel}
+                      onComfortChange={handleComfortChange}
+                      scores={scores}
+                      cityName={location.city}
+                    />
 
-                  <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                    <VentilationTimeline scores={scores} bestHour={bestHour} />
-                  </div>
+                    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                      <VentilationTimeline
+                        scores={scores}
+                        bestHour={bestHour}
+                      />
+                    </div>
 
-                  {bestHour && (
-                    <CalendarLink bestHour={bestHour} city={location.city} />
-                  )}
+                    {bestHour && (
+                      <CalendarLink bestHour={bestHour} city={location.city} />
+                    )}
 
-                  <TipsSection />
-                </>
-              )}
+                    <TipsSection />
+                  </m.div>
+                )}
+              </AnimatePresence>
             </div>
           </main>
 
