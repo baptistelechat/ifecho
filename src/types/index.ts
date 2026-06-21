@@ -48,9 +48,9 @@ export type ComfortLevel = "hot" | "neutral" | "cool";
 
 export const COMFORT_LEVELS: Record<
   ComfortLevel,
-  { emoji: string; label: string; bias: number }
+  { label: string; bias: number }
 > = {
-  hot: { emoji: "🥵", label: "Il fait chaud", bias: 2 },
-  neutral: { emoji: "😐", label: "Ça va", bias: 0 },
-  cool: { emoji: "🥶", label: "Il fait frais", bias: -2 },
+  hot: { label: "Il fait chaud", bias: 2 },
+  neutral: { label: "Ça va", bias: 0 },
+  cool: { label: "Il fait frais", bias: -2 },
 };

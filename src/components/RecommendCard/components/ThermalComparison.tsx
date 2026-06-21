@@ -1,7 +1,18 @@
 ﻿import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { COMFORT_LEVELS, type ComfortLevel, type HourlyScore } from "@/types";
-import { Cloud, Droplets, Home, Sun, Thermometer, Wind } from "lucide-react";
+import {
+  Cloud,
+  Droplets,
+  Flame,
+  Home,
+  Smile,
+  Snowflake,
+  Sun,
+  Thermometer,
+  Wind,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface ThermalComparisonProps {
@@ -12,9 +23,13 @@ interface ThermalComparisonProps {
   onComfortChange: (level: ComfortLevel) => void;
 }
 
-const comfortEntries = Object.entries(COMFORT_LEVELS) as Array<
-  [ComfortLevel, { emoji: string; label: string; bias: number }]
->;
+const COMFORT_ICONS: Record<ComfortLevel, LucideIcon> = {
+  hot: Flame,
+  neutral: Smile,
+  cool: Snowflake,
+};
+
+const comfortLevels = Object.keys(COMFORT_LEVELS) as ComfortLevel[];
 
 const ThermalComparison = ({
   currentScore,
@@ -96,6 +111,8 @@ const ThermalComparison = ({
             Intérieur
           </p>
         </div>
+
+        {/* Température + slider */}
         <div className="flex h-[1em] items-center tabular-nums text-5xl font-black leading-none text-foreground">
           {isEditing ? (
             <>
@@ -117,19 +134,13 @@ const ThermalComparison = ({
             <button
               onClick={startEditing}
               className="cursor-text p-0 transition-opacity hover:opacity-70"
-              aria-label={`Température intérieure ${indoorTemp}°. Cliquer pour modifier.`}
+              aria-label={`Température intérieure ${indoorTemp}. Cliquer pour modifier.`}
             >
               {indoorTemp}°
             </button>
           )}
         </div>
-        <div className="mt-3 space-y-1">
-          <p className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Thermometer className="size-3 shrink-0 text-ember/70" />
-            Ressenti ~{feltIndoorTemp}°
-          </p>
-        </div>
-        <div className="mt-2">
+        <div className="mt-3">
           <Slider
             value={[indoorTemp]}
             onValueChange={(values) => onTempChange(values[0]!)}
@@ -142,20 +153,30 @@ const ThermalComparison = ({
             <span className="text-[10px] text-muted-foreground">14°</span>
             <span className="text-[10px] text-muted-foreground">35°</span>
           </div>
-          {/* Ressenti intérieur */}
-          <div className="mt-2 flex justify-center gap-2">
-            {comfortEntries.map(([key, level]) => (
-              <Button
-                key={key}
-                variant={comfortLevel === key ? "default" : "outline"}
-                size="icon"
-                onClick={() => onComfortChange(key)}
-                aria-pressed={comfortLevel === key}
-                aria-label={level.label}
-              >
-                <span className="text-lg">{level.emoji}</span>
-              </Button>
-            ))}
+        </div>
+
+        {/* Ressenti + boutons */}
+        <div className="mt-3 space-y-2">
+          <p className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Thermometer className="size-3 shrink-0 text-ember/70" />
+            Ressenti ~{feltIndoorTemp}°
+          </p>
+          <div className="flex justify-center gap-2">
+            {comfortLevels.map((key) => {
+              const Icon = COMFORT_ICONS[key];
+              return (
+                <Button
+                  key={key}
+                  variant={comfortLevel === key ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => onComfortChange(key)}
+                  aria-pressed={comfortLevel === key}
+                  aria-label={COMFORT_LEVELS[key].label}
+                >
+                  <Icon className="size-4" />
+                </Button>
+              );
+            })}
           </div>
         </div>
       </div>
