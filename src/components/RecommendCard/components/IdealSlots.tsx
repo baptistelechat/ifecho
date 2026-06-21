@@ -74,14 +74,14 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
       <div className="flex items-center gap-2 px-4 pb-3 pt-4">
         <AlarmClock className="size-3.5 text-muted-foreground" />
         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Créneaux idéaux
+          Créneaux idéaux aujourd'hui
         </p>
       </div>
 
       {slots.length === 0 ? (
         <div className="px-4 pb-4">
           <p className="text-sm text-muted-foreground">
-            Aucun créneau favorable ce soir. Gardez les fenêtres fermées.
+            Aucun créneau favorable aujourd'hui. Gardez les fenêtres fermées.
           </p>
         </div>
       ) : (
