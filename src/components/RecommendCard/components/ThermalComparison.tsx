@@ -1,7 +1,10 @@
 ﻿import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { COMFORT_LEVELS, type ComfortLevel, type HourlyScore } from "@/types";
+import type { LucideIcon } from "lucide-react";
 import {
+  ChevronDown,
+  ChevronUp,
   Cloud,
   Droplets,
   Flame,
@@ -12,7 +15,6 @@ import {
   Thermometer,
   Wind,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface ThermalComparisonProps {
@@ -112,33 +114,57 @@ const ThermalComparison = ({
           </p>
         </div>
 
-        {/* Température + slider */}
-        <div className="flex h-[1em] items-center tabular-nums text-5xl font-black leading-none text-foreground">
-          {isEditing ? (
-            <>
-              <input
-                ref={inputRef}
-                type="number"
-                min={14}
-                max={35}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onBlur={commitEdit}
-                onKeyDown={handleKeyDown}
-                className="h-full w-14 border-0 bg-transparent p-0 tabular-nums text-5xl font-black leading-none text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                aria-label="Saisir la température intérieure"
-              />
-              °
-            </>
-          ) : (
-            <button
-              onClick={startEditing}
-              className="cursor-text p-0 transition-opacity hover:opacity-70"
-              aria-label={`Température intérieure ${indoorTemp}. Cliquer pour modifier.`}
+        {/* Température + boutons +/- */}
+        <div className="flex items-center justify-between">
+          <div className="flex h-[1em] items-center tabular-nums text-5xl font-black leading-none text-foreground">
+            {isEditing ? (
+              <>
+                <input
+                  ref={inputRef}
+                  type="number"
+                  min={14}
+                  max={35}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onBlur={commitEdit}
+                  onKeyDown={handleKeyDown}
+                  className="h-full w-14 border-0 bg-transparent p-0 tabular-nums text-5xl font-black leading-none text-foreground outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  aria-label="Saisir la température intérieure"
+                />
+                °
+              </>
+            ) : (
+              <button
+                onClick={startEditing}
+                className="cursor-text p-0 transition-opacity hover:opacity-70"
+                aria-label={`Température intérieure ${indoorTemp}. Cliquer pour modifier.`}
+              >
+                {indoorTemp}°
+              </button>
+            )}
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => onTempChange(Math.min(35, indoorTemp + 1))}
+              disabled={indoorTemp >= 35}
+              aria-label="Augmenter la température"
             >
-              {indoorTemp}°
-            </button>
-          )}
+              <ChevronUp className="size-3" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => onTempChange(Math.max(14, indoorTemp - 1))}
+              disabled={indoorTemp <= 14}
+              aria-label="Diminuer la température"
+            >
+              <ChevronDown className="size-3" />
+            </Button>
+          </div>
         </div>
         <div className="mt-3">
           <Slider
