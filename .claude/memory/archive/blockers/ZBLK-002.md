@@ -1,17 +1,16 @@
 ---
 id: ZBLK-002
 type: blocker
-date: 2026-06-20
-tags: [fcm, push-notifications, infrastructure, cost, agent-oscillation]
+date: 2026-06-21
+tags: [api-adresse, reverse, geolocation, bug, empty-features]
 ---
 
-# ZBLK-002 — Oscillation agent sur l'infra notifications
+# ZBLK-002 — "Votre position" affiché sans nom de ville après GPS
 
-| Friction                                                                                                                                      | Cause réelle                                                                                                                                   | Solution                                                                                                | Statut |
-| --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------ |
-| 3+ itérations (VAPID individuel → Supabase pg_cron → GitHub Actions → Cloudflare Workers → RPi) avant de converger sur une solution zéro coût | Évaluation séquentielle de chaque outil sans comprendre le modèle de coût de FCM Topics. L'agent revalorisait des outils précédemment écartés. | Baptiste a proposé le RPi ; déblocage par la compréhension que FCM Topics = coût O(topics) pas O(users) | résolu |
+| Friction                                                             | Cause réelle                                                                                                                           | Solution                                                                | Statut |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------ |
+| Label affichait "Votre position" sans commune après localisation GPS | `/reverse/?type=municipality` retourne `features: []` car les coordonnées GPS ne tombent jamais exactement sur un centroïde de commune | Retirer `&type=municipality` de l'URL `/reverse/` dans `useLocation.ts` | résolu |
 
 ## Références
 
-- [LRN-004](../../learnings/LRN-004.md) — FCM Topics : modèle de coût extrait du déblocage
-- [BDR-004](../../decisions/BDR-004.md) — Décision finale : FCM Topics + RPi
+- [BDR-012](../../decisions/BDR-012.md) — ajout de `source` pour distinguer GPS vs recherche après ce bug

@@ -82,3 +82,246 @@ Score final : 56/100, 0 erreur, 13 issues résiduels (shadcn/ui + `no-fetch-in-e
 **Entrées clés :**
 
 - [LRN-005](learnings/LRN-005.md) — Pattern `prevProp` inline render
+
+---
+
+Session courte de polish UI. Restructuration du layout `App.tsx` en 3 zones sémantiques : `<header>` toujours en haut, `<main flex-1>` pour le contenu, `<footer>` collé en bas de page. Le champ de recherche est désormais centré verticalement à l'état vide grâce à `my-auto` conditionnel sur le conteneur interne — quand les données météo arrivent, `my-auto` disparaît et le contenu s'aligne naturellement en haut. Ajout d'une signature "Made by @baptistelechat with Heart Lucide" dans le footer avec lien vers le portfolio (baptistelechat.vercel.app).
+
+**Entrées clés :**
+
+- [BDR-011](decisions/BDR-011.md) — Layout flex-col sémantique + footer collé en bas
+
+---
+
+Session de polish UX sur la localisation GPS. Ajout du bouton "Me localiser" (variant link) à côté du label "Entrez votre ville" pour relancer la géoloc à tout moment. Ajout du champ `source: 'gps' | 'search'` sur `GeoLocation` pour distinguer l'origine et adapter le label — GPS résolu affiche "Votre position (Paris)", bouton masqué quand source GPS déjà active.
+
+Bug découvert via screenshot Baptiste : label affichait systématiquement "Votre position" sans nom de commune. Cause racine : `&type=municipality` dans l'URL `/reverse/` API Adresse est trop restrictif — retourne `features: []` sauf si les coordonnées tombent exactement sur un centroïde de commune (jamais en pratique). Fix : supprimer le paramètre `type` de l'appel reverse. Corrigé en 1 ligne.
+
+**Entrées clés :**
+
+- [BDR-012](decisions/BDR-012.md) — GeoLocation.source : discriminant GPS/recherche
+- [ZBLK-002](archive/blockers/ZBLK-002.md) — "Votre position" sans ville (résolu)
+
+---
+
+Session de polish composants shadcn/ui. Remplacement systématique des éléments HTML natifs (`<button>`, `<input>`, `<input type="range">`) par leurs équivalents shadcn. Variants créés dans `button.tsx` : `surface` (bouton carte), `cta` (plein-largeur), size `icon` (rounded-full). Styles absorbés dans `input.tsx` : `border-border` au lieu de `border-input` (invisible car `--input: #ffffff` dans ce thème), `bg-input`, `rounded-xl`, focus ring subtil. Slider radix installé pour `ThermalComparison`. `TempSelector` supprimé (inutilisé).
+
+Moment clé : question sur le bouton GPS qui utilisait `variant="ember" size="icon"`. Tentative de créer un `compoundVariants` CVA pour merger les deux dimensions → trop complexe. Baptiste a clarifié : `ember` = couleur primary = `variant="default"`. Variant `ember` supprimé, compound variant retiré. Usage final : `<Button size="icon">` seulement.
+
+**Entrées clés :**
+
+- [BDR-013](decisions/BDR-013.md) — Centralisation styles shadcn, variants dédiés
+- [ZBLK-010](archive/blockers/ZBLK-010.md) — Compound variant CVA inutile (résolu)
+
+---
+
+Session enrichissement données météo + refonte algo ventilation. Trois nouvelles variables ajoutées à l'appel Open-Meteo : `apparent_temperature`, `windspeed_10m`, `uv_index`. Propagées du type `WeatherHour` → `HourlyScore` via `useWeatherForecast` et `useVentilationScore`. Affichage dans `ThermalComparison` : ressenti (Thermometer ember), humidité + vent en ligne horizontale, UV (Sun amber).
+
+Décision structurante : l'algo de ventilation utilise désormais `apparentTemperature` dans `deltaT` au lieu de la température sèche. `malusHumidity` supprimé — redondant car `apparent_temperature` intègre déjà vent + humidité + rayonnement. `bonusNight` réduit de +2 à +1 (signal UX léger, pas physique). Seuil `isFavorable` passé de `> 0` à `> 2°C` après analyse d'exemples concrets : un gain de <2°C de ressenti ne justifie pas d'ouvrir les fenêtres.
+
+**Entrées clés :**
+
+- [BDR-014](decisions/BDR-014.md) — `apparentTemperature` comme base du score ventilation
+- [BDR-015](decisions/BDR-015.md) — Seuil `isFavorable > 2°C`
+- [LRN-006](learnings/LRN-006.md) — Variable API composite : ne pas doubler ses composantes
+
+---
+
+Session de polish UX : édition inline de la température intérieure. Clic direct sur le chiffre `26°` bascule en `<input>` avec auto-focus et auto-sélection — Enter/blur valide, Escape annule. Le slider reste fonctionnel en parallèle.
+
+Deux blockers résolus : `React.KeyboardEvent<HTMLInputElement>` ne compilait pas car le namespace `React` n'est pas importé dans ce projet (named imports uniquement) — fix via structural typing `(e: { key: string })`. Puis un layout shift résiduel malgré `p-0 border-0` sur l'input : cause = intrinsic height du navigateur, pas le padding. Fix final : conteneur `div.flex.h-[1em]` + `h-full` sur l'input, vérifié par screenshots dev-browser avant/après.
+
+Correction de rangement mémoire : BLK-003 à BLK-009 étaient des fichiers orphelins non référencés dans l'index (créés lors de sessions précédentes mais jamais archivés). Archivés en ZBLK-003 à ZBLK-009, index mis à jour, fichiers actifs supprimés.
+
+**Entrées clés :**
+
+- [BDR-016](decisions/BDR-016.md) — Édition inline température : isEditing toggle + h-[1em]
+- [LRN-007](learnings/LRN-007.md) — intrinsic height input vs button : fix h-[1em]
+- [ZBLK-011](archive/blockers/ZBLK-011.md) — React.KeyboardEvent sans namespace (résolu)
+- [ZBLK-012](archive/blockers/ZBLK-012.md) — Layout shift input vs button (résolu)
+
+---
+
+Session de polish UX sur `ThermalComparison` : 3 demandes successives.
+
+(1) `ComfortLevel` migré de `T | null` vers `T` non-nullable — `"neutral"` devient le défaut permanent, sans toggle de déselection. Simplifie toute la chaîne de types et supprime les ternaires défensifs dans `App.tsx`, `RecommendCard` et `ThermalComparison`.
+
+(2) Ligne `Ressenti ~{X}°` ajoutée dans le panneau intérieur, affichant `feltIndoorTemp = indoorTemp + comfortBias`. L'utilisateur voit immédiatement l'impact de son choix de confort ressenti.
+
+(3) Icônes Lucide `Flame` / `Minus` / `Snowflake` remplacent les emojis. Layout panneau intérieur réorganisé par usage : saisie (big temp + slider) en haut, perception (`Ressenti ~X°` + boutons) en bas. `COMFORT_ICONS: Record<ComfortLevel, LucideIcon>` défini hors composant.
+
+Deux blockers résolus : RTK stale cache causait de fausses erreurs lint (`startEditing`, `handleKeyDown` marqués TS6133 — disparus via `pnpm lint` direct). PowerShell `@'...'@` perdait silencieusement les accents et le symbole ° — résolu via Write ASCII + Edit `replace_all: true` séquentiels.
+
+**Entrées clés :**
+
+- [BDR-017](decisions/BDR-017.md) — ComfortLevel non-nullable
+- [BDR-018](decisions/BDR-018.md) — Lucide + layout panneau intérieur
+- [ZBLK-013](archive/blockers/ZBLK-013.md) — RTK stale cache (résolu)
+- [ZBLK-014](archive/blockers/ZBLK-014.md) — Écriture accentuée multi-tentatives (résolu)
+
+---
+
+Session courte de débat UX + ajout composant. Débat Rodin sur slider vs stepper (boutons +/-) pour la saisie de température. L'argument "affordance thermostat" a été invalidé : les thermostats physiques sont des cadrans rotatifs, pas des boutons up/down. L'argument correct pour le stepper : précision sans ciblage de précision sur mobile (1 tap = 1°C). Rodin a suggéré de combiner les deux — ce qui a été implémenté.
+
+Modification de `ThermalComparison.tsx` : ajout de deux boutons ChevronUp/ChevronDown à droite du chiffre de température, en `flex-col gap-0.5`, avec `disabled` aux bornes 14° et 35°. Le slider existant est conservé. Pas de composant `button-group` shadcn installé — deux `Button` natifs suffisent.
+
+**Entrées clés :**
+
+- [BDR-019](decisions/BDR-019.md) — Dual control température : stepper + slider
+- [LRN-011](learnings/LRN-011.md) — Affordance thermostat ≠ stepper +/-
+
+---
+
+Session courte de refonte sémantique du delta thermique. L'utilisateur a demandé que l'écart thermique (`deltaT`) soit calculé à partir des températures ressenties des deux côtés : ressenti intérieur (`indoorTemp + comfortBias`) et ressenti extérieur (`apparentTemperature`). Avant, `comfortBias` était ajouté séparément dans le score final — résultat mathématiquement identique, mais `deltaT` ne représentait pas l'écart réel perçu.
+
+Fix en cascade propre : `useVentilationScore` (intégration de `comfortBias` dans `deltaT`, retrait du terme dans le score), `ThermalDelta` et `VerdictBanner` (suppression du recalcul local `indoorTemp - temperature`, lecture directe de `currentScore.deltaT`), `RecommendCard/index.tsx` (prop `indoorTemp` retirée des deux consommateurs). Lint propre au premier essai, 0 erreur.
+
+**Entrées clés :**
+
+- [BDR-020](decisions/BDR-020.md) — `deltaT` = ressenti intérieur − ressenti extérieur
+
+---
+
+Session de refonte de la VentilationTimeline : visualisation bidirectionnelle du score et alignement du système couleur entre Timeline et ThermalDelta.
+
+Principales évolutions : timeline bidirectionnelle avec zone positive (44px vers le haut) et zone négative (28px vers le bas), flèches ArrowDown/ArrowUp animées (`animate-bounce`) en `position: absolute` sur l'heure courante, centrage automatique via `scrollIntoView({ inline: 'center' })`. Correction du seuil de couleur : amber désormais pour la zone ±2 (au lieu de rouge dès `score ≤ 0`). ThermalDelta migré de 2 niveaux (basés sur `deltaT`) à 3 niveaux (basés sur `score`), aligné sur le même système de seuils que la timeline.
+
+Cinq blockers résolus : hooks React après return conditionnel (`rules-of-hooks`), centrage `offsetLeft` incorrect (remplacé par `scrollIntoView`), ligne jaune `bg-border` (CSS var amber dans ce thème warm), seuil rouge trop strict, deux verts différents unifiés.
+
+**Entrées clés :**
+
+- [BDR-021](decisions/BDR-021.md) — VentilationTimeline bidirectionnelle
+- [BDR-022](decisions/BDR-022.md) — Seuil couleur 3 niveaux unifié
+
+---
+
+Session courte de polish timeline : fenêtre temporelle et UI.
+
+Sujet principal : les créneaux idéaux et la VentilationTimeline s'arrêtaient à minuit (00h), tronquant les créneaux traversant la nuit (ex. "22h–06h" devenait "22h–00h"). Décision d'adopter une fenêtre glissante `[now, now+24h]` à la place de la journée calendaire 00h–23h. Nécessite `forecast_days: "2"` côté Open-Meteo, `sunrise2`/`sunset2` pour J+1, et un filtre asymétrique selon la date (J ou J+1).
+
+Bug découvert au passage : heures avec `score === 0` (ΔT nul, pas de bonus nuit) n'affichaient aucune barre dans la timeline — `0 * ZONE_HEIGHT = 0px`. Fix : `MIN_BAR` ambre pour les valeurs nulles.
+
+Côté timezone : `new Date(isoStr).getHours()` retourne l'heure UTC sur strings sans offset (Open-Meteo). En CEST le décalage est de +2h. Bug latent corrigé proactivement en parsant l'heure directement depuis le texte ISO.
+
+Trois retouches UI : séparateur J/J+1 en ligne pointillée `border-l-2 border-dashed border-primary` avec date DD/MM en dessous ; remplacement du badge "+1j" par une icône `Moon` sur les créneaux "Nuit" dans IdealSlots ; continuité des créneaux par diff de timestamps (≤1h+1s) pour gérer le passage 23h→0h.
+
+**Entrées clés :**
+
+- [BDR-023](decisions/BDR-023.md) — Fenêtre glissante [now, now+24h]
+
+---
+
+Session de redesign du composant `IdealSlots`. Le composant affichait les créneaux favorables avec un layout basique (deux lignes, petites icônes) — Baptiste a demandé de l'aligner sur le style des widgets de température (`ThermalComparison`) avec de gros chiffres.
+
+Redesign complet : l'heure (`05h – 08h`) passe en `text-4xl font-black leading-none`, le label période migre en bas à droite avec son icône. Création du pattern `TIME_OF_DAY_META` (Record) associant chaque période à une icône Lucide, une couleur et un chevron optionnel (`"up" | "down"`). Layout `flex items-end justify-between` par créneau — réduit la hauteur de carte de ~124px à ~105px.
+
+Itération sur les icônes : `Sunrise`/`Sunset` initialement choisis pour "Matin frais" et "Soirée" se sont révélés illisibles à `size-3` (12px) — plusieurs paths SVG se fondent en blob. Signalé via screenshot Baptiste. Remplacement par `Sun` + `ArrowUp`/`ArrowDown` côte à côte — rendu immédiatement lisible. Biome a ensuite reformaté `ChevronUp`/`ChevronDown` en `ArrowUp`/`ArrowDown` (noms réels des icônes Lucide utilisées).
+
+Couleurs par période appliquées à l'icône ET au label (`meta.color`). État `isNow` : tout passe en `text-ember` + fond `bg-ember/5`.
+
+**Entrées clés :**
+
+- [BDR-024](decisions/BDR-024.md) — IdealSlots redesign
+- [LRN-021](learnings/LRN-021.md) — Icônes SVG complexes illisibles < 12px
+
+---
+
+Session de refonte `TipsSection` en carousel infini. Passage d'une liste statique (5 tips, booléen `urgent`) à un carousel framer-motion avec auto-scroll 4s, swipe pointer events, boutons ChevronLeft/Right, dots de navigation, bouton Play/Pause. Icônes Play/Pause affichent l'état courant (pas l'action future), contrôles centrés, toutes les cards en blanc (suppression du boolean `urgent`).
+
+Deux blockers techniques majeurs résolus : `import from "motion/react"` absent du projet — fix immédiat en `"framer-motion"` ; AnimatePresence mode="wait" + variants custom laissait la card d'index 0 à `opacity: 0, translateX(100%)` — résolu en abandonnant AnimatePresence pour le pattern CSS flex-translate (`motion.div animate={{ x: '-{N*100}%' }}`).
+
+Swipe mobile non fonctionnel malgré pointer events corrects — fix appliqué via `[touch-action:pan-y]` + `setPointerCapture`, confirmé fonctionnel sur device réel ([ZBLK-022](archive/blockers/ZBLK-022.md) résolu).
+
+5 nouveaux tips ajoutés (ventilateur+eau, appareils électriques, côté nord, sol carrelé, draps humides) — total porté à 10. Interface `Tip` nettoyée (suppression `urgent?: boolean`).
+
+**Entrées clés :**
+
+- [ZBLK-020](archive/blockers/ZBLK-020.md) — `import from "motion/react"` (résolu)
+- [ZBLK-021](archive/blockers/ZBLK-021.md) — AnimatePresence card initiale invisible (résolu)
+- [ZBLK-022](archive/blockers/ZBLK-022.md) — Swipe mobile non fonctionnel (résolu)
+- [BDR-025](decisions/BDR-025.md) — Carousel CSS flex-translate
+
+---
+
+Session courte de branding. Remplacement du favicon emoji 🌡️ par une icône vectorielle Lucide `ThermometerSun` — SVG inline sur fond orange `#f97316` avec `rx="8"` pour arrondis, paths récupérés depuis raw GitHub (site officiel et npm n'exposent pas les paths en texte brut). Débat Rodin préalable sur le choix d'icône : `Snowflake` écarté (humour contre-intuitif), `Wind` écarté (trop spécifique ventilation), `ThermometerSun` retenu car il couvre chaleur + mesure, scalable vers une future "suite canicule" sans se limiter à la ventilation.
+
+Ajout du branding dans l'interface : nom "ifecho" + icône `ThermometerSun` dans le `<header>` (label au-dessus du h1, couleur ember), icône ajoutée également dans le footer à côté du nom. Le nom "ifecho" n'était visible que dans le footer avant cette session.
+
+**Entrées clés :**
+
+- [BDR-026](decisions/BDR-026.md) — `ThermometerSun` comme icône de l'app ifecho
+- [LRN-026](learnings/LRN-026.md) — Path SVG Lucide : source fiable = raw GitHub
+
+---
+
+Session courte d'intégration haptic feedback via le package `web-haptics` (v0.0.6, Lochie Axon). Objectif : enrichir l'expérience mobile sans code natif ni API complexe.
+
+Installation de `web-haptics`, création du hook `useHaptics` (wrapper thin exposant `success`, `nudge`, `error`). Intégré en 4 composants : `LocationSearch` (GPS→nudge, sélection commune→success, erreur via `useRef` prevError transition), `ThermalComparison` (steppers +/-→nudge, comfort buttons→success, inline edit commit→success, slider→nudge par step), `CalendarLink` (download→success), `TipsSection` (prev/next/dots→nudge).
+
+Point de correction notable : premier jet du slider utilisait `onValueCommit` (fire une fois au relâchement) — Baptiste a demandé un retour à chaque cran comme une molette → corrigé en `onValueChange` (fire à chaque step). La distinction `onValueChange` vs `onValueCommit` est maintenant documentée globalement.
+
+Lint propre (0 erreur) à l'issue. Le no-op silencieux de `web-haptics` sur desktop et iOS Safari garantit zéro garde défensive dans le code appelant.
+
+**Entrées clés :**
+
+- [BDR-027](decisions/BDR-027.md) — `web-haptics` + `useHaptics` wrapper + mapping UX
+
+---
+
+Session ultra-courte de bug fix. Bug rapporté par Baptiste : lors d'une recherche de commune, la page "se centrait" plutôt que de rester en haut. Cause identifiée dans `VentilationTimeline/index.tsx` : `scrollIntoView({ inline: "center", block: "nearest" })` appelé au mount traversait tous les ancêtres scrollables y compris la page — si la timeline était hors viewport vertical au premier chargement, la page scrollait vers elle même avec `block: "nearest"`. Fix en une ligne : remplacement par `container.scrollLeft = el.offsetLeft - container.clientWidth / 2 + el.offsetWidth / 2` — scroll horizontal isolé sans propager à la page.
+
+---
+
+Rituel `/memory-consolidate` (scope local). 2 candidats FUSIONNER détectés en phase A (LRN-001+LRN-012 via #ventilation #algorithm #scoring ; BDR-007+BDR-019 via #ux #temperature), infirmés en phase B — entrées complémentaires de niveaux distincts. Aucun candidat ARCHIVER. Registres propres.
+
+---
+
+Session de qualité code : scan `/react-doctor` complet sur ifecho. Score initial 50/100 "Critical", 1 erreur + 25 warnings sur 14 fichiers. Score final 75/100 "Needs work" après correction de 21 diagnostics, 4 déférés intentionnellement.
+
+Fixes principaux : `require-reduced-motion` + `LazyMotion` dans `App.tsx`, migration `forwardRef` → `ref` prop dans 4 composants shadcn (`button`, `card`, `input`, `slider`), pattern event-handler ref pour `useHaptics()` dans `LocationSearch` (hook retournant objet instable à chaque render), `.flatMap()` dans `IdealSlots` et `useVentilationScore`, `type="button"` sur boutons natifs, `animate-bounce` → `animate-nudge` custom (`@keyframes` dans `index.css`), migration `motion` → `m` dans `TipsSection`.
+
+Deux blockers techniques : `pnpm-workspace.yaml` créé avec `settings:` clé non reconnue par react-doctor (fix : champs racine) ; JSON react-doctor non parsable via RTK piping sur Windows (fix : `--json > ./rd_final.json` dans le CWD).
+
+4 warnings déférés : `exhaustive-deps` FP sur `resumeRef.current` en cleanup, `only-export-components` ×2 pattern shadcn, `no-fetch-in-effect` exception V0 SPA.
+
+**Entrées clés :**
+
+- [BDR-028](decisions/BDR-028.md) — Défers react-doctor intentionnels
+- [LRN-027](learnings/LRN-027.md) — Hook instable → event-handler ref
+- [ZBLK-024](archive/blockers/ZBLK-024.md) — `settings:` ignoré par react-doctor
+- [ZBLK-025](archive/blockers/ZBLK-025.md) — JSON react-doctor non parsable Windows
+
+---
+
+## 2026-06-22
+
+Session de bug fix et refonte algorithmique. Bug signalé par Baptiste : incohérence de couleur entre VerdictBanner (jaune, basé sur `deltaT`=1.1°C) et ThermalDelta + VentilationTimeline (verts, basés sur `score`=2.1 avec `bonusNight`=1). Cause : `getVerdict()` utilisait `score.deltaT` brut pendant que les autres composants utilisaient `score.score` composite. Fix : migration de `getVerdict()` vers `score.score` avec seuils unifiés (≥4 "Aérez maintenant", >2 "Bon moment", >0 "Légèrement bénéfique", ≤0 "Patientez", <-2 "Ne pas aérer").
+
+Débat connexe : message affichait "1.1°C" (deltaT) pendant que la décision reposait sur score=2.1 (deltaT + bonusNight) — asymétrie valeur affichée vs valeur seuil, confusion garantie. Cela a déclenché une remise en question du bonusNight lui-même.
+
+Refonte algo : `bonusNight` (+1 point fixe la nuit) remplacé par `uvPenalty` basé sur `uvIndex`. Raison : `apparent_temperature` Open-Meteo intègre vent + humidité mais PAS le rayonnement solaire — `uvIndex` (déjà dans le payload, inutilisé jusque-là) permet un malus physiquement justifié : fort UV = gain solaire réel par les vitres pendant l'aération. Seuils : uvIndex≥6→1.5, ≥3→1, ≥1→0.5, 0→0. Formule finale : `score = deltaT - uvPenalty`.
+
+Maintenance mémoire (argument `/memory-close`) : références GLRN-132/133/134/135 incorrectes dans ZBLK-020/021/022 remplacées par liens LRN-022/023/024/025 locaux corrects. Lien cassé journal.md (`[BLK-022](blockers/BLK-022.md) ouvert`) → `[ZBLK-022](archive/blockers/ZBLK-022.md) résolu`.
+
+**Entrées clés :**
+
+- [BDR-029](decisions/BDR-029.md) — `uvPenalty` remplace `bonusNight`
+- [BDR-030](decisions/BDR-030.md) — VerdictBanner unifié sur `score.score`
+- [LRN-031](learnings/LRN-031.md) — `apparent_temperature` Open-Meteo sans rayonnement solaire
+
+---
+
+Session animation pass `/emil-design-eng`. Objectif initial : stagger per-card sur le contenu principal d'`App.tsx` — chaque card devait apparaître individuellement avec un délai échelonné.
+
+Trois approches tentées successivement, toutes silencieuses : (1) `staggerChildren: 0.18` + `delayChildren: 0.05` dans `variants`, (2) delays explicites via constante partagée, (3) delays inline sur chaque `m.div` (0, 0.14, 0.28, 0.42). Dans les trois cas, toutes les cards apparaissaient simultanément. Cause non identifiée — interaction probable avec `LazyMotion features={domAnimation}`. Après 3 échecs, décision pragmatique : abandon du stagger, remplacement par un slide global (`m.div key="content"` unique avec `y: 24→0` + exit `y: -8, opacity: 0`).
+
+Travail parallèle sur `IdealSlots.tsx` : animation des créneaux lors de leur apparition/disparition. Premier jet avec `AnimatePresence mode="wait"` + wrapper externe → deux problèmes : (1) flash d'une card vide (header visible sans contenu) pendant la transition, (2) snap brutal à la taille finale. Solution : structure plate `AnimatePresence initial={false}` sans `mode="wait"`, chaque élément animant `height: 0 → "auto"` + `opacity` avec `overflow-hidden`. La card s'étire naturellement.
+
+Troisième changement : suppression du spinner "Récupération de la météo" (`Loader2` pendant `isLoadingWeather`). Baptiste a signalé un décalage visuel — le spinner s'affichait brièvement avant la card principale. Fix : `hasContent = weather && !isLoadingWeather && location` — rien affiché tant que les données ne sont pas prêtes.
+
+**Entrées clés :**
+
+- [BDR-031](decisions/BDR-031.md) — slide global `m.div` comme pattern d'entrée du contenu principal
+- [LRN-032](learnings/LRN-032.md) — stagger invisible dans LazyMotion + domAnimation
+- [LRN-033](learnings/LRN-033.md) — `height: 0 → "auto"` + flat AnimatePresence pour hauteur par item
+- [LRN-034](learnings/LRN-034.md) — `AnimatePresence mode="wait"` → flash entre états vide/contenu

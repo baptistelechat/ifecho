@@ -1,19 +1,41 @@
 ---
 register: decisions
-last_updated: 2026-06-21
+last_updated: 2026-06-22
 ---
 
 ## Index
 
-| ID                              | Date       | Titre                                                     | Tags                                                         | Statut |
-| ------------------------------- | ---------- | --------------------------------------------------------- | ------------------------------------------------------------ | ------ |
-| [BDR-001](decisions/BDR-001.md) | 2026-06-20 | Vite + React (pas Next.js) pour SPA statique V0           | #vite #react #nextjs #spa #stack                             | actif  |
-| [BDR-002](decisions/BDR-002.md) | 2026-06-20 | Rappel `.ics` côté client — pas de push VAPID V0          | #notifications #ics #vapid #zero-infra #v0                   | actif  |
-| [BDR-003](decisions/BDR-003.md) | 2026-06-20 | Humidité intérieure hors scope V0                         | #humidity #scope #v0 #capteurs #domotique                    | actif  |
-| [BDR-004](decisions/BDR-004.md) | 2026-06-20 | FCM Topics + RPi pour push notifications V1               | #fcm #push-notifications #topics #raspberry-pi #v1 #firebase | actif  |
-| [BDR-005](decisions/BDR-005.md) | 2026-06-20 | Double précision météo : commune UI vs centroïde dept     | #geolocation #commune #departement #scalability #centroid    | actif  |
-| [BDR-006](decisions/BDR-006.md) | 2026-06-20 | API Adresse gouvernement pour autocomplete commune        | #autocomplete #commune #api-adresse #gouvernement #v0        | actif  |
-| [BDR-007](decisions/BDR-007.md) | 2026-06-20 | Temp intérieure : dual mode (3 boutons + champ numérique) | #ux #temperature #input #dual-mode #thermometer #v0          | actif  |
-| [BDR-008](decisions/BDR-008.md) | 2026-06-20 | sunrise/sunset dynamique depuis Open-Meteo                | #open-meteo #sunrise #sunset #bonus-heure #algorithm         | actif  |
-| [BDR-009](decisions/BDR-009.md) | 2026-06-20 | Palette warm orange (#fff8f4 + ember) comme identité      | #tailwind #palette #design #orange #ember #theming           | actif  |
-| [BDR-010](decisions/BDR-010.md) | 2026-06-20 | `getBestVentilationHour` : heures futures uniquement      | #algorithm #ventilation #future-hours #ux #scoring           | actif  |
+| ID                              | Date       | Titre                                                                  | Tags                                                                                             | Statut |
+| ------------------------------- | ---------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------ |
+| [BDR-001](decisions/BDR-001.md) | 2026-06-20 | Vite + React (pas Next.js) pour SPA statique V0                        | #vite #react #nextjs #spa #stack                                                                 | actif  |
+| [BDR-002](decisions/BDR-002.md) | 2026-06-20 | Rappel `.ics` côté client — pas de push VAPID V0                       | #notifications #ics #vapid #zero-infra #v0                                                       | actif  |
+| [BDR-003](decisions/BDR-003.md) | 2026-06-20 | Humidité intérieure hors scope V0                                      | #humidity #scope #v0 #capteurs #domotique                                                        | actif  |
+| [BDR-004](decisions/BDR-004.md) | 2026-06-20 | FCM Topics + RPi pour push notifications V1                            | #fcm #push-notifications #topics #raspberry-pi #v1 #firebase                                     | actif  |
+| [BDR-005](decisions/BDR-005.md) | 2026-06-20 | Double précision météo : commune UI vs centroïde dept                  | #geolocation #commune #departement #scalability #centroid                                        | actif  |
+| [BDR-006](decisions/BDR-006.md) | 2026-06-20 | API Adresse gouvernement pour autocomplete commune                     | #autocomplete #commune #api-adresse #gouvernement #v0                                            | actif  |
+| [BDR-007](decisions/BDR-007.md) | 2026-06-20 | Temp intérieure : dual mode (3 boutons + champ numérique)              | #ux #temperature #input #dual-mode #thermometer #v0                                              | actif  |
+| [BDR-008](decisions/BDR-008.md) | 2026-06-20 | sunrise/sunset dynamique depuis Open-Meteo                             | #open-meteo #sunrise #sunset #bonus-heure #algorithm                                             | actif  |
+| [BDR-009](decisions/BDR-009.md) | 2026-06-20 | Palette warm orange (#fff8f4 + ember) comme identité                   | #tailwind #palette #design #orange #ember #theming                                               | actif  |
+| [BDR-010](decisions/BDR-010.md) | 2026-06-20 | `getBestVentilationHour` : heures futures uniquement                   | #algorithm #ventilation #future-hours #ux #scoring                                               | actif  |
+| [BDR-011](decisions/BDR-011.md) | 2026-06-21 | Layout App.tsx : flex-col sémantique + footer collé en bas             | #layout #flex-col #footer #header #app #structure                                                | actif  |
+| [BDR-012](decisions/BDR-012.md) | 2026-06-21 | `GeoLocation.source` : discriminant GPS vs recherche                   | #geolocation #source #type #ux #discriminant #typescript                                         | actif  |
+| [BDR-013](decisions/BDR-013.md) | 2026-06-21 | Centralisation styles shadcn : variants dédiés, 0 className            | #shadcn #button #input #slider #cva #variants #className #ui                                     | actif  |
+| [BDR-014](decisions/BDR-014.md) | 2026-06-21 | `apparentTemperature` comme base du score ventilation                  | #apparent-temperature #ventilation #algorithm #delta-t #open-meteo                               | actif  |
+| [BDR-015](decisions/BDR-015.md) | 2026-06-21 | Seuil `isFavorable > 2°C` pour conseiller l'aération                   | #ventilation #score #threshold #isFavorable #ux                                                  | actif  |
+| [BDR-016](decisions/BDR-016.md) | 2026-06-21 | Édition inline température : `isEditing` toggle + `h-[1em]`            | #inline-edit #isEditing #toggle #input #layout-shift #ux #react                                  | actif  |
+| [BDR-017](decisions/BDR-017.md) | 2026-06-21 | `ComfortLevel` non-nullable — `"neutral"` permanent par défaut         | #comfort-level #nullable #react #state #localStorage #ux                                         | actif  |
+| [BDR-018](decisions/BDR-018.md) | 2026-06-21 | Icônes Lucide sémantiques + layout panneau intérieur par usage         | #lucide #icon #comfort-level #layout #ux #thermal-comparison                                     | actif  |
+| [BDR-019](decisions/BDR-019.md) | 2026-06-21 | Dual control température : stepper ChevronUp/Down + slider             | #ux #temperature #stepper #slider #dual-control #mobile                                          | actif  |
+| [BDR-020](decisions/BDR-020.md) | 2026-06-21 | `deltaT` = ressenti intérieur − ressenti extérieur                     | #ventilation #algorithm #deltaT #comfortBias #apparent-temperature #scoring #semantic            | actif  |
+| [BDR-021](decisions/BDR-021.md) | 2026-06-21 | VentilationTimeline bidirectionnelle : barres ±score + flèches bounce  | #ventilation-timeline #bidirectional #chart #animation #ux #score                                | actif  |
+| [BDR-022](decisions/BDR-022.md) | 2026-06-21 | Seuil couleur 3 niveaux unifié (score) : timeline + ThermalDelta       | #color-system #threshold #score #timeline #thermal-delta #consistency                            | actif  |
+| [BDR-023](decisions/BDR-023.md) | 2026-06-21 | Fenêtre glissante `[now, now+24h]` pour timeline et créneaux idéaux    | #sliding-window #algorithm #24h #midnight #timeline #ventilation                                 | actif  |
+| [BDR-024](decisions/BDR-024.md) | 2026-06-21 | `IdealSlots` : gros chiffres + `TIME_OF_DAY_META` + layout `items-end` | #IdealSlots #design #text-4xl #TIME_OF_DAY_META #layout #items-end #icon-per-period              | actif  |
+| [BDR-025](decisions/BDR-025.md) | 2026-06-21 | TipsSection : carousel CSS flex-translate                              | #carousel #framer-motion #animatepresence #flex-translate #tips-section #react                   | actif  |
+| [BDR-026](decisions/BDR-026.md) | 2026-06-21 | `ThermometerSun` comme icône de l'app ifecho                           | #favicon #lucide #icon #branding #thermometer-sun #canicule                                      | actif  |
+| [BDR-027](decisions/BDR-027.md) | 2026-06-21 | `web-haptics` : wrapper `useHaptics` + mapping UX par zone UI          | #web-haptics #haptics #mobile-ux #hook #wrapper #react #presets #mapping                         | actif  |
+| [BDR-028](decisions/BDR-028.md) | 2026-06-21 | Défers react-doctor intentionnels (3 catégories)                       | #react-doctor #deferred #exhaustive-deps #only-export-components #no-fetch-in-effect #shadcn #v0 | actif  |
+| [BDR-029](decisions/BDR-029.md) | 2026-06-22 | `uvPenalty` remplace `bonusNight` dans le score                        | #scoring #uvPenalty #uvIndex #bonusNight #open-meteo #ventilation #algorithm                     | actif  |
+| [BDR-030](decisions/BDR-030.md) | 2026-06-22 | VerdictBanner unifié sur `score.score`                                 | #verdict-banner #score #color-system #threshold #consistency #ui #react                          | actif  |
+| [BDR-031](decisions/BDR-031.md) | 2026-06-22 | Slide global `m.div` comme entrée du contenu principal                 | #animation #framer-motion #stagger #LazyMotion #content-entry #slide #App                        | actif  |
+| [BDR-032](decisions/BDR-032.md) | 2026-06-22 | Pas de spinner météo : `hasContent` conditionnel                       | #ux #loading #weather #hasContent #layout-shift #spinner #ifecho                                 | actif  |
