@@ -28,6 +28,8 @@ export interface WeatherData {
   hours: WeatherHour[];
   sunrise: string;
   sunset: string;
+  sunrise2: string;
+  sunset2: string;
 }
 
 export interface HourlyScore {

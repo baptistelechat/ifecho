@@ -48,7 +48,7 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
           "temperature_2m,relativehumidity_2m,apparent_temperature,windspeed_10m,uv_index",
         );
         url.searchParams.set("daily", "sunrise,sunset");
-        url.searchParams.set("forecast_days", "1");
+        url.searchParams.set("forecast_days", "2");
         url.searchParams.set("timezone", "Europe/Paris");
 
         const response = await fetch(url.toString());
@@ -71,6 +71,8 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
           hours,
           sunrise: json.daily.sunrise[0] ?? "",
           sunset: json.daily.sunset[0] ?? "",
+          sunrise2: json.daily.sunrise[1] ?? json.daily.sunrise[0] ?? "",
+          sunset2: json.daily.sunset[1] ?? json.daily.sunset[0] ?? "",
         });
         setIsLoading(false);
       } catch {
