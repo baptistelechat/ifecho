@@ -1,4 +1,4 @@
-import { ArrowUpDown, Check, X } from "lucide-react";
+import { ArrowUpDown, Check, Minus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 
@@ -8,11 +8,41 @@ interface ThermalDeltaProps {
 
 const MAX_DELTA = 15;
 
+type ScoreLevel = "good" | "neutral" | "bad";
+
+const getLevel = (score: number): ScoreLevel => {
+  if (score > 2) return "good";
+  if (score > -2) return "neutral";
+  return "bad";
+};
+
+const LEVEL_STYLES: Record<
+  ScoreLevel,
+  { value: string; bar: string; icon: string }
+> = {
+  good: {
+    value: "text-verdict-good",
+    bar: "bg-verdict-good",
+    icon: "text-verdict-good",
+  },
+  neutral: {
+    value: "text-amber-500",
+    bar: "bg-amber-400",
+    icon: "text-amber-500",
+  },
+  bad: {
+    value: "text-verdict-bad",
+    bar: "bg-verdict-bad",
+    icon: "text-verdict-bad",
+  },
+};
+
 const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
   const delta = currentScore.deltaT;
   const absD = Math.abs(delta);
   const barWidth = Math.min((absD / MAX_DELTA) * 100, 100);
-  const isGood = delta > 0;
+  const level = getLevel(currentScore.score);
+  const styles = LEVEL_STYLES[level];
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
@@ -23,34 +53,28 @@ const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
             Écart thermique
           </p>
         </div>
-        <span
-          className={cn(
-            "text-sm font-bold",
-            isGood ? "text-verdict-good" : "text-verdict-bad",
-          )}
-        >
+        <span className={cn("text-sm font-bold", styles.value)}>
           {delta > 0 ? "↓" : "↑"} {absD.toFixed(1)}°C
         </span>
       </div>
 
       <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
         <div
-          className={cn(
-            "h-full rounded-full transition-all",
-            isGood ? "bg-verdict-good" : "bg-verdict-bad",
-          )}
+          className={cn("h-full rounded-full transition-all", styles.bar)}
           style={{ width: `${barWidth}%` }}
         />
       </div>
 
       <div className="mt-2 flex items-center gap-1.5">
-        {isGood ? (
-          <Check className="size-3 shrink-0 text-verdict-good" />
+        {level === "good" ? (
+          <Check className={cn("size-3 shrink-0", styles.icon)} />
+        ) : level === "neutral" ? (
+          <Minus className={cn("size-3 shrink-0", styles.icon)} />
         ) : (
-          <X className="size-3 shrink-0 text-verdict-bad" />
+          <X className={cn("size-3 shrink-0", styles.icon)} />
         )}
         <p className="text-xs text-muted-foreground">
-          {isGood
+          {delta > 0
             ? "Extérieur plus frais — aérer refroidira l'intérieur"
             : "Extérieur plus chaud — aérer réchaufferait l'intérieur"}
         </p>
