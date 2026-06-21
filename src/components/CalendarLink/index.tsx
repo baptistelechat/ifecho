@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { HourlyScore } from "@/types";
+import { useHaptics } from "@/hooks/useHaptics";
 import { CalendarPlus } from "lucide-react";
 
 interface CalendarLinkProps {
@@ -39,7 +40,10 @@ const generateIcs = (targetHour: HourlyScore, city: string): string => {
 };
 
 const CalendarLink = ({ bestHour, city }: CalendarLinkProps) => {
+  const haptics = useHaptics();
+
   const handleDownload = () => {
+    haptics.success();
     const ics = generateIcs(bestHour, city);
     const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
     const url = URL.createObjectURL(blob);

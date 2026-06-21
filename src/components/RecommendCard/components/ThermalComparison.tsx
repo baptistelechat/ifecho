@@ -1,5 +1,6 @@
 ﻿import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { useHaptics } from "@/hooks/useHaptics";
 import { COMFORT_LEVELS, type ComfortLevel, type HourlyScore } from "@/types";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -42,6 +43,7 @@ const ThermalComparison = ({
   onComfortChange,
   cityName,
 }: ThermalComparisonProps) => {
+  const haptics = useHaptics();
   const [isEditing, setIsEditing] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +63,7 @@ const ThermalComparison = ({
   const commitEdit = () => {
     const parsed = parseInt(inputValue, 10);
     if (!isNaN(parsed) && parsed >= 14 && parsed <= 35) {
+      haptics.success();
       onTempChange(parsed);
     }
     setIsEditing(false);
@@ -153,7 +156,10 @@ const ThermalComparison = ({
               variant="outline"
               size="icon"
               className="h-6 w-6"
-              onClick={() => onTempChange(Math.min(35, indoorTemp + 1))}
+              onClick={() => {
+                haptics.nudge();
+                onTempChange(Math.min(35, indoorTemp + 1));
+              }}
               disabled={indoorTemp >= 35}
               aria-label="Augmenter la température"
             >
@@ -163,7 +169,10 @@ const ThermalComparison = ({
               variant="outline"
               size="icon"
               className="h-6 w-6"
-              onClick={() => onTempChange(Math.max(14, indoorTemp - 1))}
+              onClick={() => {
+                haptics.nudge();
+                onTempChange(Math.max(14, indoorTemp - 1));
+              }}
               disabled={indoorTemp <= 14}
               aria-label="Diminuer la température"
             >
@@ -174,7 +183,10 @@ const ThermalComparison = ({
         <div className="mt-3">
           <Slider
             value={[indoorTemp]}
-            onValueChange={(values) => onTempChange(values[0]!)}
+            onValueChange={(values) => {
+              haptics.nudge();
+              onTempChange(values[0]!);
+            }}
             min={14}
             max={35}
             step={1}
@@ -200,7 +212,10 @@ const ThermalComparison = ({
                   key={key}
                   variant={comfortLevel === key ? "default" : "outline"}
                   size="icon"
-                  onClick={() => onComfortChange(key)}
+                  onClick={() => {
+                    haptics.success();
+                    onComfortChange(key);
+                  }}
                   aria-pressed={comfortLevel === key}
                   aria-label={COMFORT_LEVELS[key].label}
                 >

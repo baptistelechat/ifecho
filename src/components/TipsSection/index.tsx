@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useHaptics } from "@/hooks/useHaptics";
 import {
   Sun,
   Clock,
@@ -39,6 +40,7 @@ const RESUME_DELAY = 6000;
 const SWIPE_THRESHOLD = 50;
 
 const TipsSection = () => {
+  const haptics = useHaptics();
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -58,11 +60,13 @@ const TipsSection = () => {
   };
 
   const prev = () => {
+    haptics.nudge();
     pauseTemporarily();
     goTo((index - 1 + TIPS.length) % TIPS.length);
   };
 
   const next = () => {
+    haptics.nudge();
     pauseTemporarily();
     goTo((index + 1) % TIPS.length);
   };
@@ -147,6 +151,7 @@ const TipsSection = () => {
               key={t.id}
               aria-label={`Conseil ${i + 1} : ${t.title}`}
               onClick={() => {
+                haptics.nudge();
                 pauseTemporarily();
                 goTo(i);
               }}

@@ -3,6 +3,7 @@ import { MapPin, Loader2, Navigation } from "lucide-react";
 import { searchCommunes } from "@/hooks/useLocation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useHaptics } from "@/hooks/useHaptics";
 import type { CommuneResult, GeoLocation } from "@/types";
 
 interface LocationSearchProps {
@@ -33,11 +34,13 @@ const LocationSearch = ({
   onDetect,
   onSelect,
 }: LocationSearchProps) => {
+  const haptics = useHaptics();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CommuneResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevErrorRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (query.length < 2) {
@@ -63,6 +66,12 @@ const LocationSearch = ({
   }, [query]);
 
   useEffect(() => {
+    if (error && !prevErrorRef.current) haptics.error();
+    prevErrorRef.current = error;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
         containerRef.current &&
@@ -75,7 +84,13 @@ const LocationSearch = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleDetect = () => {
+    haptics.nudge();
+    onDetect();
+  };
+
   const handleSelect = (commune: CommuneResult) => {
+    haptics.success();
     onSelect(commune);
     setQuery("");
     setShowResults(false);
@@ -95,7 +110,7 @@ const LocationSearch = ({
           <Button
             type="button"
             variant="link"
-            onClick={onDetect}
+            onClick={handleDetect}
             className="h-auto p-0 text-[10px] font-semibold uppercase tracking-widest text-ember"
             aria-label="Utiliser ma position GPS"
           >
@@ -123,7 +138,7 @@ const LocationSearch = ({
           <Button
             type="button"
             size="icon"
-            onClick={onDetect}
+            onClick={handleDetect}
             disabled={isDetecting}
             aria-label="Détecter ma position GPS"
             className="shrink-0"
