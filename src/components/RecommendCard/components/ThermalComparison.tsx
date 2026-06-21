@@ -1,4 +1,5 @@
 import { Cloud, Home, Droplets } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import type { HourlyScore } from "@/types";
 
 interface ThermalComparisonProps {
@@ -48,15 +49,13 @@ const ThermalComparison = ({
           {indoorTemp}°
         </p>
         <div className="mt-3">
-          <input
-            type="range"
+          <Slider
+            value={[indoorTemp]}
+            onValueChange={(values) => onTempChange(values[0]!)}
             min={14}
             max={35}
             step={1}
-            value={indoorTemp}
-            onChange={(e) => onTempChange(parseInt(e.target.value, 10))}
             aria-label="Température intérieure en degrés Celsius"
-            className="w-full cursor-pointer"
           />
           <div className="mt-0.5 flex justify-between">
             <span className="text-[10px] text-muted-foreground">14°</span>

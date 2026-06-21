@@ -1,4 +1,5 @@
 import { CalendarPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { HourlyScore } from "@/types";
 
 interface CalendarLinkProps {
@@ -52,14 +53,10 @@ const CalendarLink = ({ bestHour, city }: CalendarLinkProps) => {
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleDownload}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3 text-sm font-medium text-muted-foreground shadow-sm transition-colors hover:border-ember/40 hover:text-ember"
-    >
+    <Button type="button" variant="surface" size="cta" onClick={handleDownload}>
       <CalendarPlus className="size-4" />
       Ajouter au calendrier
-    </button>
+    </Button>
   );
 };
 

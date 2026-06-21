@@ -122,7 +122,7 @@ const LocationSearch = ({
 
           <Button
             type="button"
-            variant="ember"
+            size="icon"
             onClick={onDetect}
             disabled={isDetecting}
             aria-label="Détecter ma position GPS"

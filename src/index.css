@@ -91,7 +91,3 @@ body {
   min-height: 100dvh;
   @apply text-foreground antialiased;
 }
-
-input[type="range"] {
-  accent-color: #ea580c;
-}
