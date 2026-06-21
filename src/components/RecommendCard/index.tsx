@@ -1,4 +1,4 @@
-import type { HourlyScore } from "@/types";
+import type { ComfortLevel, HourlyScore } from "@/types";
 import VerdictBanner from "./components/VerdictBanner";
 import ThermalComparison from "./components/ThermalComparison";
 import ThermalDelta from "./components/ThermalDelta";
@@ -8,7 +8,8 @@ interface RecommendCardProps {
   currentScore: HourlyScore | null;
   indoorTemp: number;
   onTempChange: (value: number) => void;
-  city: string;
+  comfortLevel: ComfortLevel;
+  onComfortChange: (level: ComfortLevel) => void;
   scores: HourlyScore[];
 }
 
@@ -16,7 +17,8 @@ const RecommendCard = ({
   currentScore,
   indoorTemp,
   onTempChange,
-  city,
+  comfortLevel,
+  onComfortChange,
   scores,
 }: RecommendCardProps) => {
   if (!currentScore) return null;
@@ -28,7 +30,8 @@ const RecommendCard = ({
         currentScore={currentScore}
         indoorTemp={indoorTemp}
         onTempChange={onTempChange}
-        city={city}
+        comfortLevel={comfortLevel}
+        onComfortChange={onComfortChange}
       />
       <ThermalDelta currentScore={currentScore} indoorTemp={indoorTemp} />
       <IdealSlots scores={scores} />

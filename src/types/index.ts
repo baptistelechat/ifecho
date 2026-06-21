@@ -19,6 +19,9 @@ export interface WeatherHour {
   time: string;
   temperature: number;
   humidity: number;
+  apparentTemperature: number;
+  windspeed: number;
+  uvIndex: number;
 }
 
 export interface WeatherData {
@@ -32,22 +35,22 @@ export interface HourlyScore {
   time: string;
   temperature: number;
   humidity: number;
+  apparentTemperature: number;
+  windspeed: number;
+  uvIndex: number;
   score: number;
   deltaT: number;
-  malusHumidity: number;
   bonusNight: number;
   isFavorable: boolean;
 }
 
-export type IndoorTempMode = "buttons" | "manual";
+export type ComfortLevel = "hot" | "neutral" | "cool";
 
-export type IndoorTempPreset = "hot" | "mild" | "cool";
-
-export const INDOOR_TEMP_PRESETS: Record<
-  IndoorTempPreset,
-  { label: string; emoji: string; value: number }
+export const COMFORT_LEVELS: Record<
+  ComfortLevel,
+  { emoji: string; label: string; bias: number }
 > = {
-  hot: { label: "Chaud", emoji: "🥵", value: 30 },
-  mild: { label: "Tiède", emoji: "😐", value: 26 },
-  cool: { label: "Frais", emoji: "🌬️", value: 22 },
+  hot: { emoji: "🥵", label: "Il fait chaud", bias: 2 },
+  neutral: { emoji: "😐", label: "Ça va", bias: 0 },
+  cool: { emoji: "🥶", label: "Il fait frais", bias: -2 },
 };

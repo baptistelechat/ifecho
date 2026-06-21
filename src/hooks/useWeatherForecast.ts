@@ -6,6 +6,9 @@ interface OpenMeteoResponse {
     time: string[];
     temperature_2m: number[];
     relativehumidity_2m: number[];
+    apparent_temperature: number[];
+    windspeed_10m: number[];
+    uv_index: number[];
   };
   daily: {
     sunrise: string[];
@@ -40,7 +43,10 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
         const url = new URL("https://api.open-meteo.com/v1/forecast");
         url.searchParams.set("latitude", lat.toString());
         url.searchParams.set("longitude", lon.toString());
-        url.searchParams.set("hourly", "temperature_2m,relativehumidity_2m");
+        url.searchParams.set(
+          "hourly",
+          "temperature_2m,relativehumidity_2m,apparent_temperature,windspeed_10m,uv_index",
+        );
         url.searchParams.set("daily", "sunrise,sunset");
         url.searchParams.set("forecast_days", "1");
         url.searchParams.set("timezone", "Europe/Paris");
@@ -56,6 +62,9 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
           time,
           temperature: json.hourly.temperature_2m[index] ?? 0,
           humidity: json.hourly.relativehumidity_2m[index] ?? 0,
+          apparentTemperature: json.hourly.apparent_temperature[index] ?? 0,
+          windspeed: json.hourly.windspeed_10m[index] ?? 0,
+          uvIndex: json.hourly.uv_index[index] ?? 0,
         }));
 
         setData({

@@ -20,31 +20,33 @@ const isNightHour = (
 export const useVentilationScore = (
   weather: WeatherData | null,
   indoorTemp: number,
+  comfortBias: number = 0,
 ) => {
   return useMemo((): HourlyScore[] => {
     if (!weather) return [];
 
     return weather.hours.map((hour) => {
-      const deltaT = indoorTemp - hour.temperature;
-      const malusHumidity = hour.humidity > 80 ? -3 : 0;
+      const deltaT = indoorTemp - hour.apparentTemperature;
       const bonusNight = isNightHour(hour.time, weather.sunrise, weather.sunset)
-        ? 2
+        ? 1
         : 0;
-      const score = deltaT + malusHumidity + bonusNight;
+      const score = deltaT + bonusNight + comfortBias;
 
       return {
         hour: parseHour(hour.time),
         time: hour.time,
         temperature: hour.temperature,
         humidity: hour.humidity,
+        apparentTemperature: hour.apparentTemperature,
+        windspeed: hour.windspeed,
+        uvIndex: hour.uvIndex,
         score,
         deltaT,
-        malusHumidity,
         bonusNight,
-        isFavorable: score > 0,
+        isFavorable: score > 2,
       };
     });
-  }, [weather, indoorTemp]);
+  }, [weather, indoorTemp, comfortBias]);
 };
 
 export const getBestVentilationHour = (
