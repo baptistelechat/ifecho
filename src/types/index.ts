@@ -50,7 +50,7 @@ export const COMFORT_LEVELS: Record<
   ComfortLevel,
   { label: string; bias: number }
 > = {
-  hot: { label: "Il fait chaud", bias: 2 },
-  neutral: { label: "Ça va", bias: 0 },
   cool: { label: "Il fait frais", bias: -2 },
+  neutral: { label: "Ça va", bias: 0 },
+  hot: { label: "Il fait chaud", bias: 2 },
 };

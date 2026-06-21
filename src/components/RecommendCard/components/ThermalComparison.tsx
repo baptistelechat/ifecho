@@ -26,9 +26,9 @@ interface ThermalComparisonProps {
 }
 
 const COMFORT_ICONS: Record<ComfortLevel, LucideIcon> = {
-  hot: Flame,
-  neutral: Smile,
   cool: Snowflake,
+  neutral: Smile,
+  hot: Flame,
 };
 
 const comfortLevels = Object.keys(COMFORT_LEVELS) as ComfortLevel[];
