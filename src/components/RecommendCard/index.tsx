@@ -25,7 +25,7 @@ const RecommendCard = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <VerdictBanner currentScore={currentScore} indoorTemp={indoorTemp} />
+      <VerdictBanner currentScore={currentScore} />
       <ThermalComparison
         currentScore={currentScore}
         indoorTemp={indoorTemp}
@@ -33,7 +33,7 @@ const RecommendCard = ({
         comfortLevel={comfortLevel}
         onComfortChange={onComfortChange}
       />
-      <ThermalDelta currentScore={currentScore} indoorTemp={indoorTemp} />
+      <ThermalDelta currentScore={currentScore} />
       <IdealSlots scores={scores} />
     </div>
   );

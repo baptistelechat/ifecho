@@ -26,11 +26,12 @@ export const useVentilationScore = (
     if (!weather) return [];
 
     return weather.hours.map((hour) => {
-      const deltaT = indoorTemp - hour.apparentTemperature;
+      const feltIndoor = indoorTemp + comfortBias;
+      const deltaT = feltIndoor - hour.apparentTemperature;
       const bonusNight = isNightHour(hour.time, weather.sunrise, weather.sunset)
         ? 1
         : 0;
-      const score = deltaT + bonusNight + comfortBias;
+      const score = deltaT + bonusNight;
 
       return {
         hour: parseHour(hour.time),

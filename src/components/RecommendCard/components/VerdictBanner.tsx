@@ -4,7 +4,6 @@ import type { HourlyScore } from "@/types";
 
 interface VerdictBannerProps {
   currentScore: HourlyScore;
-  indoorTemp: number;
 }
 
 type VerdictKey = "good" | "wait" | "bad" | "neutral";
@@ -16,8 +15,8 @@ interface Verdict {
   message: string;
 }
 
-const getVerdict = (score: HourlyScore, indoorTemp: number): Verdict => {
-  const delta = indoorTemp - score.temperature;
+const getVerdict = (score: HourlyScore): Verdict => {
+  const delta = score.deltaT;
 
   if (delta >= 4) {
     return {
@@ -105,8 +104,8 @@ const verdictConfig: Record<
   },
 };
 
-const VerdictBanner = ({ currentScore, indoorTemp }: VerdictBannerProps) => {
-  const verdict = getVerdict(currentScore, indoorTemp);
+const VerdictBanner = ({ currentScore }: VerdictBannerProps) => {
+  const verdict = getVerdict(currentScore);
   const config = verdictConfig[verdict.key];
   const { Icon } = verdict;
 

@@ -4,13 +4,12 @@ import type { HourlyScore } from "@/types";
 
 interface ThermalDeltaProps {
   currentScore: HourlyScore;
-  indoorTemp: number;
 }
 
 const MAX_DELTA = 15;
 
-const ThermalDelta = ({ currentScore, indoorTemp }: ThermalDeltaProps) => {
-  const delta = indoorTemp - currentScore.temperature;
+const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
+  const delta = currentScore.deltaT;
   const absD = Math.abs(delta);
   const barWidth = Math.min((absD / MAX_DELTA) * 100, 100);
   const isGood = delta > 0;
