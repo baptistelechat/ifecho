@@ -3,6 +3,7 @@ export interface GeoLocation {
   longitude: number;
   city: string;
   department?: string;
+  source?: "gps" | "search";
 }
 
 export interface CommuneResult {

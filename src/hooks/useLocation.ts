@@ -67,7 +67,7 @@ export const useLocation = () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          const url = `https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}&type=municipality`;
+          const url = `https://api-adresse.data.gouv.fr/reverse/?lon=${longitude}&lat=${latitude}`;
           const response = await fetch(url);
           const data = (await response.json()) as {
             features: ApiAddressFeature[];
@@ -77,9 +77,14 @@ export const useLocation = () => {
           const { department } = parseContext(
             feature?.properties.context ?? "",
           );
-          setLocation({ latitude, longitude, city, department });
+          setLocation({ latitude, longitude, city, department, source: "gps" });
         } catch {
-          setLocation({ latitude, longitude, city: "Votre position" });
+          setLocation({
+            latitude,
+            longitude,
+            city: "Votre position",
+            source: "gps",
+          });
         } finally {
           setIsLoading(false);
         }
@@ -100,6 +105,7 @@ export const useLocation = () => {
       longitude: commune.longitude,
       city: commune.city,
       department: commune.department,
+      source: "search",
     });
     setError(null);
   }, []);
