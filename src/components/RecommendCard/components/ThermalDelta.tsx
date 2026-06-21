@@ -1,6 +1,6 @@
-import { ArrowUpDown, Check, Minus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import { ArrowUpDown, Check, Minus, X } from "lucide-react";
 
 interface ThermalDeltaProps {
   currentScore: HourlyScore;
@@ -75,8 +75,8 @@ const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
         )}
         <p className="text-xs text-muted-foreground">
           {delta > 0
-            ? "Extérieur plus frais — aérer refroidira l'intérieur"
-            : "Extérieur plus chaud — aérer réchaufferait l'intérieur"}
+            ? "Extérieur plus frais - aérer refroidira l'intérieur"
+            : "Extérieur plus chaud - aérer réchaufferait l'intérieur"}
         </p>
       </div>
     </div>

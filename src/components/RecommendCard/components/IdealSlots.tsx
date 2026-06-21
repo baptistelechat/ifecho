@@ -1,17 +1,28 @@
-import { AlarmClock, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import type { LucideIcon } from "lucide-react";
+import { AlarmClock, ArrowDown, ArrowUp, Moon, Sun } from "lucide-react";
 
 interface TimeSlot {
   startHour: number;
   endHour: number;
   startMs: number;
   endMs: number;
-  label: string;
+  baseLabel: string;
   isNow: boolean;
   crossesMidnight: boolean;
-  isNight: boolean;
 }
+
+const TIME_OF_DAY_META: Record<
+  string,
+  { icon: LucideIcon; chevron?: "up" | "down"; color: string }
+> = {
+  "Matin frais": { icon: Sun, chevron: "up", color: "text-amber-400" },
+  Midi: { icon: Sun, color: "text-yellow-500" },
+  "Après-midi": { icon: Sun, color: "text-orange-400" },
+  Soirée: { icon: Sun, chevron: "down", color: "text-orange-500" },
+  Nuit: { icon: Moon, color: "text-indigo-400" },
+};
 
 const parseDateHour = (isoTime: string): { date: string; hour: number } => {
   const [datePart, timePart] = isoTime.split("T");
@@ -76,16 +87,14 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
         parseDateHour(first.time).date !== parseDateHour(last.time).date ||
         endHour === 0;
 
-      const base = getSlotLabel(startHour);
       return {
         startHour,
         endHour,
         startMs,
         endMs,
-        label: isNow ? `${base} — maintenant` : base,
+        baseLabel: getSlotLabel(startHour),
         isNow,
         crossesMidnight,
-        isNight: base === "Nuit",
       };
     })
     .filter((slot) => slot.endMs > now);
@@ -116,35 +125,69 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
         </div>
       ) : (
         <div className="divide-y divide-border">
-          {slots.map((slot) => (
-            <div
-              key={`${slot.startMs}-${slot.endMs}`}
-              className={cn(
-                "flex items-center justify-between px-4 py-3",
-                slot.isNow && "bg-ember/5",
-              )}
-            >
-              <span
+          {slots.map((slot) => {
+            const meta = TIME_OF_DAY_META[slot.baseLabel] ?? {
+              icon: Sun,
+              color: "text-muted-foreground",
+            };
+            const Icon = meta.icon;
+            const displayLabel = slot.isNow
+              ? `${slot.baseLabel} - maintenant`
+              : slot.baseLabel;
+
+            return (
+              <div
+                key={`${slot.startMs}-${slot.endMs}`}
                 className={cn(
-                  "tabular-nums text-sm font-semibold",
-                  slot.isNow ? "text-ember" : "text-foreground",
+                  "flex items-end justify-between px-4 py-3",
+                  slot.isNow && "bg-ember/5",
                 )}
               >
-                {formatH(slot.startHour)} – {formatH(slot.endHour)}
-              </span>
-              <span
-                className={cn(
-                  "flex items-center gap-1 text-xs",
-                  slot.isNow
-                    ? "font-medium text-ember"
-                    : "text-muted-foreground",
-                )}
-              >
-                {slot.isNight && <Moon className="size-3" />}
-                {slot.label}
-              </span>
-            </div>
-          ))}
+                <p
+                  className={cn(
+                    "tabular-nums text-4xl font-black leading-none",
+                    slot.isNow ? "text-ember" : "text-foreground",
+                  )}
+                >
+                  {formatH(slot.startHour)} – {formatH(slot.endHour)}
+                </p>
+                <div className="flex items-center gap-1">
+                  <span className="flex items-center">
+                    {meta.chevron === "up" && (
+                      <ArrowUp
+                        className={cn(
+                          "mr-0.5 size-2.5",
+                          slot.isNow ? "text-ember" : meta.color,
+                        )}
+                      />
+                    )}
+                    {meta.chevron === "down" && (
+                      <ArrowDown
+                        className={cn(
+                          "mr-0.5 size-2.5",
+                          slot.isNow ? "text-ember" : meta.color,
+                        )}
+                      />
+                    )}
+                    <Icon
+                      className={cn(
+                        "size-3",
+                        slot.isNow ? "text-ember" : meta.color,
+                      )}
+                    />
+                  </span>
+                  <span
+                    className={cn(
+                      "text-xs",
+                      slot.isNow ? "font-medium text-ember" : meta.color,
+                    )}
+                  >
+                    {displayLabel}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

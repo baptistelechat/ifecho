@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 interface VentilationTimelineProps {
   scores: HourlyScore[];
@@ -149,7 +149,7 @@ const VentilationTimeline = ({
                             getBarColor(s, isBest),
                           )}
                           style={{ height: `${positiveHeight}px` }}
-                          title={`${formatHour(scoreHour)} — ${score.temperature.toFixed(1)}°C — score: ${s.toFixed(1)}`}
+                          title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
                         />
                       )}
                     </div>
@@ -165,7 +165,7 @@ const VentilationTimeline = ({
                             s <= -2 ? "bg-red-500/70" : "bg-amber-400/70",
                           )}
                           style={{ height: `${negativeHeight}px` }}
-                          title={`${formatHour(scoreHour)} — ${score.temperature.toFixed(1)}°C — score: ${s.toFixed(1)}`}
+                          title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
                         />
                       )}
                     </div>

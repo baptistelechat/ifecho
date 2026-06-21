@@ -1,6 +1,6 @@
 {
-  "name": "ifecho — il fait chaud",
-  "short_name": "ifecho",
+  "name": "Ifecho - il fait chaud",
+  "short_name": "Ifecho",
   "description": "À quelle heure ouvrir vos fenêtres pour refroidir votre logement ?",
   "start_url": "/",
   "display": "standalone",

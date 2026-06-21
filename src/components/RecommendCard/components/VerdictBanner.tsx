@@ -1,6 +1,6 @@
-import { CheckCircle, Ban, Clock, Wind } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
+import { Ban, CheckCircle, Clock, Wind } from "lucide-react";
 
 interface VerdictBannerProps {
   currentScore: HourlyScore;
@@ -23,7 +23,7 @@ const getVerdict = (score: HourlyScore): Verdict => {
       key: "good",
       Icon: CheckCircle,
       title: "Aérez maintenant",
-      message: `L'extérieur est ${delta.toFixed(1)}°C plus frais — excellent moment pour ventiler.`,
+      message: `L'extérieur est ${delta.toFixed(1)}°C plus frais - excellent moment pour ventiler.`,
     };
   }
   if (delta >= 1) {
@@ -31,7 +31,7 @@ const getVerdict = (score: HourlyScore): Verdict => {
       key: "neutral",
       Icon: Wind,
       title: "Légèrement bénéfique",
-      message: `Écart de ${delta.toFixed(1)}°C — aérer renouvelle l'air sans refroidir vraiment.`,
+      message: `Écart de ${delta.toFixed(1)}°C - aérer renouvelle l'air sans refroidir vraiment.`,
     };
   }
   if (delta < -3) {
@@ -47,7 +47,7 @@ const getVerdict = (score: HourlyScore): Verdict => {
       key: "wait",
       Icon: Clock,
       title: "Patientez",
-      message: `Extérieur légèrement plus chaud (${Math.abs(delta).toFixed(1)}°C) — attendez ce soir.`,
+      message: `Extérieur légèrement plus chaud (${Math.abs(delta).toFixed(1)}°C) - attendez ce soir.`,
     };
   }
   return {

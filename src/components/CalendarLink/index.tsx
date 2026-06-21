@@ -1,6 +1,6 @@
-import { CalendarPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { HourlyScore } from "@/types";
+import { CalendarPlus } from "lucide-react";
 
 interface CalendarLinkProps {
   bestHour: HourlyScore;
@@ -20,17 +20,17 @@ const generateIcs = (targetHour: HourlyScore, city: string): string => {
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//ifecho//FR",
+    "PRODID:-//Ifecho//FR",
     "BEGIN:VEVENT",
-    `UID:ifecho-${start}@ifecho.app`,
+    `UID:Ifecho-${start}@Ifecho.app`,
     `DTSTAMP:${now}`,
     `DTSTART:${start}`,
     `DTEND:${end}`,
-    `SUMMARY:Ouvrir les fenêtres — ifecho`,
-    `DESCRIPTION:ifecho recommande d'ouvrir maintenant pour refroidir votre logement à ${city}.\\nTempérature extérieure : ${targetHour.temperature.toFixed(1)}°C`,
+    `SUMMARY:Ouvrir les fenêtres - Ifecho`,
+    `DESCRIPTION:Ifecho recommande d'ouvrir maintenant pour refroidir votre logement à ${city}.\\nTempérature extérieure : ${targetHour.temperature.toFixed(1)}°C`,
     "BEGIN:VALARM",
     "ACTION:DISPLAY",
-    "DESCRIPTION:Rappel ifecho — ouvrir les fenêtres",
+    "DESCRIPTION:Rappel Ifecho - ouvrir les fenêtres",
     "TRIGGER:-PT15M",
     "END:VALARM",
     "END:VEVENT",
@@ -45,7 +45,7 @@ const CalendarLink = ({ bestHour, city }: CalendarLinkProps) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "ifecho-ventilation.ics";
+    link.download = "Ifecho-ventilation.ics";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
