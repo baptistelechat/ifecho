@@ -10,7 +10,13 @@ import {
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
 import { COMFORT_LEVELS, type ComfortLevel } from "@/types";
-import { AlertCircle, Heart, Loader2, Wind } from "lucide-react";
+import {
+  AlertCircle,
+  Heart,
+  Loader2,
+  ThermometerSun,
+  Wind,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY_TEMP = "ifecho_indoor_temp";
@@ -103,6 +109,10 @@ const App = () => {
     <div className="flex min-h-dvh flex-col">
       {/* Header */}
       <header className="pb-4 pt-10 text-center">
+        <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
+          <ThermometerSun className="size-6" />
+          <span className="text-2xl font-semibold tracking-wide">Ifecho</span>
+        </div>
         <h1 className="flex items-center justify-center gap-2 text-2xl font-black text-foreground">
           Quand aérer&nbsp;?
           <Wind className="size-5 text-ember" />
@@ -176,6 +186,7 @@ const App = () => {
       {/* Footer */}
       <footer className="py-4 text-center text-xs text-muted-foreground">
         <p className="mt-1 flex items-center justify-center gap-1">
+          <ThermometerSun className="size-3 text-ember" />
           Ifecho • Made by{" "}
           <a
             href="https://baptistelechat.vercel.app/"
