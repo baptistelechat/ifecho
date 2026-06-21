@@ -111,7 +111,7 @@ const App = () => {
       <header className="pb-4 pt-10 text-center">
         <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
           <ThermometerSun className="size-6" />
-          <span className="text-2xl font-semibold tracking-wide">Ifecho</span>
+          <span className="text-2xl font-bold tracking-wide">Ifecho</span>
         </div>
         <h1 className="flex items-center justify-center gap-2 text-2xl font-black text-foreground">
           Quand aérer&nbsp;?

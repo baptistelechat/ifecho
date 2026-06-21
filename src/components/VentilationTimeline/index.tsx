@@ -44,10 +44,12 @@ const VentilationTimeline = ({
   const maxAbsScore = Math.max(...scores.map((s) => Math.abs(s.score)), 0.1);
 
   useEffect(() => {
-    currentHourRef.current?.scrollIntoView({
-      inline: "center",
-      block: "nearest",
-    });
+    if (currentHourRef.current && scrollRef.current) {
+      const container = scrollRef.current;
+      const el = currentHourRef.current;
+      container.scrollLeft =
+        el.offsetLeft - container.clientWidth / 2 + el.offsetWidth / 2;
+    }
   }, []);
 
   if (scores.length === 0) return null;
