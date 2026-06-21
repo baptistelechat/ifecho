@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), qrcode()],
   server: {
     host: true,
+    watch: {
+      ignored: ["**/.claude/**"],
+    },
   },
   resolve: {
     alias: {
