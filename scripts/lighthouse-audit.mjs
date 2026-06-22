@@ -7,10 +7,10 @@
  */
 
 import { spawn } from "child_process";
-import { writeFileSync, mkdirSync } from "fs";
-import { resolve } from "path";
 import { launch } from "chrome-launcher";
+import { mkdirSync, writeFileSync } from "fs";
 import lighthouse from "lighthouse";
+import { resolve } from "path";
 
 const PORT = 4174;
 const BASE_URL = `http://localhost:${PORT}/`;
@@ -92,7 +92,7 @@ async function runLighthouse(url, preset) {
     try {
       await chrome.kill();
     } catch (e) {
-      // EPERM Windows : Chrome n'a pas encore libéré le répertoire temp — ignoré
+      // EPERM Windows : Chrome n'a pas encore libéré le répertoire temp - ignoré
       if (!String(e.message).includes("EPERM")) throw e;
     }
   }
@@ -155,10 +155,10 @@ function printScores(desktop, mobile) {
 
 function printFailures(label, failures) {
   if (failures.length === 0) {
-    console.log(`\n${COL.green}✅ Aucun échec — ${label}${COL.reset}`);
+    console.log(`\n${COL.green}✅ Aucun échec - ${label}${COL.reset}`);
     return;
   }
-  console.log(`\n${COL.bold}❌ ÉCHECS — ${label}${COL.reset}`);
+  console.log(`\n${COL.bold}❌ ÉCHECS - ${label}${COL.reset}`);
   console.log("─".repeat(60));
   for (const f of failures) {
     console.log(`  [${colorScore(f.score)}%] ${f.id}`);

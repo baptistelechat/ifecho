@@ -6,7 +6,7 @@ Ifecho calcule le meilleur créneau de ventilation basé sur les prévisions mé
 
 ## Sources de données
 
-- [Open-Meteo](https://open-meteo.com): Prévisions météo horaires — gratuit, sans clé API, sans tracking
+- [Open-Meteo](https://open-meteo.com): Prévisions météo horaires - gratuit, sans clé API, sans tracking
 - [API Adresse](https://adresse.data.gouv.fr): Géolocalisation des communes françaises
 
 ## Auteur

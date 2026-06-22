@@ -61,7 +61,7 @@ Sources : [PostHog MCP — Claude Code](https://posthog.com/docs/model-context-p
 
 ### STORY-003-1 — Installer et initialiser PostHog
 
-**Statut** : ⬜ À faire
+**Statut** : ✅ Terminé
 **Effort** : 30 min
 
 **Description**
@@ -71,12 +71,12 @@ requise (aucune donnée personnelle stockée côté client).
 
 **Critères d'acceptation**
 
-- [ ] `pnpm add posthog-js` ajouté aux dépendances
-- [ ] Variables d'env dans `.env.local` : `VITE_POSTHOG_KEY` et `VITE_POSTHOG_HOST`
-- [ ] `.env.example` mis à jour avec les placeholders
-- [ ] PostHog initialisé dans `main.tsx` avant le mount React
-- [ ] `pnpm build` propre (0 erreur TS)
-- [ ] En dev : les events apparaissent dans le Live Events PostHog
+- [x] `pnpm add posthog-js` ajouté aux dépendances
+- [x] Variables d'env dans `.env.local` : `VITE_POSTHOG_KEY` et `VITE_POSTHOG_HOST`
+- [x] `.env.example` mis à jour avec les placeholders
+- [x] PostHog initialisé dans `main.tsx` avant le mount React
+- [x] `pnpm build` propre (0 erreur TS)
+- [ ] En dev : les events apparaissent dans le Live Events PostHog (nécessite un projet PostHog actif)
 
 **Config recommandée**
 
@@ -104,7 +104,7 @@ if (import.meta.env.VITE_POSTHOG_KEY) {
 
 ### STORY-003-2 — Hook `useAnalytics`
 
-**Statut** : ⬜ À faire
+**Statut** : ✅ Terminé
 **Dépendance** : STORY-003-1
 **Effort** : 30 min
 
@@ -115,10 +115,10 @@ d'events et centralise le catalogue.
 
 **Critères d'acceptation**
 
-- [ ] `src/hooks/useAnalytics.ts` créé
-- [ ] Toutes les méthodes typées (pas de `string` libre pour les event names)
-- [ ] Guard `if (!import.meta.env.VITE_POSTHOG_KEY) return` → no-op silencieux en local sans clé
-- [ ] Aucun `console.log` laissé en production
+- [x] `src/hooks/useAnalytics.ts` créé
+- [x] Toutes les méthodes typées (pas de `string` libre pour les event names)
+- [x] Guard `if (!import.meta.env.VITE_POSTHOG_KEY) return` → no-op silencieux en local sans clé
+- [x] Aucun `console.log` laissé en production
 
 **Interface attendue**
 
@@ -139,7 +139,7 @@ const useAnalytics = () => ({
 
 ### STORY-003-3 — Instrumenter les events
 
-**Statut** : ⬜ À faire
+**Statut** : ✅ Terminé
 **Dépendance** : STORY-003-2
 **Effort** : 45 min
 
@@ -166,15 +166,15 @@ Placer les appels `analytics.*` aux bons endroits dans l'app, sans polluer la lo
 
 **Critères d'acceptation**
 
-- [ ] Les 7 events se déclenchent dans PostHog Live Events lors du smoke test
-- [ ] Aucune donnée personnelle identifiable dans les propriétés d'event
-- [ ] Pas de double-fire (ex : `weather_loaded` déclenché une seule fois par fetch)
+- [ ] Les 7 events se déclenchent dans PostHog Live Events lors du smoke test (nécessite un projet PostHog actif)
+- [x] Aucune donnée personnelle identifiable dans les propriétés d'event
+- [x] Pas de double-fire (ex : `weather_loaded` déclenché une seule fois par fetch)
 
 ---
 
 ### STORY-003-5 — Page Politique de confidentialité
 
-**Statut** : ⬜ À faire (avant déploiement public)
+**Statut** : ✅ Terminé
 **Dépendance** : STORY-003-1
 **Effort** : 30 min
 
@@ -214,10 +214,10 @@ Plus d'infos : https://posthog.com/privacy
 
 **Critères d'acceptation**
 
-- [ ] Route `/confidentialite` accessible dans l'app
-- [ ] Lien "Confidentialité" visible dans `AppFooter`
-- [ ] Page lisible sur mobile (même charte graphique warm)
-- [ ] Contenu couvre : données collectées, Session Replay, absence de cookies, hébergement EU
+- [x] Route `/confidentialite` accessible dans l'app
+- [x] Lien "Confidentialité" visible dans `AppFooter`
+- [x] Page lisible sur mobile (même charte graphique warm)
+- [x] Contenu couvre : données collectées, Session Replay, absence de cookies, hébergement EU
 
 ---
 
