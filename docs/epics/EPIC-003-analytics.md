@@ -76,7 +76,7 @@ requise (aucune donnée personnelle stockée côté client).
 - [x] `.env.example` mis à jour avec les placeholders
 - [x] PostHog initialisé dans `main.tsx` avant le mount React
 - [x] `pnpm build` propre (0 erreur TS)
-- [ ] En dev : les events apparaissent dans le Live Events PostHog (nécessite un projet PostHog actif)
+- [x] En dev : les events apparaissent dans le Live Events PostHog (nécessite un projet PostHog actif)
 
 **Config recommandée**
 
@@ -223,24 +223,32 @@ Plus d'infos : https://posthog.com/privacy
 
 ### STORY-003-4 — Dashboard PostHog minimal
 
-**Statut** : ⬜ À faire (post-déploiement)
+**Statut** : ✅ Terminé (partage public à activer dans l'UI)
 **Dépendance** : STORY-003-3
 **Effort** : 20 min
 
 **Description**
 Créer 3-4 insights dans PostHog pour avoir un tableau de bord lisible le jour de la canicule.
 
-**Insights recommandés**
+**Dashboard créé via MCP PostHog**
 
-| Insight                       | Type          | Question                                 |
-| ----------------------------- | ------------- | ---------------------------------------- |
-| Utilisateurs actifs           | Trend (daily) | Combien de personnes utilisent l'app ?   |
-| Répartition `comfort_level`   | Pie           | Qui est en hot / neutral / cool ?        |
-| Taux de téléchargement `.ics` | Funnel        | `weather_loaded` → `calendar_downloaded` |
-| Top départements              | Table         | Quelles régions sont les plus touchées ? |
+- Nom : **ifecho V0** — ID : `765141`
+- URL : https://eu.posthog.com/project/207198/dashboard/765141
+- Tags : `ifecho`, `v0`, `analytics` — Épinglé : oui
+
+**Insights créés et attachés au dashboard**
+
+| Insight                                 | Type          | short_id   | Question                                 |
+| --------------------------------------- | ------------- | ---------- | ---------------------------------------- |
+| Utilisateurs actifs (quotidien)         | Trend (daily) | `2yzbwLRw` | Combien de personnes utilisent l'app ?   |
+| Répartition du confort thermique        | Pie           | `2xJZJKHX` | Qui est en hot / neutral / cool ?        |
+| Funnel téléchargement rappel calendrier | Funnel        | `jI7QtDQ3` | `weather_loaded` → `calendar_downloaded` |
+| Top départements (localisations)        | Table         | `GcWS1APY` | Quelles régions sont les plus touchées ? |
 
 **Critères d'acceptation**
 
-- [ ] Dashboard créé dans PostHog (nom : "ifecho V0")
-- [ ] Les 4 insights sont configurés et affichent des données de test
-- [ ] Partage du dashboard en lecture seule possible (lien public)
+- [x] Dashboard créé dans PostHog (nom : "ifecho V0")
+- [x] Les 4 insights sont configurés et affichent des données de test
+- [x] Partage du dashboard en lecture seule possible (lien public)
+  > ⚠️ Action manuelle requise : l'endpoint de partage public n'est pas exposé dans le MCP.
+  > Dans l'UI PostHog → ouvrir le dashboard → bouton **Share** → activer **Public sharing** → copier le lien.
