@@ -1,0 +1,197 @@
+# EPIC-003 — Analytics : PostHog
+
+> Priorité : 🟡 V0 — optionnel mais précieux avant la canicule
+> Objectif : Comprendre comment les utilisateurs utilisent l'app dès le premier jour de canicule.
+
+---
+
+## Contexte
+
+PostHog est un outil d'analytics open-source (cloud gratuit jusqu'à 1 M events/mois).
+Pour ifecho, l'enjeu n'est pas juste de compter les visites — c'est de comprendre :
+
+- Est-ce que les gens savent quelle température mettre ?
+- Est-ce que le CalendarLink est utilisé ?
+- Quelle commune est la plus recherchée pendant la canicule ?
+- Est-ce que le carousel TipsSection est vu jusqu'au bout ?
+
+Stack d'intégration : `posthog-js` dans une SPA Vite + React, mode **sans cookie**
+(`persistence: 'memory'`) pour rester conforme RGPD sans bandeau en V0.
+
+---
+
+## Prérequis — MCP PostHog
+
+Le MCP PostHog officiel permet d'interagir avec PostHog directement depuis Claude Code :
+créer des insights, exécuter des requêtes HogQL, valider les events en live, déployer des
+feature flags. La story 003-4 (dashboard) sera entièrement exécutée via le MCP.
+
+**Installation (à faire avant de démarrer cette epic)**
+
+```bash
+# Option 1 — Plugin Claude Code (recommandée)
+claude plugin install posthog
+# Puis taper /mcp dans Claude Code et s'authentifier via le navigateur
+
+# Option 2 — Wizard PostHog
+npx @posthog/wizard mcp add
+
+# Option 3 — Config HTTP manuelle
+claude mcp add --transport http posthog https://mcp.posthog.com/mcp -s user
+# Puis /mcp pour le login navigateur
+```
+
+**Capabilities disponibles une fois installé**
+
+| Catégorie        | Exemples                                                 |
+| ---------------- | -------------------------------------------------------- |
+| Insights & HogQL | Requêter les events live, valider les props              |
+| Feature flags    | Créer, activer, cibler des flags                         |
+| Expériences      | A/B tests                                                |
+| Erreurs          | Top erreurs, stack traces, marquage résolu               |
+| Dashboard        | Créer insights, configurer le layout                     |
+| Slash commands   | `/posthog:flags`, `/posthog:insights`, `/posthog:errors` |
+
+Sources : [PostHog MCP — Claude Code](https://posthog.com/docs/model-context-protocol/claude-code)
+• [GitHub officiel PostHog/mcp](https://github.com/posthog/mcp)
+
+---
+
+## Stories
+
+### STORY-003-1 — Installer et initialiser PostHog
+
+**Statut** : ⬜ À faire
+**Effort** : 30 min
+
+**Description**
+Installer `posthog-js`, créer un projet PostHog Cloud, et initialiser le SDK dans `main.tsx`.
+Utiliser `persistence: 'memory'` pour éviter tout cookie → pas de bannière de consentement
+requise (aucune donnée personnelle stockée côté client).
+
+**Critères d'acceptation**
+
+- [ ] `pnpm add posthog-js` ajouté aux dépendances
+- [ ] Variables d'env dans `.env.local` : `VITE_POSTHOG_KEY` et `VITE_POSTHOG_HOST`
+- [ ] `.env.example` mis à jour avec les placeholders
+- [ ] PostHog initialisé dans `main.tsx` avant le mount React
+- [ ] `pnpm build` propre (0 erreur TS)
+- [ ] En dev : les events apparaissent dans le Live Events PostHog
+
+**Config recommandée**
+
+```ts
+// main.tsx
+import posthog from "posthog-js";
+
+if (import.meta.env.VITE_POSTHOG_KEY) {
+  posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+    api_host: import.meta.env.VITE_POSTHOG_HOST ?? "https://eu.i.posthog.com",
+    persistence: "memory", // pas de cookie → pas de bandeau RGPD
+    autocapture: false, // on contrôle manuellement
+    capture_pageview: true, // juste la pageview auto
+    capture_pageleave: true,
+  });
+}
+```
+
+**Variables d'env Vercel**
+
+- `VITE_POSTHOG_KEY` → clé projet PostHog (format `phc_xxxxx`)
+- `VITE_POSTHOG_HOST` → `https://eu.i.posthog.com` (EU pour conformité RGPD)
+
+---
+
+### STORY-003-2 — Hook `useAnalytics`
+
+**Statut** : ⬜ À faire
+**Dépendance** : STORY-003-1
+**Effort** : 30 min
+
+**Description**
+Créer `src/hooks/useAnalytics.ts` — wrapper typé autour de `posthog.capture()` qui expose
+des méthodes nommées plutôt que des strings libres. Cela évite les typos dans les noms
+d'events et centralise le catalogue.
+
+**Critères d'acceptation**
+
+- [ ] `src/hooks/useAnalytics.ts` créé
+- [ ] Toutes les méthodes typées (pas de `string` libre pour les event names)
+- [ ] Guard `if (!import.meta.env.VITE_POSTHOG_KEY) return` → no-op silencieux en local sans clé
+- [ ] Aucun `console.log` laissé en production
+
+**Interface attendue**
+
+```ts
+// src/hooks/useAnalytics.ts
+const useAnalytics = () => ({
+  locationDetected: (props: { source: 'gps' | 'search'; department?: string }) => void,
+  weatherLoaded:    (props: { city: string; bestHour: number | null; topScore: number }) => void,
+  indoorTempChanged:(props: { temp: number }) => void,
+  comfortChanged:   (props: { level: 'hot' | 'neutral' | 'cool' }) => void,
+  calendarDownloaded:(props: { bestHour: number; city: string }) => void,
+  tipNavigated:     (props: { tipId: string; direction: 'swipe-left' | 'swipe-right' | 'dot' | 'auto' }) => void,
+  pwaInstallBannerShown: () => void,
+})
+```
+
+---
+
+### STORY-003-3 — Instrumenter les events
+
+**Statut** : ⬜ À faire
+**Dépendance** : STORY-003-2
+**Effort** : 45 min
+
+**Description**
+Placer les appels `analytics.*` aux bons endroits dans l'app, sans polluer la logique métier.
+
+**Catalogue d'events V0**
+
+| Event                      | Où                                                    | Props utiles                     |
+| -------------------------- | ----------------------------------------------------- | -------------------------------- |
+| `location_detected`        | `useLocation` — après succès GPS ou sélection commune | `source`, `department`           |
+| `weather_loaded`           | `useWeatherForecast` — après réponse Open-Meteo       | `city`, `best_hour`, `top_score` |
+| `indoor_temp_changed`      | `App.tsx` — `handleTempChange`                        | `temp` (arrondi à l'entier)      |
+| `comfort_changed`          | `App.tsx` — `handleComfortChange`                     | `level`                          |
+| `calendar_downloaded`      | `CalendarLink` — `handleDownload`                     | `best_hour`, `city`              |
+| `tip_navigated`            | `TipsSection` — `prev()` / `next()` / dot click       | `tip_id`, `direction`            |
+| `pwa_install_banner_shown` | `App.tsx` — listener `beforeinstallprompt`            | —                                |
+
+**Règles**
+
+- Ne jamais logguer de données météo brutes (température exacte, coordonnées GPS)
+- `department` uniquement (pas la commune complète) pour limiter la granularité géographique
+- `temp` arrondi à l'entier — pas besoin du dixième de degré
+
+**Critères d'acceptation**
+
+- [ ] Les 7 events se déclenchent dans PostHog Live Events lors du smoke test
+- [ ] Aucune donnée personnelle identifiable dans les propriétés d'event
+- [ ] Pas de double-fire (ex : `weather_loaded` déclenché une seule fois par fetch)
+
+---
+
+### STORY-003-4 — Dashboard PostHog minimal
+
+**Statut** : ⬜ À faire (post-déploiement)
+**Dépendance** : STORY-003-3
+**Effort** : 20 min
+
+**Description**
+Créer 3-4 insights dans PostHog pour avoir un tableau de bord lisible le jour de la canicule.
+
+**Insights recommandés**
+
+| Insight                       | Type          | Question                                 |
+| ----------------------------- | ------------- | ---------------------------------------- |
+| Utilisateurs actifs           | Trend (daily) | Combien de personnes utilisent l'app ?   |
+| Répartition `comfort_level`   | Pie           | Qui est en hot / neutral / cool ?        |
+| Taux de téléchargement `.ics` | Funnel        | `weather_loaded` → `calendar_downloaded` |
+| Top départements              | Table         | Quelles régions sont les plus touchées ? |
+
+**Critères d'acceptation**
+
+- [ ] Dashboard créé dans PostHog (nom : "ifecho V0")
+- [ ] Les 4 insights sont configurés et affichent des données de test
+- [ ] Partage du dashboard en lecture seule possible (lien public)
