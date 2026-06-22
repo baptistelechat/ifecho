@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import type { CommuneResult, GeoLocation } from "@/types";
+import useAnalytics from "@/hooks/useAnalytics";
 
 interface ApiAddressFeature {
   properties: {
@@ -50,6 +51,7 @@ export const searchCommunes = async (
 };
 
 export const useLocation = () => {
+  const analytics = useAnalytics();
   const [location, setLocation] = useState<GeoLocation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,6 +80,7 @@ export const useLocation = () => {
             feature?.properties.context ?? "",
           );
           setLocation({ latitude, longitude, city, department, source: "gps" });
+          analytics.locationDetected({ source: "gps", department });
         } catch {
           setLocation({
             latitude,
@@ -85,6 +88,7 @@ export const useLocation = () => {
             city: "Votre position",
             source: "gps",
           });
+          analytics.locationDetected({ source: "gps" });
         } finally {
           setIsLoading(false);
         }
@@ -106,6 +110,10 @@ export const useLocation = () => {
       city: commune.city,
       department: commune.department,
       source: "search",
+    });
+    analytics.locationDetected({
+      source: "search",
+      department: commune.department,
     });
     setError(null);
   }, []);

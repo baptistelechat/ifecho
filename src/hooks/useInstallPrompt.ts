@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import useAnalytics from "@/hooks/useAnalytics";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -13,6 +14,7 @@ interface UseInstallPromptReturn {
 }
 
 export const useInstallPrompt = (): UseInstallPromptReturn => {
+  const analytics = useAnalytics();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [canInstall, setCanInstall] = useState(false);
@@ -32,6 +34,7 @@ export const useInstallPrompt = (): UseInstallPromptReturn => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setCanInstall(true);
+      analytics.pwaInstallBannerShown();
     };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);

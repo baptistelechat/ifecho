@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import useAnalytics from "@/hooks/useAnalytics";
 import { useHaptics } from "@/hooks/useHaptics";
 import {
   Sun,
@@ -40,6 +41,7 @@ const RESUME_DELAY = 6000;
 const SWIPE_THRESHOLD = 50;
 
 const TipsSection = () => {
+  const analytics = useAnalytics();
   const haptics = useHaptics();
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -62,19 +64,33 @@ const TipsSection = () => {
   const prev = () => {
     haptics.nudge();
     pauseTemporarily();
-    goTo((index - 1 + TIPS.length) % TIPS.length);
+    const nextIndex = (index - 1 + TIPS.length) % TIPS.length;
+    analytics.tipNavigated({
+      tipId: TIPS[nextIndex].id,
+      direction: "swipe-left",
+    });
+    goTo(nextIndex);
   };
 
   const next = () => {
     haptics.nudge();
     pauseTemporarily();
-    goTo((index + 1) % TIPS.length);
+    const nextIndex = (index + 1) % TIPS.length;
+    analytics.tipNavigated({
+      tipId: TIPS[nextIndex].id,
+      direction: "swipe-right",
+    });
+    goTo(nextIndex);
   };
 
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setIndex((p) => (p + 1) % TIPS.length);
+      setIndex((p) => {
+        const nextIdx = (p + 1) % TIPS.length;
+        analytics.tipNavigated({ tipId: TIPS[nextIdx].id, direction: "auto" });
+        return nextIdx;
+      });
     }, AUTO_DELAY);
     return () => clearInterval(timer);
   }, [isPaused]);
@@ -155,6 +171,7 @@ const TipsSection = () => {
               onClick={() => {
                 haptics.nudge();
                 pauseTemporarily();
+                analytics.tipNavigated({ tipId: t.id, direction: "dot" });
                 goTo(i);
               }}
               className={cn(

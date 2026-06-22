@@ -18,6 +18,7 @@ import {
   domAnimation,
   m,
 } from "framer-motion";
+import useAnalytics from "@/hooks/useAnalytics";
 import { AlertCircle, Heart, ThermometerSun, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -61,6 +62,7 @@ const formatDate = (date: Date): string =>
   });
 
 const App = () => {
+  const analytics = useAnalytics();
   const [indoorTemp, setIndoorTemp] = useState<number>(loadIndoorTemp);
   const [comfortLevel, setComfortLevel] =
     useState<ComfortLevel>(loadComfortLevel);
@@ -89,8 +91,19 @@ const App = () => {
     detectLocation();
   }, [detectLocation]);
 
+  useEffect(() => {
+    if (!weather || !location) return;
+    analytics.weatherLoaded({
+      city: location.city,
+      bestHour: bestHour?.hour ?? null,
+      topScore: bestHour?.score ?? 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weather]);
+
   const handleTempChange = (value: number) => {
     setIndoorTemp(value);
+    analytics.indoorTempChanged({ temp: value });
     try {
       localStorage.setItem(STORAGE_KEY_TEMP, value.toString());
     } catch {
@@ -100,6 +113,7 @@ const App = () => {
 
   const handleComfortChange = (level: ComfortLevel) => {
     setComfortLevel(level);
+    analytics.comfortChanged({ level });
     try {
       localStorage.setItem(STORAGE_KEY_COMFORT, level);
     } catch {

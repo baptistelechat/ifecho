@@ -172,6 +172,55 @@ Placer les appels `analytics.*` aux bons endroits dans l'app, sans polluer la lo
 
 ---
 
+### STORY-003-5 — Page Politique de confidentialité
+
+**Statut** : ⬜ À faire (avant déploiement public)
+**Dépendance** : STORY-003-1
+**Effort** : 30 min
+
+**Description**
+PostHog étant activé avec Session Replay, Product Analytics, Web Analytics et Error Tracking,
+l'app doit informer les utilisateurs des données collectées (RGPD Art. 13/14).
+Créer une route `/confidentialite` minimaliste et un lien dans le footer.
+
+**Stack**
+
+- Route React (`/confidentialite`) dans `App.tsx` via `react-router-dom` ou page séparée
+- Composant `PrivacyPage` dans `src/pages/PrivacyPage.tsx`
+- Lien "Confidentialité" dans `AppFooter`
+
+**Contenu minimal de la page**
+
+```
+Politique de confidentialité — ifecho
+
+Données collectées
+ifecho utilise PostHog (hébergé en Europe) pour améliorer l'application.
+Nous collectons des événements anonymes : chargement météo, téléchargement du rappel
+calendrier, navigation dans les conseils. Aucune donnée personnelle identifiable
+n'est collectée.
+
+Sessions anonymes
+Nous enregistrons des sessions de navigation anonymes (Session Replay) pour comprendre
+comment l'app est utilisée. Les champs de saisie sont automatiquement masqués.
+
+Cookies
+Aucun cookie n'est utilisé. Les données sont stockées uniquement en mémoire de session.
+
+Hébergement
+PostHog EU — serveurs en Europe (RGPD-compliant).
+Plus d'infos : https://posthog.com/privacy
+```
+
+**Critères d'acceptation**
+
+- [ ] Route `/confidentialite` accessible dans l'app
+- [ ] Lien "Confidentialité" visible dans `AppFooter`
+- [ ] Page lisible sur mobile (même charte graphique warm)
+- [ ] Contenu couvre : données collectées, Session Replay, absence de cookies, hébergement EU
+
+---
+
 ### STORY-003-4 — Dashboard PostHog minimal
 
 **Statut** : ⬜ À faire (post-déploiement)
