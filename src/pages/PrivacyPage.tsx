@@ -7,7 +7,8 @@ import {
   Shield,
   ThermometerSun,
 } from "lucide-react";
-import type { LucideIcon, ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 interface PrivacyPageProps {
   onBack: () => void;
