@@ -130,7 +130,11 @@ const VerdictBanner = ({ currentScore }: VerdictBannerProps) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
-        className={cn("rounded-2xl border p-4", config.border, config.bg)}
+        className={cn(
+          "min-h-[6.5rem] rounded-2xl border p-4",
+          config.border,
+          config.bg,
+        )}
       >
         <div className="flex items-start gap-3">
           <Icon className={cn("mt-0.5 size-4 shrink-0", config.iconColor)} />
