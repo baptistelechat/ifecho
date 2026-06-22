@@ -7,5 +7,3 @@ last_updated: 2026-06-22
 
 | ID  | Date | Friction | Tags | Statut |
 | --- | ---- | -------- | ---- | ------ |
-
-_Aucun blocker ouvert._
