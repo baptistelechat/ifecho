@@ -1,7 +1,7 @@
 <h1 align="center">🌡️ Ifecho</h1>
 
 <p align="center">
-    <i>Il fait chaud — Ifecho analyse les températures de la journée pour déterminer le meilleur moment pour aérer un logement. Mobile-first, sans compte, sans serveur. 🪟</i><br>
+    <i>Ifecho (Il fait chaud) analyse les températures de la journée pour déterminer le meilleur moment pour aérer un logement. Mobile-first, sans compte, sans serveur. 🪟</i><br>
 </p>
 
 ---

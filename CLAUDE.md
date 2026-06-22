@@ -1,6 +1,6 @@
 ## 🌡 Ifecho
 
-App de conseils canicule — "il fait chaud" (jeu de mots phonétique). Aide l'utilisateur à savoir à quelle heure ouvrir ses fenêtres pour refroidir son logement, basée sur la température extérieure horaire et la température intérieure estimée. Mobile-first, 100% client-side, déployée sur Vercel.
+App de conseils canicule — sous-titre public : "Bien vivre la chaleur". Le nom "Ifecho" est un jeu de mots phonétique sur "il fait chaud". Aide l'utilisateur à savoir à quelle heure ouvrir ses fenêtres pour refroidir son logement, basée sur la température extérieure horaire et la température intérieure estimée. Mobile-first, 100% client-side, déployée sur Vercel.
 
 ### Stack technique
 

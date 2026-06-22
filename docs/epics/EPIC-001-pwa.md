@@ -24,62 +24,49 @@ nécessite techniquement un SW enregistré). iOS fonctionne sans SW pour l'ajout
 
 ### STORY-001-1 — Générer les icônes PNG
 
-**Statut** : ⬜ À faire  
+**Statut** : ✅ Fait  
 **Effort** : ~30 min
 
 **Description**  
-Générer `public/icon-192.png` et `public/icon-512.png` depuis le `favicon.svg` existant
-(ThermometerSun Lucide sur fond `#fff7ed` avec cercle ember `#f97316`).
+Génération via `@vite-pwa/assets-generator` depuis `public/logo.svg`
+(ThermometerSun Lucide, fond `#f97316`).
 
 **Critères d'acceptation**
 
-- [ ] `public/icon-192.png` existe, dimensions 192×192, fond `#fff7ed`, icône ember centrée
-- [ ] `public/icon-512.png` existe, dimensions 512×512, même charte
-- [ ] `manifest.json` pointe correctement sur ces deux fichiers (déjà le cas)
-- [ ] Pas de 404 sur `/icon-192.png` et `/icon-512.png` en `pnpm dev`
-
-**Options de génération**
-
-1. **Hugging Face Space** (ImageMagick / Rsvg) — convertir le SVG en PNG aux deux tailles
-2. **Script Node** — `sharp` ou `svgexport` en local
-3. **Outil en ligne** — Favicon.io / RealFaviconGenerator
+- [x] `public/pwa-192x192.png` existe, dimensions 192×192
+- [x] `public/pwa-512x512.png` existe, dimensions 512×512
+- [x] `public/maskable-icon-512x512.png` existe avec padding 10% maskable
+- [x] `public/apple-touch-icon-180x180.png` existe pour iOS
+- [x] `manifest.json` pointe correctement sur ces fichiers
+- [x] `purpose: "any"` et `purpose: "maskable"` séparés dans le manifest (pas `"any maskable"`)
+- [x] Pas de 404 en `pnpm dev`
 
 **Notes**
 
-- Le champ `"purpose": "any maskable"` dans le manifest est trop permissif — si l'icône n'a pas
-  de zone de sécurité maskable, split en deux entrées :
-  ```json
-  { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-  { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
-  ```
-  Ou garder `maskable` et ajouter un padding ≥ 10% dans l'icône.
+- Icônes générées avec `pnpm generate-pwa-assets` via `pwa-assets.config.ts`
+- Noms : `pwa-64x64.png`, `pwa-192x192.png`, `pwa-512x512.png`, `maskable-icon-512x512.png`
 
 ---
 
 ### STORY-001-2 — Ajouter un Service Worker minimal
 
-**Statut** : ⬜ À faire  
+**Statut** : ✅ Fait (à valider en DevTools)  
 **Effort** : ~30 min  
 **Dépendance** : STORY-001-1
 
 **Description**  
-Ajouter `vite-plugin-pwa` avec une config minimaliste pour enregistrer un SW et
-déclencher le prompt d'installation Android. Pas de cache offline ambitieux en V0 —
-juste le strict nécessaire pour que Chrome considère l'app comme "installable".
+`vite-plugin-pwa` configuré avec workbox minimaliste.
 
 **Critères d'acceptation**
 
-- [ ] `vite-plugin-pwa` installé et configuré dans `vite.config.ts`
-- [ ] SW enregistré sans erreur dans la DevTools → Application → Service Workers
-- [ ] Pas de régression build (`pnpm build` sans erreur)
-- [ ] Le SW n'intercepte pas les appels Open-Meteo (pas de cache réseau agressif)
+- [x] `vite-plugin-pwa` installé et configuré dans `vite.config.ts`
+- [ ] SW enregistré sans erreur dans DevTools → Application → Service Workers _(à vérifier sur build)_
+- [x] Pas de régression build (`pnpm build` sans erreur) — `dist/sw.js` généré
+- [x] Le SW n'intercepte pas les appels Open-Meteo (`runtimeCaching: []`)
 
-**Config recommandée**
+**Config en place**
 
 ```ts
-// vite.config.ts
-import { VitePWA } from "vite-plugin-pwa";
-
 VitePWA({
   registerType: "autoUpdate",
   manifest: false, // on garde notre manifest.json
@@ -104,7 +91,7 @@ Tester l'installation sur au moins un device iOS et un Android.
 
 - [ ] Ouvrir l'URL déployée dans Safari
 - [ ] Menu Partager → "Sur l'écran d'accueil"
-- [ ] L'icône affichée est `icon-512.png` (pas un screenshot)
+- [ ] L'icône affichée est l'icône ember (pas un screenshot)
 - [ ] L'app s'ouvre en mode standalone (pas de barre Safari)
 - [ ] Le `theme_color` orange est visible dans la barre de statut
 
@@ -121,3 +108,29 @@ Tester l'installation sur au moins un device iOS et un Android.
 Chrome DevTools → Application → Manifest → vérifier "Installability"
 Lighthouse → PWA audit (score attendu ≥ 80 en V0)
 ```
+
+---
+
+### STORY-001-4 — Bouton d'installation in-app _(ajout)_
+
+**Statut** : ✅ Fait  
+**Effort** : ~1h
+
+**Description**  
+Bouton discret dans le header permettant à l'utilisateur d'installer l'app même s'il a ignoré
+le prompt système initial.
+
+**Ce qui a été fait**
+
+- `src/hooks/useInstallPrompt.ts` — capture `beforeinstallprompt`, détecte iOS et mode standalone
+- `src/components/InstallButton/index.tsx` — bouton conditionnel dans le header
+  - Android/Chrome : déclenche directement `deferredPrompt.prompt()`
+  - iOS Safari : affiche un tooltip avec instructions (icône Share → "Sur l'écran d'accueil")
+  - Invisible si déjà installé (`display-mode: standalone`) ou navigateur non-supporté
+
+**Critères d'acceptation**
+
+- [x] Le bouton n'apparaît pas si l'app est déjà installée
+- [x] Android : le bouton déclenche le prompt natif Chrome
+- [x] iOS : le bouton affiche les instructions avec icône Share bleue
+- [x] Le bouton disparaît automatiquement après installation (`appinstalled` event)

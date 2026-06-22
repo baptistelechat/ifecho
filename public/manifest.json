@@ -1,7 +1,7 @@
 {
-  "name": "Ifecho - il fait chaud",
+  "name": "Ifecho - Bien vivre la chaleur",
   "short_name": "Ifecho",
-  "description": "À quelle heure ouvrir vos fenêtres pour refroidir votre logement ?",
+  "description": "Bien vivre la chaleur - savoir quand ventiler et anticiper les canicules.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fff7ed",
@@ -9,16 +9,28 @@
   "lang": "fr",
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
+      "src": "/pwa-64x64.png",
+      "sizes": "64x64",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

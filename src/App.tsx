@@ -1,4 +1,5 @@
 ﻿import CalendarLink from "@/components/CalendarLink";
+import InstallButton from "@/components/InstallButton";
 import LocationSearch from "@/components/LocationSearch";
 import RecommendCard from "@/components/RecommendCard";
 import TipsSection from "@/components/TipsSection";
@@ -113,7 +114,8 @@ const App = () => {
       <MotionConfig reducedMotion="user">
         <div className="flex min-h-dvh flex-col">
           {/* Header */}
-          <header className="pb-4 pt-10 text-center">
+          <header className="relative pb-4 pt-10 text-center">
+            <InstallButton />
             <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
               <ThermometerSun className="size-6" />
               <span className="text-2xl font-bold tracking-wide">Ifecho</span>
