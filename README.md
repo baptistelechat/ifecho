@@ -1,11 +1,12 @@
 <h1 align="center">🌡️ Ifecho</h1>
 
 <p align="center">
-    <i>Il fait chaud — Ifecho analyse les températures de la journée pour déterminer le meilleur moment pour aérer un logement. Mobile-first, sans compte, sans serveur. 🪟</i><br>
+    <i>Ifecho (Il fait chaud) analyse les températures de la journée pour déterminer le meilleur moment pour aérer un logement. Mobile-first, sans compte, sans serveur. 🪟</i><br>
 </p>
 
 ---
 
+[![Production](https://img.shields.io/badge/Production-ifecho.vercel.app-orange)](https://ifecho.vercel.app)
 ![React 19](https://img.shields.io/badge/React-19-blue)
 ![Vite 6](https://img.shields.io/badge/Vite-6-purple)
 ![TypeScript 5](https://img.shields.io/badge/TypeScript-5-blue)

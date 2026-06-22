@@ -1,0 +1,14 @@
+# Ifecho
+
+> Application web progressive pour savoir quand ouvrir ses fenêtres et rafraîchir son logement en période de canicule.
+
+Ifecho calcule le meilleur créneau de ventilation basé sur les prévisions météo horaires et la température intérieure estimée. Installable sur iOS et Android (PWA).
+
+## Sources de données
+
+- [Open-Meteo](https://open-meteo.com): Prévisions météo horaires - gratuit, sans clé API, sans tracking
+- [API Adresse](https://adresse.data.gouv.fr): Géolocalisation des communes françaises
+
+## Auteur
+
+- [Baptiste Lechat](https://baptistelechat.vercel.app)

@@ -1,6 +1,6 @@
 ---
 register: journal
-last_updated: 2026-06-21
+last_updated: 2026-06-22
 ---
 
 ## 2026-06-20
@@ -18,7 +18,7 @@ Infrastructure mémoire agent initialisée via `/memory-setup`.
 - [BDR-003](decisions/BDR-003.md) — Humidité intérieure hors scope V0
 - [LRN-001](learnings/LRN-001.md) — Algo score ventilation
 - [LRN-002](learnings/LRN-002.md) — Règle des 500 W/m²
-- [BLK-001](blockers/BLK-001.md) — Deadline 36h
+- [ZBLK-001](archive/blockers/ZBLK-001.md) — Deadline 36h
 
 ---
 
@@ -350,3 +350,138 @@ Correction notable : le `min-h` est le plancher de la hauteur courte (valeur = c
 **Entrées clés :**
 
 - [LRN-036](learnings/LRN-036.md) — `min-h` plancher du cas long pour stabiliser hauteur variable
+
+---
+
+Session EPIC-001 PWA installability. Implémentation complète : icônes + Service Worker depuis zéro.
+
+**Icônes** — `@vite-pwa/assets-generator` installé avec `pnpm add -D -w` (présence de `pnpm-workspace.yaml` → flag `-w` obligatoire, premier blocage). `pwa-assets.config.ts` créé avec override du preset `minimal2023Preset` pour fond `#f97316` orange sur les icônes maskable et apple-touch-icon (fond blanc par défaut). Toutes les icônes générées depuis `public/logo.svg` (renommé depuis `favicon.svg`) : pwa-64, pwa-192, pwa-512, maskable-512, apple-touch-180, favicon.ico. Règle W3C confirmée : padding 0.1 pour maskable (zone de sécurité spec), 0.3 pour apple (convention preset — pas arbitraire).
+
+**Service Worker** — `vite-plugin-pwa` ajouté avec `registerType: "autoUpdate"`, `manifest: false` (manifest.json dans public/ géré manuellement). Build propre : `dist/sw.js` + `dist/workbox-9c191d2f.js`, 5 precached entries, PWA v1.3.0. Manifest mis à jour : icônes `"purpose"` splittées en `"any"` et `"maskable"` séparés.
+
+**Rename favicon.svg → logo.svg** — séparation des rôles : `logo.svg` = source de génération uniquement, `favicon.ico` généré = vrai favicon navigateur. Crash Vite HMR suite au rename pendant session active : ENOENT sur l'ancien chemin depuis `vite:css-analysis`, aucune référence orpheline dans le code source. Fix : `Remove-Item -Recurse -Force node_modules/.vite` + redémarrage. Lint + build propres confirmés.
+
+**Entrées clés :**
+
+- [BDR-034](decisions/BDR-034.md) — `@vite-pwa/assets-generator` source unique icônes PWA
+- [BDR-036](decisions/BDR-036.md) — `logo.svg` vs `favicon.ico` : séparation des rôles
+- [LRN-038](learnings/LRN-038.md) — Vite HMR ENOENT après rename
+- [ZBLK-028](archive/blockers/ZBLK-028.md) — ENOENT crash HMR (résolu)
+
+---
+
+Session de finalisation PWA + rebranding sous-titre.
+
+**Bouton d'installation in-app (STORY-001-4)** — Audit EPIC-001 : STORY-001-1 (icônes) et STORY-001-2 (SW) étaient déjà complets depuis la session précédente. Ajout STORY-001-4 : bouton de rattrapage pour les utilisateurs ayant ignoré le prompt système natif. Hook `useInstallPrompt` : capture `beforeinstallprompt` (Android), détecte iOS (pas d'API prompt → tooltip instructions Share + "Sur l'écran d'accueil"), guard standalone (`display-mode: standalone`). `InstallButton` en `absolute top-4 right-4` dans le header (`relative`). L'`appinstalled` event supprime le bouton automatiquement.
+
+**Rebranding sous-titre** — Débat Rodin : "il fait chaud" dans le sous-titre explique le jeu de mots phonétique (le tue) et ne décrit pas la valeur produit. Décision : "Bien vivre la chaleur" — scope couvrant V0 (ventilation) + V1 (alertes canicule, conseils survie) sans s'enfermer sur une feature. Mis à jour dans `manifest.json`, `index.html`, `CLAUDE.md`.
+
+**BLK-001 archivé** — Deadline 36h "avant lundi 22 juin" atteinte : app fonctionnelle avec PWA installable, bouton installation, scope V0 complet.
+
+**Entrées clés :**
+
+- [BDR-037](decisions/BDR-037.md) — Bouton d'installation PWA in-app
+- [BDR-038](decisions/BDR-038.md) — Sous-titre "Bien vivre la chaleur"
+- GLRN-136 — `beforeinstallprompt` pattern complet (global)
+- [ZBLK-001](archive/blockers/ZBLK-001.md) — Deadline 36h (résolu)
+
+---
+
+Session courte de validation PWA. STORY-001-2 (Service Worker) validée à 100% : `pnpm preview` expose `dist/` avec le SW actif — DevTools Application > Service Workers confirmait `#7427 activated and running`, Chrome affichait le bouton "Ouvrir dans l'appli" (PWA installable détectée). Découverte notable : `vite-plugin-pwa` sans `devOptions.enabled` ne génère pas de SW en mode `pnpm dev` — c'est un no-op silencieux côté DevTools.
+
+Discussion stratégie test Android : `beforeinstallprompt` exige HTTPS sauf `localhost` — réseau local HTTP (`192.168.x.x`) bloque l'event. URL Vercel HTTPS = solution directe sans config supplémentaire. Prochaine étape : commit + push → test device Android réel (STORY-001-3).
+
+STORY-001-3 (tests devices réels iOS + Android) reste ouverte.
+
+---
+
+Test STORY-001-3 (Android) via URL Vercel preview : bouton d'installation absent sur Android Chrome + PC malgré SW visible dans DevTools. Erreur découverte dans la console : `manifest.json:1 Failed to load resource: the server responded with a status of 401`. Cause : Vercel Deployment Protection (Vercel Auth) protège tous les fichiers statiques des previews, y compris `manifest.json` — Chrome abandonne silencieusement la validation PWA sans lever d'erreur JS, `beforeinstallprompt` ne fire jamais.
+
+Fix : Baptiste désactive Vercel Authentication dans Settings → Deployment Protection (option préférée à un merge vers `main` juste pour le test). Android Chrome install ✅ confirmé : banner natif affiché, icône ember, mode standalone. EPIC-001 mis à jour : STORY-001-2 ✅ complet, STORY-001-3 Android ✅, avertissement Vercel Auth ajouté dans la checklist. iOS reste à tester quand device disponible.
+
+**Entrées clés :**
+
+- [ZBLK-029](archive/blockers/ZBLK-029.md) — Vercel Auth 401, manifest.json bloqué sur preview (résolu)
+- GLRN-138 — Vercel Auth preview → manifest.json 401 (pattern global)
+
+---
+
+Session d'optimisation Lighthouse (STORY-001-5). Audit complet via `pnpm lighthouse` (script Node API `scripts/lighthouse-audit.mjs` — chrome-launcher + lighthouse module pour éviter EPERM Windows). Scores initiaux problématiques : Accessibility < 100, SEO < 100, Agentic-Browsing 0/100.
+
+Corrections appliquées : `label-content-name-mismatch` (WCAG 2.5.3) dans `LocationSearch` — suppression de l'`aria-label` "Utiliser ma position GPS" redondant sur le bouton "Me localiser" (texte visible suffit) ; `color-contrast` (WCAG AA) — `text-ember` (#ea580c, 3.42:1 ❌) → `text-heat-700` (#c2410c, 5.17:1 ✅), `text-muted-foreground` (4.0:1 ❌) → `text-stone-600` (5.5:1 ✅) ; `public/llms.txt` reformaté selon le standard llmstxt.org (H1 + blockquote + sections H2 avec liens markdown) pour passer l'audit `agentic-browsing` ; `preconnect` Open-Meteo complétés avec attribut `crossorigin` (obligatoire pour ressources CORS fetch).
+
+Scores finaux : Accessibility 100/100, SEO 100/100, Agentic-Browsing 100/100 (desktop + mobile). Quatre échecs résiduels acceptés comme by-design : `geolocation-on-start`, `errors-in-console` (web-haptics interne), `render-blocking` (vite-plugin-pwa 0.13 kB), `unused-javascript` (framer-motion + shadcn, hors scope V0). STORY-001-5 ajoutée à EPIC-001-pwa.md avec tableau de scores et liste des acceptations.
+
+**Entrées clés :**
+
+- [BDR-039](decisions/BDR-039.md) — `pnpm lighthouse` comme commande d'audit standard
+
+---
+
+Session EPIC-002 — QA & Déploiement Vercel, complétée à 100 %.
+
+STORY-002-1 (Build propre) : `pnpm lint` → 0 erreur (2 warnings BDR-028 intentionnels), `pnpm build` → 0 erreur TypeScript, bundle 123 kB gzippé (< 300 kB). Clean au premier run, aucune correction nécessaire.
+
+STORY-002-2 (Smoke test mobile) : testé sur device réel via URL Vercel preview branch `development` (Vercel Auth désactivée temporairement). Parcours principal complet : géoloc GPS ✅, recherche commune ✅, météo affichée ✅, VerdictBanner ✅, IdealSlots ✅, VentilationTimeline ✅, slider + haptics ✅, swipe carousel ✅, bouton `.ics` ✅. Edge cases : refus géoloc ✅, hors connexion ✅, minuit traversé ✅.
+
+STORY-002-3 (Déploiement Vercel) : prod déjà déployée sur `main` → https://ifecho.vercel.app. Lighthouse ≥ 80 sur tous les axes (Perf 85/99 · A11y 100 · BP 92 · SEO 100 · Agentic-Browsing 100). Test externe : frère Android ✅. iOS prévu ce soir (EPIC-001 STORY-001-3, pas EPIC-002).
+
+Mises à jour cross-session : badge prod ajouté dans `README.md`, URL prod référencée dans `.claude/memory/project.md`, `docs/epics/EPIC-002-qa-deploy.md` marqué ✅ TERMINÉ le 2026-06-22.
+
+---
+
+Session EPIC-003 PostHog Analytics — STORY-003-1 à STORY-003-3 complétées.
+
+Installation de `posthog-js` (flag `-w` pour le workspace), initialisation dans `main.tsx` avec `persistence: 'memory'` (pas de cookies → pas de bannière RGPD), `autocapture: false`, EU host `eu.i.posthog.com`.
+
+Hook `useAnalytics` créé : wrapper typé exposant 7 méthodes nommées par événement (`locationDetected`, `weatherLoaded`, `indoorTempChanged`, `comfortChanged`, `calendarDownloaded`, `tipNavigated`, `pwaInstallBannerShown`). Chaque méthode encapsule `posthog.capture()` avec un type strict.
+
+Instrumentation complète des 7 events : `locationDetected` dans `useLocation.ts` (GPS + search) ; `weatherLoaded` dans `App.tsx` via `useEffect([weather])` — données composées depuis 2 hooks (`useWeatherForecast` + `useVentilationScore`), event placé au consumer pas dans le hook fetch ; `indoorTempChanged` + `comfortChanged` dans les handlers `App.tsx` ; `calendarDownloaded` dans `CalendarLink` ; `tipNavigated` dans `TipsSection` (prev/next/dot/auto dans le setInterval) ; `pwaInstallBannerShown` dans `useInstallPrompt`.
+
+Validation via PostHog Live Events : tous les events reçus correctement. Doublons observés (`tip_navigated` ×2, `location_detected` ×2) — comportement normal React StrictMode en dev (state updaters + effects appelés 2× intentionnellement), absent en production.
+
+Décision dev/prod : analytics désactivées par défaut en dev (`import.meta.env.PROD`). Escape hatch : `VITE_POSTHOG_DEBUG=true` dans `.env.local` (non commité) pour activer ponctuellement. Documenté dans `.env.example` (commenté par défaut).
+
+STORY-003-4 (dashboard PostHog MCP) et STORY-003-5 (page `/confidentialite`) restent à faire.
+
+**Entrées clés :**
+
+- [BDR-041](decisions/BDR-041.md) — PostHog Cloud EU choisi pour ifecho
+- [LRN-045](learnings/LRN-045.md) — Event analytics composé → consumer multi-hooks
+- GBDR-003 — `persistence: 'memory'` → pas de bannière RGPD (global)
+- GLRN-139 — `import.meta.env.PROD || DEBUG_FLAG` pour dev/prod (global)
+- GLRN-140 — React StrictMode 2× → doublons analytics en dev (global)
+
+---
+
+Session de finalisation EPIC-003 — STORY-003-5 complétée.
+
+Création de `PrivacyPage.tsx` : 4 sections RGPD typées avec icônes Lucide (`BarChart2`/Données collectées, `Eye`/Sessions anonymes, `Shield`/Cookies et stockage local, `Server`/Hébergement). Style "Conseils canicule" (`text-[10px] font-semibold uppercase tracking-widest text-muted-foreground`) pour les titres de section, même charte warm orange que le reste de l'app.
+
+Extraction du footer en composant partagé `AppFooter` (`src/components/AppFooter/index.tsx`) : icône `Database` devant "Données", icône `Lock` devant "Confidentialité", séparateur horizontal `w-16 border-t` entre la ligne branding et les liens utilitaires, séparateur vertical `h-3 w-px bg-border` entre les deux liens côte à côte. Composant réutilisé dans `App.tsx` et `PrivacyPage.tsx`.
+
+Routing hash natif dans `App.tsx` sans react-router-dom : `useState(() => hash === '#confidentialite')` pour l'état initial, listener `hashchange` dans un `useEffect`, `history.replaceState(null, '', pathname)` pour nettoyer le hash au retour.
+
+EPIC-003 : toutes les tâches réalisables sans projet PostHog actif cochées. 2 checkboxes restent ouvertes (smoke test Live Events). STORY-003-4 (dashboard) à faire post-déploiement via MCP PostHog.
+
+**Entrées clés :**
+
+- [BDR-042](decisions/BDR-042.md) — Routing hash natif sans react-router
+- [BDR-043](decisions/BDR-043.md) — AppFooter composant partagé
+- [LRN-046](learnings/LRN-046.md) — Pattern hash routing SPA
+
+---
+
+Session de finalisation EPIC-003 — STORY-003-4 (dashboard PostHog) complétée.
+
+229 events de dev (localhost:5173) polluaient le dashboard "ifecho V0". Suppression impossible : `persistence: 'memory'` crée des events orphelins sans person records, `persons-bulk-delete` ne les atteint pas. Solution retenue : filtre projet `test_account_filters` avec `$host != localhost:5173` + `test_account_filters_default_checked: true`, puis `filterTestAccounts: true` propagé sur les 17 insights du dashboard en 3 batches parallèles (fetch → patch en mémoire → update).
+
+Dashboard "ifecho V0" (ID 765141, https://eu.posthog.com/project/207198/dashboard/765141) : 17 insights couvrant engagement (DAU/WAU), rétention, stickiness, météo (score, température), géographie (top villes/départements), UX (ressenti, tips, heure recommandée, PWA), et 2 funnels. Tous filtrent les données dev.
+
+`docs/epics/EPIC-003-analytics.md` mis à jour : tableau des 17 insights réels (vs 4 documentés initialement), filtre test_account_filters documenté, STORY-003-4 marquée ✅.
+
+**Entrées clés :**
+
+- [BDR-044](decisions/BDR-044.md) — `test_account_filters` PostHog pour exclure localhost
+- [LRN-047](learnings/LRN-047.md) — `persistence: 'memory'` → events orphelins, bulk-delete inefficace
+- [LRN-048](learnings/LRN-048.md) — `insight-update` PostHog exige la query complète

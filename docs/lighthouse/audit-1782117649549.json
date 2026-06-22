@@ -1,0 +1,391 @@
+{
+  "fetchTime": "2026-06-22T08:40:49.550Z",
+  "desktop": {
+    "scores": {
+      "performance": 85,
+      "accessibility": 90,
+      "best-practices": 92,
+      "seo": 91,
+      "agentic-browsing": 67
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": "Blocked call to navigator.vibrate because user hasn't tapped on the frame or any embedded frame yet: https://www.chromestatus.com/feature/5644273861001216."
+          }
+        ]
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "items": [
+          {
+            "node": "<button class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl…\" type=\"button\" aria-label=\"Utiliser ma position GPS\">",
+            "url": null,
+            "description": null
+          },
+          {
+            "node": "<p class=\"text-xs text-verdict-bad\">",
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "title": "Elements with visible text labels do not have matching accessible names.",
+        "score": 0,
+        "items": [
+          {
+            "node": "<button class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl…\" type=\"button\" aria-label=\"Utiliser ma position GPS\">",
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "target-size",
+        "title": "Touch targets do not have sufficient size or spacing.",
+        "score": 0,
+        "items": [
+          {
+            "node": "<a href=\"https://baptistelechat.vercel.app/\" class=\"underline transition-colors hover:text-ember\" target=\"_blank\" rel=\"noopener noreferrer\">",
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-Bvsd61rx.js",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "geolocation-on-start",
+        "title": "Requests the geolocation permission on page load",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "llms-txt",
+        "title": "llms.txt does not follow recommendations",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to."
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4."
+          }
+        ]
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-BbklSFHH.css",
+            "description": null
+          },
+          {
+            "node": null,
+            "url": "http://localhost:4174/registerSW.js",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 46,
+        "items": []
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 70,
+        "items": []
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 77,
+        "items": []
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 97,
+        "items": []
+      }
+    ]
+  },
+  "mobile": {
+    "scores": {
+      "performance": 99,
+      "accessibility": 90,
+      "best-practices": 92,
+      "seo": 91,
+      "agentic-browsing": 67
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": "Blocked call to navigator.vibrate because user hasn't tapped on the frame or any embedded frame yet: https://www.chromestatus.com/feature/5644273861001216."
+          }
+        ]
+      },
+      {
+        "id": "color-contrast",
+        "title": "Background and foreground colors do not have a sufficient contrast ratio.",
+        "score": 0,
+        "items": [
+          {
+            "node": "<button class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl…\" type=\"button\" aria-label=\"Utiliser ma position GPS\">",
+            "url": null,
+            "description": null
+          },
+          {
+            "node": "<p class=\"text-xs text-verdict-bad\">",
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "title": "Elements with visible text labels do not have matching accessible names.",
+        "score": 0,
+        "items": [
+          {
+            "node": "<button class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl…\" type=\"button\" aria-label=\"Utiliser ma position GPS\">",
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "target-size",
+        "title": "Touch targets do not have sufficient size or spacing.",
+        "score": 0,
+        "items": [
+          {
+            "node": "<a href=\"https://baptistelechat.vercel.app/\" class=\"underline transition-colors hover:text-ember\" target=\"_blank\" rel=\"noopener noreferrer\">",
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-Bvsd61rx.js",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "geolocation-on-start",
+        "title": "Requests the geolocation permission on page load",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "robots-txt",
+        "title": "robots.txt is not valid",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "llms-txt",
+        "title": "llms.txt does not follow recommendations",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to."
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4."
+          }
+        ]
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-BbklSFHH.css",
+            "description": null
+          },
+          {
+            "node": null,
+            "url": "http://localhost:4174/registerSW.js",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 93,
+        "items": []
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 98,
+        "items": []
+      }
+    ]
+  }
+}

@@ -1,7 +1,22 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import posthog from "posthog-js";
 import "./index.css";
 import App from "./App.tsx";
+
+const posthogEnabled =
+  !!import.meta.env.VITE_POSTHOG_KEY &&
+  (import.meta.env.PROD || import.meta.env.VITE_POSTHOG_DEBUG === "true");
+
+if (posthogEnabled) {
+  posthog.init(import.meta.env.VITE_POSTHOG_KEY, {
+    api_host: import.meta.env.VITE_POSTHOG_HOST ?? "https://eu.i.posthog.com",
+    persistence: "memory",
+    autocapture: false,
+    capture_pageview: true,
+    capture_pageleave: true,
+  });
+}
 
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element not found");
