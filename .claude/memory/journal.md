@@ -1,6 +1,6 @@
 ---
 register: journal
-last_updated: 2026-06-21
+last_updated: 2026-06-22
 ---
 
 ## 2026-06-20
@@ -18,7 +18,7 @@ Infrastructure mémoire agent initialisée via `/memory-setup`.
 - [BDR-003](decisions/BDR-003.md) — Humidité intérieure hors scope V0
 - [LRN-001](learnings/LRN-001.md) — Algo score ventilation
 - [LRN-002](learnings/LRN-002.md) — Règle des 500 W/m²
-- [BLK-001](blockers/BLK-001.md) — Deadline 36h
+- [ZBLK-001](archive/blockers/ZBLK-001.md) — Deadline 36h
 
 ---
 
@@ -350,3 +350,45 @@ Correction notable : le `min-h` est le plancher de la hauteur courte (valeur = c
 **Entrées clés :**
 
 - [LRN-036](learnings/LRN-036.md) — `min-h` plancher du cas long pour stabiliser hauteur variable
+
+---
+
+Session EPIC-001 PWA installability. Implémentation complète : icônes + Service Worker depuis zéro.
+
+**Icônes** — `@vite-pwa/assets-generator` installé avec `pnpm add -D -w` (présence de `pnpm-workspace.yaml` → flag `-w` obligatoire, premier blocage). `pwa-assets.config.ts` créé avec override du preset `minimal2023Preset` pour fond `#f97316` orange sur les icônes maskable et apple-touch-icon (fond blanc par défaut). Toutes les icônes générées depuis `public/logo.svg` (renommé depuis `favicon.svg`) : pwa-64, pwa-192, pwa-512, maskable-512, apple-touch-180, favicon.ico. Règle W3C confirmée : padding 0.1 pour maskable (zone de sécurité spec), 0.3 pour apple (convention preset — pas arbitraire).
+
+**Service Worker** — `vite-plugin-pwa` ajouté avec `registerType: "autoUpdate"`, `manifest: false` (manifest.json dans public/ géré manuellement). Build propre : `dist/sw.js` + `dist/workbox-9c191d2f.js`, 5 precached entries, PWA v1.3.0. Manifest mis à jour : icônes `"purpose"` splittées en `"any"` et `"maskable"` séparés.
+
+**Rename favicon.svg → logo.svg** — séparation des rôles : `logo.svg` = source de génération uniquement, `favicon.ico` généré = vrai favicon navigateur. Crash Vite HMR suite au rename pendant session active : ENOENT sur l'ancien chemin depuis `vite:css-analysis`, aucune référence orpheline dans le code source. Fix : `Remove-Item -Recurse -Force node_modules/.vite` + redémarrage. Lint + build propres confirmés.
+
+**Entrées clés :**
+
+- [BDR-034](decisions/BDR-034.md) — `@vite-pwa/assets-generator` source unique icônes PWA
+- [BDR-036](decisions/BDR-036.md) — `logo.svg` vs `favicon.ico` : séparation des rôles
+- [LRN-038](learnings/LRN-038.md) — Vite HMR ENOENT après rename
+- [ZBLK-028](archive/blockers/ZBLK-028.md) — ENOENT crash HMR (résolu)
+
+---
+
+Session de finalisation PWA + rebranding sous-titre.
+
+**Bouton d'installation in-app (STORY-001-4)** — Audit EPIC-001 : STORY-001-1 (icônes) et STORY-001-2 (SW) étaient déjà complets depuis la session précédente. Ajout STORY-001-4 : bouton de rattrapage pour les utilisateurs ayant ignoré le prompt système natif. Hook `useInstallPrompt` : capture `beforeinstallprompt` (Android), détecte iOS (pas d'API prompt → tooltip instructions Share + "Sur l'écran d'accueil"), guard standalone (`display-mode: standalone`). `InstallButton` en `absolute top-4 right-4` dans le header (`relative`). L'`appinstalled` event supprime le bouton automatiquement.
+
+**Rebranding sous-titre** — Débat Rodin : "il fait chaud" dans le sous-titre explique le jeu de mots phonétique (le tue) et ne décrit pas la valeur produit. Décision : "Bien vivre la chaleur" — scope couvrant V0 (ventilation) + V1 (alertes canicule, conseils survie) sans s'enfermer sur une feature. Mis à jour dans `manifest.json`, `index.html`, `CLAUDE.md`.
+
+**BLK-001 archivé** — Deadline 36h "avant lundi 22 juin" atteinte : app fonctionnelle avec PWA installable, bouton installation, scope V0 complet.
+
+**Entrées clés :**
+
+- [BDR-037](decisions/BDR-037.md) — Bouton d'installation PWA in-app
+- [BDR-038](decisions/BDR-038.md) — Sous-titre "Bien vivre la chaleur"
+- GLRN-136 — `beforeinstallprompt` pattern complet (global)
+- [ZBLK-001](archive/blockers/ZBLK-001.md) — Deadline 36h (résolu)
+
+---
+
+Session courte de validation PWA. STORY-001-2 (Service Worker) validée à 100% : `pnpm preview` expose `dist/` avec le SW actif — DevTools Application > Service Workers confirmait `#7427 activated and running`, Chrome affichait le bouton "Ouvrir dans l'appli" (PWA installable détectée). Découverte notable : `vite-plugin-pwa` sans `devOptions.enabled` ne génère pas de SW en mode `pnpm dev` — c'est un no-op silencieux côté DevTools.
+
+Discussion stratégie test Android : `beforeinstallprompt` exige HTTPS sauf `localhost` — réseau local HTTP (`192.168.x.x`) bloque l'event. URL Vercel HTTPS = solution directe sans config supplémentaire. Prochaine étape : commit + push → test device Android réel (STORY-001-3).
+
+STORY-001-3 (tests devices réels iOS + Android) reste ouverte.

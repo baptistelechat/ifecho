@@ -43,3 +43,6 @@ last_updated: 2026-06-22
 | [LRN-034](learnings/LRN-034.md) | 2026-06-22 | `AnimatePresence mode="wait"` → flash transition état-vide↔contenu      | #framer-motion #AnimatePresence #mode-wait #flash #transition #empty-state #react #animation      |
 | [LRN-035](learnings/LRN-035.md) | 2026-06-22 | Label contextuel : afficher seulement quand il lève une ambiguïté       | #ux #label #conditional #disambiguation #signal #information-density #ifecho                      |
 | [LRN-036](learnings/LRN-036.md) | 2026-06-22 | `min-h` stabilise la hauteur au plancher du cas long                    | #css #min-h #layout-shift #ux #tailwind #variable-height #interactive                             |
+| [LRN-037](learnings/LRN-037.md) | 2026-06-22 | `resizeOptions.background` contrôle couleur fond padding PWA icons      | #pwa #assets-generator #maskable #apple #resizeOptions #background                                |
+| [LRN-038](learnings/LRN-038.md) | 2026-06-22 | Vite HMR ENOENT après rename → clear `node_modules/.vite` + restart     | #vite #hmr #cache #rename #enoent #node_modules                                                   |
+| [LRN-039](learnings/LRN-039.md) | 2026-06-22 | `pnpm add` workspace root exige `-w` → `ERR_PNPM_ADDING_TO_ROOT`        | #pnpm #workspace #pnpm-workspace #install #root #flag                                             |

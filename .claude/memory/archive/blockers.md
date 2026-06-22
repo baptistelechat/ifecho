@@ -1,12 +1,13 @@
 ---
 register: archive_blockers
-last_updated: 2026-06-21
+last_updated: 2026-06-22
 ---
 
 ## Index
 
 | ID                               | Date       | Friction                                                | Tags                                                               | Statut |
 | -------------------------------- | ---------- | ------------------------------------------------------- | ------------------------------------------------------------------ | ------ |
+| [ZBLK-001](blockers/ZBLK-001.md) | 2026-06-20 | Deadline 36h — livraison avant lundi 22 juin            | #deadline #scope #36h #canicule #v0 #livraison #vercel             | résolu |
 | [ZBLK-003](blockers/ZBLK-003.md) | 2026-06-20 | Formatter hook → VS Code contenu périmé après Edit      | #formatter #hooks #vscode #stale-content #edit-tool                | résolu |
 | [ZBLK-004](blockers/ZBLK-004.md) | 2026-06-20 | `pnpm create vite` bloqué sur prompt interactif         | #vite #pnpm #scaffolding #interactive-prompt                       | résolu |
 | [ZBLK-005](blockers/ZBLK-005.md) | 2026-06-20 | shadcn composants dans mauvais dossier sur Windows      | #shadcn #windows #path-alias #components #cli                      | résolu |
@@ -31,3 +32,6 @@ last_updated: 2026-06-21
 | [ZBLK-023](blockers/ZBLK-023.md) | 2026-06-21 | ESLint version conflict RTK global vs projet            | #eslint #rtk #version-conflict #lint                               | résolu |
 | [ZBLK-024](blockers/ZBLK-024.md) | 2026-06-21 | `pnpm-workspace.yaml settings:` ignoré par react-doctor | #pnpm-workspace #react-doctor #yaml #hardening #silent-failure     | résolu |
 | [ZBLK-025](blockers/ZBLK-025.md) | 2026-06-21 | JSON react-doctor non parsable via RTK/Windows          | #react-doctor #rtk #windows #json #stdout #temp-path #bash #python | résolu |
+| [ZBLK-026](blockers/ZBLK-026.md) | 2026-06-22 | `pnpm add` sans `-w` → `ERR_PNPM_ADDING_TO_ROOT`        | #pnpm #workspace #install #root #flag #pnpm-workspace              | résolu |
+| [ZBLK-027](blockers/ZBLK-027.md) | 2026-06-22 | Fond blanc sur icônes maskable/apple générées           | #pwa #assets-generator #maskable #apple #background                | résolu |
+| [ZBLK-028](blockers/ZBLK-028.md) | 2026-06-22 | ENOENT crash après rename `favicon.svg` en session HMR  | #vite #hmr #rename #cache #enoent                                  | résolu |
