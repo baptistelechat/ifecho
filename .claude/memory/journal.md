@@ -325,3 +325,28 @@ Troisième changement : suppression du spinner "Récupération de la météo" (`
 - [LRN-032](learnings/LRN-032.md) — stagger invisible dans LazyMotion + domAnimation
 - [LRN-033](learnings/LRN-033.md) — `height: 0 → "auto"` + flat AnimatePresence pour hauteur par item
 - [LRN-034](learnings/LRN-034.md) — `AnimatePresence mode="wait"` → flash entre états vide/contenu
+
+---
+
+Session ultra-courte. Tentative de relancer le projet (`pnpm i`) bloquée par `ERROR packages field missing or empty`. Cause : `pnpm-workspace.yaml` présent (créé lors du react-doctor pass) mais sans champ `packages:` — pnpm interprète la présence du fichier comme une déclaration workspace et exige le champ même sur un projet single-package. Fix en une ligne : ajout de `packages: ["."]` en tête du fichier. Échange court sur le sens des champs de hardening (`minimumReleaseAge: 10080` = quarantaine 7 jours anti-typosquatting, `trustPolicy: no-downgrade` = protection rollback vers version vulnérable).
+
+---
+
+Session ultra-courte de polish UX sur `IdealSlots`. Observation de Baptiste : quand un créneau de nuit (`04h–06h`) apparaît sous un créneau du jour (`06h–09h`), l'utilisateur peut croire que les deux sont aujourd'hui. Fix en 2 itérations : (1) ajout de `• Demain` sur les slots du lendemain ; (2) upgrade vers symétrie conditionnelle — le label jour n'apparaît que si la liste contient des créneaux de 2 jours distincts (`slots.some(s => s.startDate !== todayStr)`). Si tout est aujourd'hui, aucun label. Si mix J/J+1 → `• Aujourd'hui` et `• Demain` sur chaque slot respectif.
+
+**Entrées clés :**
+
+- [BDR-033](decisions/BDR-033.md) — Label jour conditionnel dans IdealSlots
+- [LRN-035](learnings/LRN-035.md) — Label contextuel : afficher seulement quand il lève une ambiguïté
+
+---
+
+Session ultra-courte de stabilisation UX. Bug signalé : `VerdictBanner` changeait de hauteur selon le verdict (message 1 ligne "Bon moment pour aérer" vs 2 lignes "Ne pas aérer"), décalant les boutons ChevronUp/Down du stepper lors de clics rapides — le mauvais bouton passait sous le curseur sans que l'utilisateur bouge la souris.
+
+Tentative debounce rejetée par Baptiste : retarde le changement mais ne le supprime pas — il y a toujours un frame où la card change de hauteur. Solution retenue : `min-h-[6.5rem]` sur le `m.div` de `VerdictBanner`. La valeur correspond à la hauteur du cas le plus long, si bien que le message court est "tiré vers le haut" et ne rétrécit plus la card.
+
+Correction notable : le `min-h` est le plancher de la hauteur courte (valeur = cas long), pas le plafond de la hauteur longue.
+
+**Entrées clés :**
+
+- [LRN-036](learnings/LRN-036.md) — `min-h` plancher du cas long pour stabiliser hauteur variable

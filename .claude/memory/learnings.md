@@ -41,3 +41,5 @@ last_updated: 2026-06-22
 | [LRN-032](learnings/LRN-032.md) | 2026-06-22 | `staggerChildren` + delays explicites silencieux dans LazyMotion        | #framer-motion #stagger #staggerChildren #LazyMotion #domAnimation #delay #animation #react       |
 | [LRN-033](learnings/LRN-033.md) | 2026-06-22 | `height: 0 → "auto"` + flat `AnimatePresence` = hauteur par item        | #framer-motion #AnimatePresence #height-auto #overflow-hidden #flat-structure #item-animation     |
 | [LRN-034](learnings/LRN-034.md) | 2026-06-22 | `AnimatePresence mode="wait"` → flash transition état-vide↔contenu      | #framer-motion #AnimatePresence #mode-wait #flash #transition #empty-state #react #animation      |
+| [LRN-035](learnings/LRN-035.md) | 2026-06-22 | Label contextuel : afficher seulement quand il lève une ambiguïté       | #ux #label #conditional #disambiguation #signal #information-density #ifecho                      |
+| [LRN-036](learnings/LRN-036.md) | 2026-06-22 | `min-h` stabilise la hauteur au plancher du cas long                    | #css #min-h #layout-shift #ux #tailwind #variable-height #interactive                             |

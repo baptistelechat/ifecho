@@ -39,3 +39,4 @@ last_updated: 2026-06-22
 | [BDR-030](decisions/BDR-030.md) | 2026-06-22 | VerdictBanner unifié sur `score.score`                                 | #verdict-banner #score #color-system #threshold #consistency #ui #react                          | actif  |
 | [BDR-031](decisions/BDR-031.md) | 2026-06-22 | Slide global `m.div` comme entrée du contenu principal                 | #animation #framer-motion #stagger #LazyMotion #content-entry #slide #App                        | actif  |
 | [BDR-032](decisions/BDR-032.md) | 2026-06-22 | Pas de spinner météo : `hasContent` conditionnel                       | #ux #loading #weather #hasContent #layout-shift #spinner #ifecho                                 | actif  |
+| [BDR-033](decisions/BDR-033.md) | 2026-06-22 | Label jour conditionnel dans `IdealSlots` si mix de jours              | #IdealSlots #ux #date-label #conditional #ambiguity #day-boundary #ifecho                        | actif  |
