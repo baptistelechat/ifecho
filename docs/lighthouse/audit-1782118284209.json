@@ -1,0 +1,211 @@
+{
+  "fetchTime": "2026-06-22T08:51:24.209Z",
+  "desktop": {
+    "scores": {
+      "performance": 85,
+      "accessibility": 100,
+      "best-practices": 92,
+      "seo": 100,
+      "agentic-browsing": 100
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": "Blocked call to navigator.vibrate because user hasn't tapped on the frame or any embedded frame yet: https://www.chromestatus.com/feature/5644273861001216."
+          }
+        ]
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-DKkfIqWb.js",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "geolocation-on-start",
+        "title": "Requests the geolocation permission on page load",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to."
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4."
+          }
+        ]
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/registerSW.js",
+            "description": null
+          },
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-D_7bKhye.css",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 46,
+        "items": []
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 70,
+        "items": []
+      },
+      {
+        "id": "speed-index",
+        "title": "Speed Index",
+        "score": 77,
+        "items": []
+      },
+      {
+        "id": "interactive",
+        "title": "Time to Interactive",
+        "score": 97,
+        "items": []
+      }
+    ]
+  },
+  "mobile": {
+    "scores": {
+      "performance": 99,
+      "accessibility": 100,
+      "best-practices": 92,
+      "seo": 100,
+      "agentic-browsing": 100
+    },
+    "failures": [
+      {
+        "id": "errors-in-console",
+        "title": "Browser errors were logged to the console",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": "Blocked call to navigator.vibrate because user hasn't tapped on the frame or any embedded frame yet: https://www.chromestatus.com/feature/5644273861001216."
+          }
+        ]
+      },
+      {
+        "id": "unused-javascript",
+        "title": "Reduce unused JavaScript",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-DKkfIqWb.js",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "geolocation-on-start",
+        "title": "Requests the geolocation permission on page load",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "network-dependency-tree-insight",
+        "title": "Network dependency tree",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": null,
+            "description": null
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "[preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints help the browser establish a connection earlier in the page load, saving time when the first request for that origin is made. The following are the origins that the page preconnected to."
+          },
+          {
+            "node": null,
+            "url": null,
+            "description": "Add [preconnect](https://developer.chrome.com/docs/lighthouse/performance/uses-rel-preconnect/) hints to your most important origins, but try to use no more than 4."
+          }
+        ]
+      },
+      {
+        "id": "render-blocking-insight",
+        "title": "Render-blocking requests",
+        "score": 0,
+        "items": [
+          {
+            "node": null,
+            "url": "http://localhost:4174/registerSW.js",
+            "description": null
+          },
+          {
+            "node": null,
+            "url": "http://localhost:4174/assets/index-D_7bKhye.css",
+            "description": null
+          }
+        ]
+      },
+      {
+        "id": "first-contentful-paint",
+        "title": "First Contentful Paint",
+        "score": 93,
+        "items": []
+      },
+      {
+        "id": "largest-contentful-paint",
+        "title": "Largest Contentful Paint",
+        "score": 98,
+        "items": []
+      }
+    ]
+  }
+}

@@ -206,7 +206,7 @@ const App = () => {
               Ifecho • Made by{" "}
               <a
                 href="https://baptistelechat.vercel.app/"
-                className="underline transition-colors hover:text-ember"
+                className="inline-block py-1 underline transition-colors hover:text-ember"
                 target="_blank"
                 rel="noopener noreferrer"
               >

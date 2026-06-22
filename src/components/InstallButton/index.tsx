@@ -38,7 +38,7 @@ const InstallButton = () => {
         onClick={handleClick}
         aria-label="Installer l'application sur votre écran d'accueil"
         aria-expanded={isIos ? showHint : undefined}
-        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground shadow-sm transition-all hover:border-ember hover:text-ember active:scale-95"
+        className="flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-stone-600 shadow-sm transition-all hover:border-ember hover:text-ember active:scale-95"
       >
         {isIos ? (
           <Share className="size-3.5" />

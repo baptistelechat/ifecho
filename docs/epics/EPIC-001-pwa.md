@@ -50,7 +50,7 @@ Génération via `@vite-pwa/assets-generator` depuis `public/logo.svg`
 
 ### STORY-001-2 — Ajouter un Service Worker minimal
 
-**Statut** : ✅ Fait (à valider en DevTools)  
+**Statut** : ✅ Fait  
 **Effort** : ~30 min  
 **Dépendance** : STORY-001-1
 
@@ -60,7 +60,7 @@ Génération via `@vite-pwa/assets-generator` depuis `public/logo.svg`
 **Critères d'acceptation**
 
 - [x] `vite-plugin-pwa` installé et configuré dans `vite.config.ts`
-- [ ] SW enregistré sans erreur dans DevTools → Application → Service Workers _(à vérifier sur build)_
+- [x] SW enregistré sans erreur dans DevTools → Application → Service Workers (`#7430 activated and running` via `pnpm preview`)
 - [x] Pas de régression build (`pnpm build` sans erreur) — `dist/sw.js` généré
 - [x] Le SW n'intercepte pas les appels Open-Meteo (`runtimeCaching: []`)
 
@@ -81,11 +81,13 @@ VitePWA({
 
 ### STORY-001-3 — Valider l'installation sur mobile
 
-**Statut** : ⬜ À faire  
+**Statut** : 🟡 Partiel (Android ✅ — iOS à tester)  
 **Dépendance** : STORY-001-1, STORY-001-2
 
 **Description**  
 Tester l'installation sur au moins un device iOS et un Android.
+
+**⚠️ Prérequis Vercel** : les preview deployments sont protégés par Vercel Auth — le `manifest.json` retourne 401, ce qui bloque l'installabilité PWA. Désactiver Vercel Authentication dans Settings → Deployment Protection avant de tester, ou tester sur la branche `main` (prod).
 
 **Checklist iOS (Safari)**
 
@@ -97,16 +99,16 @@ Tester l'installation sur au moins un device iOS et un Android.
 
 **Checklist Android (Chrome)**
 
-- [ ] Ouvrir l'URL déployée dans Chrome
-- [ ] Le banner "Ajouter à l'écran d'accueil" apparaît (ou menu ⋮ → Installer)
-- [ ] L'icône affichée est l'icône ember (pas générique)
-- [ ] L'app s'ouvre en mode standalone
+- [x] Ouvrir l'URL déployée dans Chrome
+- [x] Le banner "Ajouter à l'écran d'accueil" apparaît (ou menu ⋮ → Installer)
+- [x] L'icône affichée est l'icône ember (pas générique)
+- [x] L'app s'ouvre en mode standalone
 
 **Outil diagnostic**
 
 ```
 Chrome DevTools → Application → Manifest → vérifier "Installability"
-Lighthouse → PWA audit (score attendu ≥ 80 en V0)
+Lighthouse → pnpm lighthouse (script custom node scripts/lighthouse-audit.mjs)
 ```
 
 ---
@@ -134,3 +136,44 @@ le prompt système initial.
 - [x] Android : le bouton déclenche le prompt natif Chrome
 - [x] iOS : le bouton affiche les instructions avec icône Share bleue
 - [x] Le bouton disparaît automatiquement après installation (`appinstalled` event)
+
+---
+
+### STORY-001-5 — Optimisation Lighthouse _(ajout)_
+
+**Statut** : ✅ Fait  
+**Effort** : ~2h
+
+**Description**  
+Script d'audit Lighthouse automatisé + corrections des échecs d'accessibilité, SEO et qualité.
+
+**Ce qui a été fait**
+
+- `scripts/lighthouse-audit.mjs` — script node (chrome-launcher + lighthouse API, évite les problèmes EPERM Windows)
+- `pnpm lighthouse` — build → preview → audit desktop + mobile → rapport JSON dans `docs/lighthouse/`
+- `public/manifest.json` — ajout du champ `"id": "/"`
+- `public/robots.txt` — créé pour SEO 100/100
+- `public/llms.txt` — format llmstxt.org (H1 + blockquote + liens markdown) pour agentic-browsing 100/100
+- `src/index.css` — `--color-verdict-bad` : `#ef4444` → `#b91c1c` (contraste WCAG AA 5.8:1)
+- `src/components/RecommendCard/components/ThermalComparison.tsx` — aria-label bouton température fixé (WCAG 2.5.3)
+- `src/components/InstallButton/index.tsx` — `text-muted-foreground` → `text-stone-600` (contraste 5.5:1)
+- `src/components/LocationSearch/index.tsx` — `text-ember` 10px → `text-heat-700` (contraste 5.17:1), `text-muted-foreground` → `text-stone-600`, suppression aria-label mismatch
+- `src/App.tsx` — tap target footer `@baptistelechat` : `inline-block py-1` ajouté (WCAG 2.5.5)
+- `index.html` — preconnect Open-Meteo avec attribut `crossorigin`
+
+**Scores finaux (audit 2026-06-22)**
+
+| Catégorie        | Desktop | Mobile  |
+| ---------------- | ------- | ------- |
+| Performance      | 85      | 99      |
+| Accessibility    | **100** | **100** |
+| Best Practices   | 92      | 92      |
+| SEO              | **100** | **100** |
+| Agentic-Browsing | **100** | **100** |
+
+**Échecs résiduels acceptés (by-design)**
+
+- `geolocation-on-start` — `detectLocation()` sur mount est le cœur de l'UX
+- `errors-in-console` (vibrate) — la lib `web-haptics` teste `navigator.vibrate` avant geste utilisateur
+- `render-blocking` (registerSW.js, CSS) — généré par vite-plugin-pwa, impact minimal (0.13 kB)
+- `unused-javascript` — bundle 384 kB JS (framer-motion + shadcn) ; code splitting hors scope V0

@@ -2,6 +2,7 @@
   "name": "Ifecho - Bien vivre la chaleur",
   "short_name": "Ifecho",
   "description": "Bien vivre la chaleur - savoir quand ventiler et anticiper les canicules.",
+  "id": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fff7ed",

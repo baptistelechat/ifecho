@@ -28,7 +28,7 @@
   --color-sky: #3b82f6;
   --color-ember: #ea580c;
   --color-verdict-good: #22c55e;
-  --color-verdict-bad: #ef4444;
+  --color-verdict-bad: #b91c1c;
   --color-verdict-wait: #f59e0b;
 
   --animate-nudge: nudge 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;

@@ -103,7 +103,7 @@ const LocationSearch = ({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <MapPin className="size-3.5 text-ember" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-600">
             {getLocationLabel(location)}
           </p>
         </div>
@@ -112,8 +112,7 @@ const LocationSearch = ({
             type="button"
             variant="link"
             onClick={handleDetect}
-            className="h-auto p-0 text-[10px] font-semibold uppercase tracking-widest text-ember"
-            aria-label="Utiliser ma position GPS"
+            className="h-auto p-0 text-[10px] font-semibold uppercase tracking-widest text-heat-700"
           >
             <Locate className="!size-3" />
             Me localiser
