@@ -86,11 +86,7 @@ const TipsSection = () => {
   useEffect(() => {
     if (isPaused) return;
     const timer = setInterval(() => {
-      setIndex((p) => {
-        const nextIdx = (p + 1) % TIPS.length;
-        analytics.tipNavigated({ tipId: TIPS[nextIdx].id, direction: "auto" });
-        return nextIdx;
-      });
+      setIndex((p) => (p + 1) % TIPS.length);
     }, AUTO_DELAY);
     return () => clearInterval(timer);
   }, [isPaused]);

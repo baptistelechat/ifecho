@@ -57,6 +57,16 @@ const useAnalytics = () => ({
     if (!isEnabled()) return;
     posthog.capture("pwa_install_banner_shown");
   },
+
+  pwaInstallClicked: (props: { outcome: "accepted" | "dismissed" }) => {
+    if (!isEnabled()) return;
+    posthog.capture("pwa_install_clicked", props);
+  },
+
+  pwaInstalled: () => {
+    if (!isEnabled()) return;
+    posthog.capture("pwa_installed");
+  },
 });
 
 export default useAnalytics;

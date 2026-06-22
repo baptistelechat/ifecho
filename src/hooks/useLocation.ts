@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import type { CommuneResult, GeoLocation } from "@/types";
 import useAnalytics from "@/hooks/useAnalytics";
 
@@ -55,13 +55,16 @@ export const useLocation = () => {
   const [location, setLocation] = useState<GeoLocation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const loadingRef = useRef(false);
 
   const detectLocation = useCallback(() => {
+    if (loadingRef.current) return;
     if (!navigator.geolocation) {
       setError("La géolocalisation n'est pas supportée par votre navigateur.");
       return;
     }
 
+    loadingRef.current = true;
     setIsLoading(true);
     setError(null);
 
@@ -90,6 +93,7 @@ export const useLocation = () => {
           });
           analytics.locationDetected({ source: "gps" });
         } finally {
+          loadingRef.current = false;
           setIsLoading(false);
         }
       },
@@ -97,6 +101,7 @@ export const useLocation = () => {
         setError(
           "Impossible d'obtenir votre position. Saisissez votre commune.",
         );
+        loadingRef.current = false;
         setIsLoading(false);
       },
       { timeout: 10000 },

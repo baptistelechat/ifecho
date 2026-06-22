@@ -42,6 +42,7 @@ export const useInstallPrompt = (): UseInstallPromptReturn => {
 
   useEffect(() => {
     const handler = () => {
+      analytics.pwaInstalled();
       setCanInstall(false);
       setDeferredPrompt(null);
     };
@@ -53,6 +54,7 @@ export const useInstallPrompt = (): UseInstallPromptReturn => {
     if (!deferredPrompt) return false;
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
+    analytics.pwaInstallClicked({ outcome });
     setDeferredPrompt(null);
     setCanInstall(false);
     return outcome === "accepted";

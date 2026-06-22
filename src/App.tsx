@@ -22,7 +22,7 @@ import AppFooter from "@/components/AppFooter";
 import useAnalytics from "@/hooks/useAnalytics";
 import PrivacyPage from "@/pages/PrivacyPage";
 import { AlertCircle, ThermometerSun, Wind } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const STORAGE_KEY_TEMP = "ifecho_indoor_temp";
 const STORAGE_KEY_COMFORT = "ifecho_comfort_level";
@@ -122,14 +122,19 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weather]);
 
+  const tempDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleTempChange = (value: number) => {
     setIndoorTemp(value);
-    analytics.indoorTempChanged({ temp: value });
     try {
       localStorage.setItem(STORAGE_KEY_TEMP, value.toString());
     } catch {
       // localStorage unavailable
     }
+    if (tempDebounceRef.current) clearTimeout(tempDebounceRef.current);
+    tempDebounceRef.current = setTimeout(() => {
+      analytics.indoorTempChanged({ temp: value });
+    }, 800);
   };
 
   const handleComfortChange = (level: ComfortLevel) => {
