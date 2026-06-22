@@ -228,7 +228,7 @@ Plus d'infos : https://posthog.com/privacy
 **Effort** : 20 min
 
 **Description**
-Créer 3-4 insights dans PostHog pour avoir un tableau de bord lisible le jour de la canicule.
+Créer des insights dans PostHog pour avoir un tableau de bord lisible le jour de la canicule.
 
 **Dashboard créé via MCP PostHog**
 
@@ -236,19 +236,39 @@ Créer 3-4 insights dans PostHog pour avoir un tableau de bord lisible le jour d
 - URL : https://eu.posthog.com/project/207198/dashboard/765141
 - Tags : `ifecho`, `v0`, `analytics` — Épinglé : oui
 
-**Insights créés et attachés au dashboard**
+**Filtre données de test (configuré)**
 
-| Insight                                 | Type          | short_id   | Question                                 |
-| --------------------------------------- | ------------- | ---------- | ---------------------------------------- |
-| Utilisateurs actifs (quotidien)         | Trend (daily) | `2yzbwLRw` | Combien de personnes utilisent l'app ?   |
-| Répartition du confort thermique        | Pie           | `2xJZJKHX` | Qui est en hot / neutral / cool ?        |
-| Funnel téléchargement rappel calendrier | Funnel        | `jI7QtDQ3` | `weather_loaded` → `calendar_downloaded` |
-| Top départements (localisations)        | Table         | `GcWS1APY` | Quelles régions sont les plus touchées ? |
+Filtre projet actif : `$host != localhost:5173` (exclut les 229 events de développement).
+Configuré via `test_account_filters` + `test_account_filters_default_checked: true`.
+Tous les insights ont `filterTestAccounts: true` — les données dev sont invisibles dans le dashboard.
+
+**Insights créés et attachés au dashboard (17 au total)**
+
+| Insight                         | Type        | short_id   | Question                                        |
+| ------------------------------- | ----------- | ---------- | ----------------------------------------------- |
+| Utilisateurs actifs (quotidien) | Trend DAU   | `2yzbwLRw` | Combien de personnes utilisent l'app ?          |
+| Utilisateurs actifs (WAU)       | Trend WAU   | `jZJSUgUZ` | Volume hebdomadaire utilisateurs                |
+| Retention — qui revient ?       | Retention   | `0GoFYtZp` | Rétention J+1 → J+14                            |
+| Stickiness — fréquence          | Stickiness  | `GKuXTTAK` | Jours d'utilisation par mois                    |
+| Score météo moyen               | Trend avg   | `IHXai54L` | `top_score` moyen journalier                    |
+| Température intérieure moyenne  | Trend avg   | `LuocUOez` | Température saisie moyenne                      |
+| GPS vs recherche manuelle       | Trend/Pie   | `Wri4aI8l` | Source de localisation (`gps` vs `search`)      |
+| Top départements                | Trend/Table | `GcWS1APY` | Régions les plus touchées                       |
+| Top villes                      | Trend/Table | `yJNCWGTC` | Villes les plus consultées                      |
+| Meilleure heure recommandée     | Trend/Table | `5qc2ZL2j` | Distribution des heures idéales                 |
+| Ressenti thermique              | Trend/Bar   | `gwjqMjmt` | `hot` / `neutral` / `cool`                      |
+| Répartition confort thermique   | Trend/Pie   | `2xJZJKHX` | Répartition hot / neutral / cool                |
+| Tips les plus consultés         | Trend/Table | `QgMVdjVL` | Classement par `tip_id`                         |
+| Navigation dans les tips        | Trend/Pie   | `sNkWWf1j` | swipe vs dot vs auto                            |
+| Prompt installation PWA         | Trend total | `QCuZ1Vk8` | Affichage du prompt d'installation              |
+| Funnel engagement complet       | Funnel      | `tnvjNDUF` | 4 étapes : location → weather → temp → calendar |
+| Funnel téléchargement rappel    | Funnel      | `jI7QtDQ3` | `weather_loaded` → `calendar_downloaded`        |
 
 **Critères d'acceptation**
 
 - [x] Dashboard créé dans PostHog (nom : "ifecho V0")
-- [x] Les 4 insights sont configurés et affichent des données de test
+- [x] Les 17 insights sont configurés avec `filterTestAccounts: true`
+- [x] Filtre `$host != localhost:5173` configuré au niveau projet
 - [x] Partage du dashboard en lecture seule possible (lien public)
   > ⚠️ Action manuelle requise : l'endpoint de partage public n'est pas exposé dans le MCP.
   > Dans l'UI PostHog → ouvrir le dashboard → bouton **Share** → activer **Public sharing** → copier le lien.
