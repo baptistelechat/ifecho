@@ -9,6 +9,7 @@ interface TimeSlot {
   endHour: number;
   startMs: number;
   endMs: number;
+  startDate: string;
   baseLabel: string;
   isNow: boolean;
   crossesMidnight: boolean;
@@ -93,6 +94,7 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
         endHour,
         startMs,
         endMs,
+        startDate: parseDateHour(first.time).date,
         baseLabel: getSlotLabel(startHour),
         isNow,
         crossesMidnight,
@@ -107,8 +109,14 @@ interface IdealSlotsProps {
 
 const SLOT_EASING: [number, number, number, number] = [0.23, 1, 0.32, 1];
 
+const getTodayStr = (): string => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 const IdealSlots = ({ scores }: IdealSlotsProps) => {
   const slots = getIdealSlots(scores);
+  const todayStr = getTodayStr();
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
@@ -146,9 +154,16 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
               color: "text-muted-foreground",
             };
             const Icon = meta.icon;
+            const hasMultipleDays = slots.some((s) => s.startDate !== todayStr);
+            const isTomorrow = slot.startDate !== todayStr;
+            const dayLabel = hasMultipleDays
+              ? isTomorrow
+                ? " • Demain"
+                : " • Aujourd'hui"
+              : "";
             const displayLabel = slot.isNow
-              ? `${slot.baseLabel} - maintenant`
-              : slot.baseLabel;
+              ? `${slot.baseLabel} • Maintenant`
+              : `${slot.baseLabel}${dayLabel}`;
 
             return (
               <m.div

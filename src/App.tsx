@@ -10,7 +10,6 @@ import {
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
 import { COMFORT_LEVELS, type ComfortLevel } from "@/types";
-import { AlertCircle, Heart, ThermometerSun, Wind } from "lucide-react";
 import {
   AnimatePresence,
   LazyMotion,
@@ -18,6 +17,7 @@ import {
   domAnimation,
   m,
 } from "framer-motion";
+import { AlertCircle, Heart, ThermometerSun, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY_TEMP = "ifecho_indoor_temp";
@@ -123,7 +123,7 @@ const App = () => {
               <Wind className="size-5 text-ember" />
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {formatDate(now)} · {formatTime(now)}
+              {formatDate(now)} • {formatTime(now)}
             </p>
           </header>
 
@@ -222,7 +222,7 @@ const App = () => {
               >
                 Open-Meteo
               </a>
-              {" · "}
+              {" • "}
               <a
                 href="https://adresse.data.gouv.fr"
                 className="underline transition-colors hover:text-ember"
