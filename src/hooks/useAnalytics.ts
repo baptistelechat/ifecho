@@ -3,7 +3,12 @@ import posthog from "posthog-js";
 const isEnabled = () => !!import.meta.env.VITE_POSTHOG_KEY;
 
 const useAnalytics = () => ({
-  appOpened: (props: { is_pwa: boolean; is_first_visit: boolean }) => {
+  appOpened: (props: {
+    is_pwa: boolean;
+    is_first_visit: boolean;
+    local_hour: number;
+    local_day_of_week: number;
+  }) => {
     if (!isEnabled()) return;
     posthog.capture("app_opened", props);
   },
@@ -26,16 +31,27 @@ const useAnalytics = () => ({
     posthog.capture("location_gps_not_supported");
   },
 
+  locationSearchAbandoned: (props: { query_length: number }) => {
+    if (!isEnabled()) return;
+    posthog.capture("location_search_abandoned", props);
+  },
+
   weatherLoaded: (props: {
     city: string;
     bestHour: number | null;
     topScore: number;
+    outdoor_temp_current: number | null;
+    outdoor_temp_max_24h: number;
+    is_heatwave: boolean;
   }) => {
     if (!isEnabled()) return;
     posthog.capture("weather_loaded", {
       city: props.city,
       best_hour: props.bestHour,
       top_score: props.topScore,
+      outdoor_temp_current: props.outdoor_temp_current,
+      outdoor_temp_max_24h: props.outdoor_temp_max_24h,
+      is_heatwave: props.is_heatwave,
     });
   },
 
@@ -51,6 +67,15 @@ const useAnalytics = () => ({
   }) => {
     if (!isEnabled()) return;
     posthog.capture("verdict_seen", props);
+  },
+
+  verdictUpdated: (props: {
+    verdict: "good" | "neutral" | "wait" | "bad";
+    score: number;
+    delta_t: number;
+  }) => {
+    if (!isEnabled()) return;
+    posthog.capture("verdict_updated", props);
   },
 
   indoorTempChanged: (props: { temp: number }) => {
@@ -85,6 +110,11 @@ const useAnalytics = () => ({
   tipsCarouselToggled: (props: { state: "paused" | "playing" }) => {
     if (!isEnabled()) return;
     posthog.capture("tips_carousel_toggled", props);
+  },
+
+  sectionViewed: (props: { section_id: string }) => {
+    if (!isEnabled()) return;
+    posthog.capture("section_viewed", props);
   },
 
   iosInstallHintShown: () => {

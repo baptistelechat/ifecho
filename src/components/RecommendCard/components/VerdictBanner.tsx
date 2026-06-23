@@ -3,7 +3,7 @@ import type { HourlyScore } from "@/types";
 import { AnimatePresence, m } from "framer-motion";
 import { Ban, CheckCircle, Clock, Wind } from "lucide-react";
 import useAnalytics from "@/hooks/useAnalytics";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface VerdictBannerProps {
   currentScore: HourlyScore;
@@ -124,13 +124,20 @@ const VerdictBanner = ({ currentScore }: VerdictBannerProps) => {
   const verdict = getVerdict(currentScore);
   const config = verdictConfig[verdict.key];
   const { Icon } = verdict;
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    analytics.verdictSeen({
+    const payload = {
       verdict: verdict.key,
       score: currentScore.score,
       delta_t: currentScore.deltaT,
-    });
+    };
+    if (isFirstRender.current) {
+      analytics.verdictSeen(payload);
+      isFirstRender.current = false;
+    } else {
+      analytics.verdictUpdated(payload);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [verdict.key]);
 

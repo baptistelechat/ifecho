@@ -4,6 +4,7 @@ import { searchCommunes } from "@/hooks/useLocation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHaptics } from "@/hooks/useHaptics";
+import useAnalytics from "@/hooks/useAnalytics";
 import type { CommuneResult, GeoLocation } from "@/types";
 
 interface LocationSearchProps {
@@ -35,6 +36,7 @@ const LocationSearch = ({
   onSelect,
 }: LocationSearchProps) => {
   const haptics = useHaptics();
+  const analytics = useAnalytics();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CommuneResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -43,6 +45,8 @@ const LocationSearch = ({
   const prevErrorRef = useRef<string | null>(null);
   const hapticsErrorRef = useRef(haptics.error);
   hapticsErrorRef.current = haptics.error;
+  const queryRef = useRef(query);
+  queryRef.current = query;
 
   useEffect(() => {
     if (query.length < 2) {
@@ -78,11 +82,17 @@ const LocationSearch = ({
         containerRef.current &&
         !containerRef.current.contains(e.target as Node)
       ) {
+        if (queryRef.current.length >= 2) {
+          analytics.locationSearchAbandoned({
+            query_length: queryRef.current.length,
+          });
+        }
         setShowResults(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDetect = () => {

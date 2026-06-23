@@ -77,7 +77,7 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
         setIsLoading(false);
       } catch {
         if (!cancelled) {
-          setError("Impossible de récupérer les données météo.");
+          setError("Impossible de récupérer les données météo. Vérifier votre connexion internet.");
           setIsLoading(false);
         }
       }

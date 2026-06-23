@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import useAnalytics from "@/hooks/useAnalytics";
+import useOnceVisible from "@/hooks/useOnceVisible";
 import { useHaptics } from "@/hooks/useHaptics";
 import {
   Sun,
@@ -47,6 +48,9 @@ const TipsSection = () => {
   const [isPaused, setIsPaused] = useState(false);
   const resumeRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dragStartX = useRef(0);
+  const sectionRef = useOnceVisible<HTMLDivElement>(() => {
+    analytics.sectionViewed({ section_id: "tips_section" });
+  });
 
   const goTo = (nextIndex: number) => setIndex(nextIndex);
 
@@ -113,7 +117,7 @@ const TipsSection = () => {
   };
 
   return (
-    <div className="space-y-3">
+    <div ref={sectionRef} className="space-y-3">
       <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
         <Lightbulb className="size-3.5" />
         Conseils canicule

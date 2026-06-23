@@ -111,12 +111,15 @@ const App = () => {
   const currentScore = scores.find((s) => s.hour === currentHour) ?? null;
 
   useEffect(() => {
+    const openedAt = new Date();
     const isPwa =
       window.matchMedia("(display-mode: standalone)").matches ||
       Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
     analytics.appOpened({
       is_pwa: isPwa,
       is_first_visit: isFirstVisit(),
+      local_hour: openedAt.getHours(),
+      local_day_of_week: openedAt.getDay(),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -138,10 +141,17 @@ const App = () => {
 
   useEffect(() => {
     if (!weather || !location) return;
+    const tempMax =
+      scores.length > 0
+        ? Math.max(...scores.map((s) => s.apparentTemperature))
+        : 0;
     analytics.weatherLoaded({
       city: location.city,
       bestHour: bestHour?.hour ?? null,
       topScore: bestHour?.score ?? 0,
+      outdoor_temp_current: currentScore?.apparentTemperature ?? null,
+      outdoor_temp_max_24h: Math.round(tempMax),
+      is_heatwave: tempMax > 33,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weather]);
@@ -200,13 +210,9 @@ const App = () => {
             >
               {/* Header */}
               <header className="relative pb-4 pt-10 text-center">
-                <div className="absolute right-4 top-4 flex items-center gap-2">
-                  <ShareButton
-                    city={location?.city}
-                    bestHour={bestHour}
-                    currentScore={currentScore}
-                  />
+                <div className="absolute right-4 top-4 flex flex-col items-end gap-2 sm:flex-row sm:items-center">
                   <InstallButton />
+                  <ShareButton currentScore={currentScore} />
                 </div>
                 <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
                   <ThermometerSun className="size-6" />

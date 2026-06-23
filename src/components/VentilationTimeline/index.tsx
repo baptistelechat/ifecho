@@ -3,6 +3,7 @@ import type { HourlyScore } from "@/types";
 import { m, useInView } from "framer-motion";
 import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import { useEffect, useRef } from "react";
+import useAnalytics from "@/hooks/useAnalytics";
 
 interface VentilationTimelineProps {
   scores: HourlyScore[];
@@ -34,10 +35,17 @@ const VentilationTimeline = ({
   scores,
   bestHour,
 }: VentilationTimelineProps) => {
+  const analytics = useAnalytics();
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentHourRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: true, margin: "-60px" });
+
+  useEffect(() => {
+    if (isInView)
+      analytics.sectionViewed({ section_id: "ventilation_timeline" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInView]);
 
   const currentHour = new Date().getHours();
   const nowDate = (() => {

@@ -4,10 +4,11 @@ import { Share2 } from "lucide-react";
 import { useState } from "react";
 
 interface ShareButtonProps {
-  city?: string | null;
-  bestHour?: HourlyScore | null;
   currentScore?: HourlyScore | null;
 }
+
+const SHARE_TEXT =
+  "Ifecho m'a conseillé d'aérer mon logement aujourd'hui 🌡️ Et toi, tu sais quand ouvrir tes fenêtres ?";
 
 const getVerdictKey = (score: number): "good" | "neutral" | "wait" | "bad" => {
   if (score > 2) return "good";
@@ -16,38 +17,33 @@ const getVerdictKey = (score: number): "good" | "neutral" | "wait" | "bad" => {
   return "bad";
 };
 
-const buildShareText = (
-  city?: string | null,
-  bestHour?: HourlyScore | null,
-): string => {
-  if (city && bestHour) {
-    return `Ifecho me conseille d'aérer à ${bestHour.hour}h à ${city} pour rafraîchir l'intérieur 🌡️`;
-  }
-  if (city) {
-    return `Je suis la météo de ${city} avec Ifecho pour savoir quand aérer mon logement 🌡️`;
-  }
-  return `Découvre la meilleure heure pour aérer ton logement avec Ifecho 🌡️`;
+const buildShareUrl = (method: "native" | "clipboard"): string => {
+  const url = new URL(window.location.origin);
+  url.searchParams.set("utm_source", "share");
+  url.searchParams.set("utm_medium", method);
+  url.searchParams.set("utm_campaign", "viral");
+  return url.toString();
 };
 
-const ShareButton = ({ city, bestHour, currentScore }: ShareButtonProps) => {
+const ShareButton = ({ currentScore }: ShareButtonProps) => {
   const analytics = useAnalytics();
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
-    const url = window.location.origin;
-    const text = buildShareText(city, bestHour);
+    const isNative = Boolean(navigator.share);
+    const url = buildShareUrl(isNative ? "native" : "clipboard");
     const verdict = currentScore ? getVerdictKey(currentScore.score) : null;
 
     try {
       if (navigator.share) {
         await navigator.share({
           title: "Ifecho — Bien vivre la chaleur",
-          text,
+          text: SHARE_TEXT,
           url,
         });
         analytics.appShared({ verdict, method: "native" });
       } else {
-        await navigator.clipboard.writeText(`${text}\n${url}`);
+        await navigator.clipboard.writeText(`${SHARE_TEXT}\n${url}`);
         analytics.appShared({ verdict, method: "clipboard" });
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
