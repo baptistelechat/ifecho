@@ -1,6 +1,6 @@
 ---
 register: decisions
-last_updated: 2026-06-22
+last_updated: 2026-06-23
 ---
 
 ## Index
@@ -51,3 +51,4 @@ last_updated: 2026-06-22
 | [BDR-042](decisions/BDR-042.md) | 2026-06-22 | Routing hash natif (#confidentialite) sans react-router pour SPA légère | #spa #routing #hash #react-router #react #vite #ifecho                                           | actif  |
 | [BDR-043](decisions/BDR-043.md) | 2026-06-22 | `AppFooter` composant partagé entre App.tsx et PrivacyPage              | #footer #dry #component #shared #react #ifecho #layout                                           | actif  |
 | [BDR-044](decisions/BDR-044.md) | 2026-06-22 | `test_account_filters` PostHog pour exclure données localhost           | #posthog #test-account-filters #localhost #analytics #dashboard #filtering                       | actif  |
+| [BDR-045](decisions/BDR-045.md) | 2026-06-23 | `device_type` custom retiré → `$os` natif PostHog                       | #analytics #posthog #device_type #os #simplification #autocapture #ifecho                        | actif  |

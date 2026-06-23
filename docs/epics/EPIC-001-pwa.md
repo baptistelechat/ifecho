@@ -81,7 +81,7 @@ VitePWA({
 
 ### STORY-001-3 — Valider l'installation sur mobile
 
-**Statut** : 🟡 Partiel (Android ✅ — iOS à tester)  
+**Statut** : ✅ Terminé (Android ✅ — iOS ✅ validé le 2026-06-23)  
 **Dépendance** : STORY-001-1, STORY-001-2
 
 **Description**  
@@ -91,11 +91,11 @@ Tester l'installation sur au moins un device iOS et un Android.
 
 **Checklist iOS (Safari)**
 
-- [ ] Ouvrir l'URL déployée dans Safari
-- [ ] Menu Partager → "Sur l'écran d'accueil"
-- [ ] L'icône affichée est l'icône ember (pas un screenshot)
-- [ ] L'app s'ouvre en mode standalone (pas de barre Safari)
-- [ ] Le `theme_color` orange est visible dans la barre de statut
+- [x] Ouvrir l'URL déployée dans Safari
+- [x] Menu Partager → "Sur l'écran d'accueil"
+- [x] L'icône affichée est l'icône ember (pas un screenshot)
+- [x] L'app s'ouvre en mode standalone (pas de barre Safari)
+- [x] Le `theme_color` orange est visible dans la barre de statut
 
 **Checklist Android (Chrome)**
 

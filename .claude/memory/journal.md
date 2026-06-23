@@ -1,6 +1,6 @@
 ---
 register: journal
-last_updated: 2026-06-22
+last_updated: 2026-06-23
 ---
 
 ## 2026-06-20
@@ -485,3 +485,19 @@ Dashboard "ifecho V0" (ID 765141, https://eu.posthog.com/project/207198/dashboar
 - [BDR-044](decisions/BDR-044.md) — `test_account_filters` PostHog pour exclure localhost
 - [LRN-047](learnings/LRN-047.md) — `persistence: 'memory'` → events orphelins, bulk-delete inefficace
 - [LRN-048](learnings/LRN-048.md) — `insight-update` PostHog exige la query complète
+
+## 2026-06-23
+
+Session de finalisation analytics — continuation de l'EPIC-003 après compaction de contexte.
+
+**Audit analytics complet (session compactée)** : `useAnalytics.ts` enrichi de 7 à 17 méthodes nommées. Nouveaux events : `appOpened` (is_pwa, is_first_visit via flag localStorage `ifecho_visited`), `locationGpsDenied`, `locationGpsNotSupported`, `weatherError`, `verdictSeen`, `tipsCarouselToggled`, `iosInstallHintShown`, `pwaInstallClicked`, `pwaInstalled`, `privacyPageViewed`. Instrumentation complète : App.tsx (app_opened + weather_error), useLocation.ts (GPS denied/not supported), VerdictBanner.tsx (verdict_seen via `useEffect([verdict.key])`), InstallButton (ios_install_hint_shown via setState fonctionnel), TipsSection (tips_carousel_toggled via `setIsPaused(prev => {...})`).
+
+Dashboard "ifecho V0" renommé "ifecho V1" avec description et tags mis à jour. 4 nouveaux insights créés via MCP PostHog : refus GPS, verdicts vus, premières visites, Mix OS.
+
+**Simplification OS** : `device_type: getDeviceType()` retiré de `analytics.appOpened()` — PostHog capture nativement `$os` sur `$pageview`, la propriété custom était redondante. Helper `getDeviceType()` supprimé d'App.tsx. Insight "Mix device (app_opened)" migré vers "Mix OS (pageview)" : source `$pageview` + breakdown `$os` + math `dau`. `pnpm lint` : 0 erreur, 8 warnings BDR-028 pre-existing.
+
+**Entrées clés :**
+
+- [BDR-045](decisions/BDR-045.md) — `device_type` custom retiré, `$os` natif PostHog
+- voir aussi GBDR-004 — règle générale propriétés natives PostHog
+- voir aussi GLRN-141 — liste propriétés auto-capturées `$pageview`
