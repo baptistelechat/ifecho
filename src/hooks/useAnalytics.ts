@@ -111,6 +111,14 @@ const useAnalytics = () => ({
     if (!isEnabled()) return;
     posthog.capture("privacy_page_viewed");
   },
+
+  appShared: (props: {
+    verdict: "good" | "neutral" | "wait" | "bad" | null;
+    method: "native" | "clipboard";
+  }) => {
+    if (!isEnabled()) return;
+    posthog.capture("app_shared", props);
+  },
 });
 
 export default useAnalytics;

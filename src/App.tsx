@@ -1,5 +1,6 @@
 ﻿import CalendarLink from "@/components/CalendarLink";
 import InstallButton from "@/components/InstallButton";
+import ShareButton from "@/components/ShareButton";
 import LocationSearch from "@/components/LocationSearch";
 import RecommendCard from "@/components/RecommendCard";
 import TipsSection from "@/components/TipsSection";
@@ -199,7 +200,14 @@ const App = () => {
             >
               {/* Header */}
               <header className="relative pb-4 pt-10 text-center">
-                <InstallButton />
+                <div className="absolute right-4 top-4 flex items-center gap-2">
+                  <ShareButton
+                    city={location?.city}
+                    bestHour={bestHour}
+                    currentScore={currentScore}
+                  />
+                  <InstallButton />
+                </div>
                 <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
                   <ThermometerSun className="size-6" />
                   <span className="text-2xl font-bold tracking-wide">

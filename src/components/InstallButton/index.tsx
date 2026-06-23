@@ -37,7 +37,7 @@ const InstallButton = () => {
   };
 
   return (
-    <div className="absolute right-4 top-4" ref={containerRef}>
+    <div className="relative" ref={containerRef}>
       <button
         type="button"
         onClick={handleClick}
