@@ -533,3 +533,39 @@ Image OG 1200×630 générée via script Node.js `scripts/generate-og.mjs` (Sato
 
 - [BDR-048](decisions/BDR-048.md) — OG image ifecho : generate-og.mjs + PNG dans /public
 - [ZBLK-030](archive/blockers/ZBLK-030.md) — Satori refus woff2 lors génération OG
+
+---
+
+Quatrième session du 23 juin — ShareButton UTM, dashboard acquisition, Q&A PostHog.
+
+Session démarrée après compaction de contexte. Trois axes :
+
+**ShareButton refactorisé (suite sessions 2-3)** : layout header réorganisé en `flex-col items-end / sm:flex-row sm:items-center` pour mettre le bouton "Partager" _sous_ le bouton "Installer" sur mobile. Texte simplifié : logique conditionnelle 3 branches (ville+heure / ville / générique) remplacée par une constante universelle. Fonction `buildShareUrl(method)` ajoutée : injecte `utm_source=share`, `utm_medium=native|clipboard`, `utm_campaign=viral` — sans UTM dans l'URL, le trafic viral est indiscernable du trafic direct dans PostHog.
+
+**Dashboard "Acquisition — Liens UTM"** (PostHog ID 769548) créé via MCP PostHog avec 5 insights : total partages (BoldNumber), canaux d'acquisition par `$initial_utm_source` (pie), méthode partage native/clipboard (pie), tendance hebdo partages, funnel viral (partagé → première visite → retour).
+
+**Q&A PostHog UTM** : (1) Dashboard UTM dédié vs "ifecho V1" → dédié est la bonne architecture (product analytics ≠ marketing/acquisition) ; (2) PostHog capte-t-il tous les UTM y compris manuels (ex: `?utm_source=twitter`) → oui, générique, tout `utm_*` capté automatiquement. Clarification importante : une URL nue partagée sans params UTM ne crée **aucun** `$initial_utm_source` — seul le bouton "Partager" (qui forge l'URL avec UTM) garantit le tracking.
+
+**Entrées clés :**
+
+- [BDR-049](decisions/BDR-049.md) — ShareButton texte universel constant
+- [BDR-050](decisions/BDR-050.md) — UTM params injectés dans l'URL de partage
+- [BDR-051](decisions/BDR-051.md) — Dashboard UTM dédié séparé du dashboard produit
+
+---
+
+Cinquième session du 23 juin — rituel `/memory-close` + analytics enrichis + cleanup dashboard PostHog.
+
+**Enrichissement events analytics** : `app_opened` reçoit désormais `local_hour` (0–23) et `local_day_of_week` (0–6) depuis `new Date()` côté client, pour comprendre les patterns horaires d'usage. `weather_loaded` reçoit `outdoor_temp_current`, `outdoor_temp_max_24h` et `is_heatwave` (seuil > 33°C) pour corréler canicule ↔ utilisation — raison d'être d'ifecho. Deux nouveaux events instrumentés : `location_search_abandoned` (click-outside avec `query.length ≥ 2`, via pattern `queryRef.current` dans `LocationSearch`) et `section_viewed` (première vue via hook `useOnceVisible` — IntersectionObserver one-shot avec `firedRef` guard — sur `TipsSection`).
+
+**Cleanup dashboard PostHog** : situation à 3 dashboards (V1 + 2×V2) résolue. V1 (ID 765141) et V2-temp (ID 769675) supprimés. V2-master (ID 769673) renommé "ifecho V2 — Comportement utilisateur", pinned. Architecture finale : ~30 tiles organisés en 6 sections séparateurs texte (📊 Vue d'ensemble · 🔗 Acquisition · 📍 Localisation · 🌡️ Météo & Verdicts · 💡 Engagement · 📤 Partage). Découverte : `dashboard-tile-copy` MCP générait "result exceeds maximum tokens" à chaque copie — les opérations réussissaient quand même (LRN-049).
+
+Toutes les entrées mémoire de cette session en local (directive : "full local").
+
+**Entrées clés :**
+
+- [BDR-052](decisions/BDR-052.md) — Dashboard V2 : 6 sections, ~30 tiles
+- [BDR-053](decisions/BDR-053.md) — `local_hour` + `is_heatwave` sur events clés
+- [LRN-049](learnings/LRN-049.md) — PostHog MCP tile-copy : oversized ≠ échec
+- [LRN-050](learnings/LRN-050.md) — `valueRef.current` : state courant dans handler stable
+- [LRN-051](learnings/LRN-051.md) — `useOnceVisible` IntersectionObserver one-shot

@@ -1,6 +1,6 @@
 ---
 register: learnings
-last_updated: 2026-06-22
+last_updated: 2026-06-23
 ---
 
 ## Index
@@ -55,3 +55,6 @@ last_updated: 2026-06-22
 | [LRN-046](learnings/LRN-046.md) | 2026-06-22 | Hash routing SPA : `useState` init + `hashchange` + `history.replaceState` | #spa #hash-routing #react #hashchange #history #replaceState #react-router-alternative #ifecho    |
 | [LRN-047](learnings/LRN-047.md) | 2026-06-22 | `persistence: 'memory'` PostHog → events orphelins, bulk-delete inefficace | #posthog #persistence-memory #persons #events #orphelins #bulk-delete #test-account-filters       |
 | [LRN-048](learnings/LRN-048.md) | 2026-06-22 | PostHog `insight-update` exige la query complète (pas de merge partiel)    | #posthog #mcp #insight-update #query #fetch-first #patch #filterTestAccounts                      |
+| [LRN-049](learnings/LRN-049.md) | 2026-06-23 | PostHog MCP `tile-copy` : réponse oversized ≠ échec opérationnel           | #posthog #mcp #dashboard-tile-copy #oversized-response #token-limit #verification                 |
+| [LRN-050](learnings/LRN-050.md) | 2026-06-23 | `valueRef.current = value` : state courant dans handler stable             | #react #useRef #stale-closure #event-handler #useEffect #state-read #click-outside                |
+| [LRN-051](learnings/LRN-051.md) | 2026-06-23 | `useOnceVisible` : IntersectionObserver one-shot + `firedRef`              | #react #intersection-observer #analytics #hook #one-shot #firedRef #section-viewed                |
