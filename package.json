@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator --config pwa-assets.config.ts",
+    "generate-og": "node scripts/generate-og.mjs",
     "lighthouse": "node scripts/lighthouse-audit.mjs"
   },
   "dependencies": {
@@ -26,6 +27,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
+    "@fontsource/inter": "^5.2.8",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.1.10",
     "@types/node": "^26.0.0",
     "@types/react": "^19.1.6",
@@ -38,6 +41,7 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",
     "lighthouse": "^13.4.0",
+    "satori": "^0.26.0",
     "tailwindcss": "^4.1.10",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.34.0",
