@@ -3,12 +3,27 @@ import posthog from "posthog-js";
 const isEnabled = () => !!import.meta.env.VITE_POSTHOG_KEY;
 
 const useAnalytics = () => ({
+  appOpened: (props: { is_pwa: boolean; is_first_visit: boolean }) => {
+    if (!isEnabled()) return;
+    posthog.capture("app_opened", props);
+  },
+
   locationDetected: (props: {
     source: "gps" | "search";
     department?: string;
   }) => {
     if (!isEnabled()) return;
     posthog.capture("location_detected", props);
+  },
+
+  locationGpsDenied: () => {
+    if (!isEnabled()) return;
+    posthog.capture("location_gps_denied");
+  },
+
+  locationGpsNotSupported: () => {
+    if (!isEnabled()) return;
+    posthog.capture("location_gps_not_supported");
   },
 
   weatherLoaded: (props: {
@@ -22,6 +37,20 @@ const useAnalytics = () => ({
       best_hour: props.bestHour,
       top_score: props.topScore,
     });
+  },
+
+  weatherError: (props: { message: string }) => {
+    if (!isEnabled()) return;
+    posthog.capture("weather_error", { message: props.message });
+  },
+
+  verdictSeen: (props: {
+    verdict: "good" | "neutral" | "wait" | "bad";
+    score: number;
+    delta_t: number;
+  }) => {
+    if (!isEnabled()) return;
+    posthog.capture("verdict_seen", props);
   },
 
   indoorTempChanged: (props: { temp: number }) => {
@@ -53,6 +82,16 @@ const useAnalytics = () => ({
     });
   },
 
+  tipsCarouselToggled: (props: { state: "paused" | "playing" }) => {
+    if (!isEnabled()) return;
+    posthog.capture("tips_carousel_toggled", props);
+  },
+
+  iosInstallHintShown: () => {
+    if (!isEnabled()) return;
+    posthog.capture("ios_install_hint_shown");
+  },
+
   pwaInstallBannerShown: () => {
     if (!isEnabled()) return;
     posthog.capture("pwa_install_banner_shown");
@@ -66,6 +105,11 @@ const useAnalytics = () => ({
   pwaInstalled: () => {
     if (!isEnabled()) return;
     posthog.capture("pwa_installed");
+  },
+
+  privacyPageViewed: () => {
+    if (!isEnabled()) return;
+    posthog.capture("privacy_page_viewed");
   },
 });
 

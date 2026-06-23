@@ -69,6 +69,17 @@ const formatDate = (date: Date): string =>
     month: "long",
   });
 
+const isFirstVisit = (): boolean => {
+  try {
+    const key = "ifecho_visited";
+    if (localStorage.getItem(key)) return false;
+    localStorage.setItem(key, "1");
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const App = () => {
   const analytics = useAnalytics();
   const [currentPage, setCurrentPage] = useState<"main" | "privacy">(() =>
@@ -99,10 +110,22 @@ const App = () => {
   const currentScore = scores.find((s) => s.hour === currentHour) ?? null;
 
   useEffect(() => {
+    const isPwa =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
+    analytics.appOpened({
+      is_pwa: isPwa,
+      is_first_visit: isFirstVisit(),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     const handler = () => {
-      setCurrentPage(
-        window.location.hash === "#confidentialite" ? "privacy" : "main",
-      );
+      const page =
+        window.location.hash === "#confidentialite" ? "privacy" : "main";
+      setCurrentPage(page);
+      if (page === "privacy") analytics.privacyPageViewed();
     };
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
@@ -121,6 +144,12 @@ const App = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weather]);
+
+  useEffect(() => {
+    if (!weatherError) return;
+    analytics.weatherError({ message: weatherError });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weatherError]);
 
   const tempDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

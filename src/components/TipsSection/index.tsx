@@ -58,7 +58,10 @@ const TipsSection = () => {
 
   const togglePause = () => {
     if (resumeRef.current) clearTimeout(resumeRef.current);
-    setIsPaused((prev) => !prev);
+    setIsPaused((prev) => {
+      analytics.tipsCarouselToggled({ state: prev ? "playing" : "paused" });
+      return !prev;
+    });
   };
 
   const prev = () => {

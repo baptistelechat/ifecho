@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 import { AnimatePresence, m } from "framer-motion";
 import { Ban, CheckCircle, Clock, Wind } from "lucide-react";
+import useAnalytics from "@/hooks/useAnalytics";
+import { useEffect } from "react";
 
 interface VerdictBannerProps {
   currentScore: HourlyScore;
@@ -118,9 +120,19 @@ const verdictConfig: Record<
 };
 
 const VerdictBanner = ({ currentScore }: VerdictBannerProps) => {
+  const analytics = useAnalytics();
   const verdict = getVerdict(currentScore);
   const config = verdictConfig[verdict.key];
   const { Icon } = verdict;
+
+  useEffect(() => {
+    analytics.verdictSeen({
+      verdict: verdict.key,
+      score: currentScore.score,
+      delta_t: currentScore.deltaT,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verdict.key]);
 
   return (
     <AnimatePresence mode="wait" initial={false}>

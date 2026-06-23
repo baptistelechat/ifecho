@@ -61,6 +61,7 @@ export const useLocation = () => {
     if (loadingRef.current) return;
     if (!navigator.geolocation) {
       setError("La géolocalisation n'est pas supportée par votre navigateur.");
+      analytics.locationGpsNotSupported();
       return;
     }
 
@@ -101,6 +102,7 @@ export const useLocation = () => {
         setError(
           "Impossible d'obtenir votre position. Saisissez votre commune.",
         );
+        analytics.locationGpsDenied();
         loadingRef.current = false;
         setIsLoading(false);
       },
