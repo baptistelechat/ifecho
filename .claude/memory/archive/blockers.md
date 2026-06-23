@@ -1,6 +1,6 @@
 ---
 register: archive_blockers
-last_updated: 2026-06-22
+last_updated: 2026-06-23
 ---
 
 ## Index
@@ -36,3 +36,4 @@ last_updated: 2026-06-22
 | [ZBLK-027](blockers/ZBLK-027.md) | 2026-06-22 | Fond blanc sur icônes maskable/apple générées            | #pwa #assets-generator #maskable #apple #background                              | résolu |
 | [ZBLK-028](blockers/ZBLK-028.md) | 2026-06-22 | ENOENT crash après rename `favicon.svg` en session HMR   | #vite #hmr #rename #cache #enoent                                                | résolu |
 | [ZBLK-029](blockers/ZBLK-029.md) | 2026-06-22 | Vercel Auth 401 bloque `beforeinstallprompt` sur preview | #pwa #vercel #manifest #401 #deployment-protection #beforeinstallprompt #preview | résolu |
+| [ZBLK-030](blockers/ZBLK-030.md) | 2026-06-23 | Satori refus woff2 lors génération OG                    | #satori #font #woff2 #og-image #error #fontsource                                | résolu |

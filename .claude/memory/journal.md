@@ -501,3 +501,35 @@ Dashboard "ifecho V0" renommé "ifecho V1" avec description et tags mis à jour.
 - [BDR-045](decisions/BDR-045.md) — `device_type` custom retiré, `$os` natif PostHog
 - voir aussi GBDR-004 — règle générale propriétés natives PostHog
 - voir aussi GLRN-141 — liste propriétés auto-capturées `$pageview`
+
+---
+
+Deuxième session du 23 juin — Build in Public et bouton de partage.
+
+Ajout du bouton "Partager" dans le header (`src/components/ShareButton/index.tsx`) : Web Share API si disponible, sinon fallback `navigator.clipboard` avec feedback "Copié !" 2s. Texte dynamique selon ville et bestHour. InstallButton refactorisé : son `absolute top-4 right-4` déplacé dans App.tsx au profit d'un wrapper `div.absolute.right-4.top-4.flex.items-center.gap-2` contenant les deux boutons côte à côte.
+
+2 insights PostHog créés via MCP sur le dashboard "ifecho V1" (ID 765141) pour analyser les sources d'acquisition du lancement : "Source d'acquisition (référents)" (breakdown `$referring_domain`) et "Canaux UTM (source)" (breakdown `$initial_utm_source` — person property).
+
+Discussion Build in Public X/Twitter : 3 formats de thread (data-driven, problème/solution, behind-the-scenes) avec conseil Rodin sur le biais d'audience technique. L'audience dev Twitter n'est pas l'utilisateur cible — les premières métriques seront biaisées.
+
+**Entrées clés :**
+
+- [BDR-046](decisions/BDR-046.md) — ShareButton : Web Share API + clipboard fallback
+- [BDR-047](decisions/BDR-047.md) — Wrapper absolu header ShareButton + InstallButton
+- voir aussi GLRN-143 — état app dans event partage → segmentation viral
+- voir aussi GLRN-144 — PostHog $referring_domain vs $initial_utm_source
+
+---
+
+Troisième session du 23 juin — OpenGraph et image OG.
+
+Ajout complet des meta tags OpenGraph (10 balises) et Twitter Card dans `index.html` : `og:type`, `og:url`, `og:site_name`, `og:locale`, `og:title`, `og:description`, `og:image` (+width/height/type), `twitter:card`, `twitter:url`, `twitter:title`, `twitter:description`, `twitter:image`. URL de production : `https://ifecho.vercel.app/og-image.png`.
+
+Image OG 1200×630 générée via script Node.js `scripts/generate-og.mjs` (Satori v0.26 + @resvg/resvg-js v2.6.2) et commitée dans `public/og-image.png` (66 Ko). Police Inter chargée localement depuis `@fontsource/inter` devDependency en `.woff` — Satori refuse woff2 avec "Unsupported OpenType signature wOF2" (ZBLK-030 résolu). Commande `pnpm generate-og` ajoutée dans `package.json`.
+
+4 variantes de design générées depuis un script temporaire, V2 "Centré + pill badge" sélectionnée par Baptiste puis raffinée : URL plus visible (26px, #c2410c), logo 140px, titre "Ifecho" 140px bold, pill badge "Bien vivre la chaleur" réduit (20px). Fichiers temporaires (variants + script de variantes) purgés après sélection.
+
+**Entrées clés :**
+
+- [BDR-048](decisions/BDR-048.md) — OG image ifecho : generate-og.mjs + PNG dans /public
+- [ZBLK-030](archive/blockers/ZBLK-030.md) — Satori refus woff2 lors génération OG
