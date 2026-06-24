@@ -625,3 +625,17 @@ Cause racine identifiée : `pnpm preview` sert le build prod Vite → `import.me
 
 - [BDR-056](decisions/BDR-056.md) — Guard `isLocalhost` dans `main.tsx` pour PostHog
 - voir aussi GLRN-153 — `pnpm preview` → `PROD=true` sur localhost (global)
+
+---
+
+Session courte de diagnostic OG image et nettoyage git.
+
+**Twitter Card X (résolu)** : L'OG image n'apparaissait pas dans les tweets malgré des balises méta correctes. Cause = cache stale X/Twitter. Solution = Twitter Card Validator (`cards-dev.twitter.com/validator`) qui force le re-scraping. Résolu.
+
+**Mauvais diagnostic sur `/og-image.png`** : L'URL retournait l'app au lieu de l'image dans le navigateur normal. Diagnostic initial erroné → Vercel SPA rewriting → création inutile d'un `vercel.json`. Réalité : le Service Worker PWA interceptait la requête dans le navigateur (avec SW installé). Test en navigation privée (pas de SW) = image affichée correctement. Le `vercel.json` était inutile et potentiellement dangereux.
+
+**Nettoyage** : `git reset --hard 668d9d1` + `git push --force origin main` pour supprimer les 2 commits inutiles. Découverte : Vercel ne redéploie pas automatiquement sur force push — il faut promouvoir manuellement le bon commit depuis le dashboard ("Promote to Production").
+
+**Entrées clés :**
+
+- [ZBLK-034](archive/blockers/ZBLK-034.md) — Mauvais diagnostic : SW PWA masquait le comportement serveur

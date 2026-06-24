@@ -40,3 +40,4 @@ last_updated: 2026-06-24
 | [ZBLK-031](blockers/ZBLK-031.md) | 2026-06-24 | Dashboard PostHog V2 : tiles `layouts` vides = pas de grille | #posthog #dashboard #layout #tiles #grid #reorder #two-column                                              | résolu |
 | [ZBLK-032](blockers/ZBLK-032.md) | 2026-06-24 | Après `two_column`, headers texte (w=6) partagent une ligne  | #posthog #dashboard #layout #headers #text-tile #two-column #w6                                            | résolu |
 | [ZBLK-033](blockers/ZBLK-033.md) | 2026-06-24 | `useRegisterSW`/`onNeedRefresh` ne fire pas au 2e cycle SW   | #pwa #service-worker #workbox #useRegisterSW #onNeedRefresh #controllerchange #vite-plugin-pwa #autoUpdate | résolu |
+| [ZBLK-034](blockers/ZBLK-034.md) | 2026-06-24 | Mauvais diagnostic : `/og-image.png` retourne l'app (SW PWA) | #pwa #service-worker #og-image #vercel #diagnosis #navigation-privee #vercel-json                          | résolu |
