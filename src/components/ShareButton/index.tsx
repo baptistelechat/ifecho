@@ -1,5 +1,5 @@
-import type { HourlyScore } from "@/types";
 import useAnalytics from "@/hooks/useAnalytics";
+import type { HourlyScore } from "@/types";
 import { Share2 } from "lucide-react";
 import { useState } from "react";
 
@@ -21,7 +21,7 @@ const buildShareUrl = (method: "native" | "clipboard"): string => {
   const url = new URL(window.location.origin);
   url.searchParams.set("utm_source", "share");
   url.searchParams.set("utm_medium", method);
-  url.searchParams.set("utm_campaign", "viral");
+  url.searchParams.set("utm_campaign", "share_button");
   return url.toString();
 };
 

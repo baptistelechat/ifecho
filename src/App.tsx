@@ -1,16 +1,21 @@
-﻿import CalendarLink from "@/components/CalendarLink";
+﻿import AppFooter from "@/components/AppFooter";
+import CalendarLink from "@/components/CalendarLink";
 import InstallButton from "@/components/InstallButton";
-import ShareButton from "@/components/ShareButton";
 import LocationSearch from "@/components/LocationSearch";
 import RecommendCard from "@/components/RecommendCard";
+import ShareButton from "@/components/ShareButton";
 import TipsSection from "@/components/TipsSection";
+import { Toaster } from "@/components/ui/sonner";
 import VentilationTimeline from "@/components/VentilationTimeline";
+import useAnalytics from "@/hooks/useAnalytics";
 import { useLocation } from "@/hooks/useLocation";
+import { useUpdateNotification } from "@/hooks/useUpdateNotification";
 import {
   getBestVentilationHour,
   useVentilationScore,
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
+import PrivacyPage from "@/pages/PrivacyPage";
 import { COMFORT_LEVELS, type ComfortLevel } from "@/types";
 import {
   AnimatePresence,
@@ -19,9 +24,6 @@ import {
   domAnimation,
   m,
 } from "framer-motion";
-import AppFooter from "@/components/AppFooter";
-import useAnalytics from "@/hooks/useAnalytics";
-import PrivacyPage from "@/pages/PrivacyPage";
 import { AlertCircle, ThermometerSun, Wind } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -83,6 +85,7 @@ const isFirstVisit = (): boolean => {
 
 const App = () => {
   const analytics = useAnalytics();
+  useUpdateNotification();
   const [currentPage, setCurrentPage] = useState<"main" | "privacy">(() =>
     window.location.hash === "#confidentialite" ? "privacy" : "main",
   );
@@ -195,119 +198,122 @@ const App = () => {
   };
 
   return (
-    <LazyMotion features={domAnimation}>
-      <MotionConfig reducedMotion="user">
-        <AnimatePresence mode="wait">
-          {currentPage === "privacy" ? (
-            <m.div key="privacy" {...PAGE_TRANSITION}>
-              <PrivacyPage onBack={handleBack} />
-            </m.div>
-          ) : (
-            <m.div
-              key="main"
-              {...PAGE_TRANSITION}
-              className="flex min-h-dvh flex-col"
-            >
-              {/* Header */}
-              <header className="relative pb-4 pt-10 text-center">
-                <div className="absolute right-4 top-4 flex flex-col items-end gap-2 sm:flex-row sm:items-center">
-                  <InstallButton />
-                  <ShareButton currentScore={currentScore} />
-                </div>
-                <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
-                  <ThermometerSun className="size-6" />
-                  <span className="text-2xl font-bold tracking-wide">
-                    Ifecho
-                  </span>
-                </div>
-                <h1 className="flex items-center justify-center gap-2 text-2xl font-black text-foreground">
-                  Quand aérer&nbsp;?
-                  <Wind className="size-5 text-ember" />
-                </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {formatDate(now)} • {formatTime(now)}
-                </p>
-              </header>
-
-              {/* Content */}
-              <main className="flex flex-1 flex-col px-4 pb-4">
-                <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
-                  {/* Recherche de commune */}
-                  <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                    <LocationSearch
-                      location={location}
-                      isDetecting={isDetecting}
-                      error={locationError}
-                      onDetect={detectLocation}
-                      onSelect={setFromCommune}
-                    />
+    <>
+      <Toaster position="bottom-center" />
+      <LazyMotion features={domAnimation}>
+        <MotionConfig reducedMotion="user">
+          <AnimatePresence mode="wait">
+            {currentPage === "privacy" ? (
+              <m.div key="privacy" {...PAGE_TRANSITION}>
+                <PrivacyPage onBack={handleBack} />
+              </m.div>
+            ) : (
+              <m.div
+                key="main"
+                {...PAGE_TRANSITION}
+                className="flex min-h-dvh flex-col"
+              >
+                {/* Header */}
+                <header className="relative pb-4 pt-10 text-center">
+                  <div className="absolute right-4 top-4 flex flex-col items-end gap-2 sm:flex-row sm:items-center">
+                    <InstallButton />
+                    <ShareButton currentScore={currentScore} />
                   </div>
+                  <div className="mb-2 flex items-center justify-center gap-1.5 text-ember">
+                    <ThermometerSun className="size-6" />
+                    <span className="text-2xl font-bold tracking-wide">
+                      Ifecho
+                    </span>
+                  </div>
+                  <h1 className="flex items-center justify-center gap-2 text-2xl font-black text-foreground">
+                    Quand aérer&nbsp;?
+                    <Wind className="size-5 text-ember" />
+                  </h1>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {formatDate(now)} • {formatTime(now)}
+                  </p>
+                </header>
 
-                  {/* Erreur meteo */}
-                  <AnimatePresence>
-                    {weatherError && (
-                      <m.div
-                        key="error"
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4"
-                      >
-                        <AlertCircle className="size-4 shrink-0 text-verdict-bad" />
-                        <p className="text-sm text-red-700">{weatherError}</p>
-                      </m.div>
-                    )}
-                  </AnimatePresence>
+                {/* Content */}
+                <main className="flex flex-1 flex-col px-4 pb-4">
+                  <div className="mx-auto flex w-full max-w-sm flex-col gap-3">
+                    {/* Recherche de commune */}
+                    <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                      <LocationSearch
+                        location={location}
+                        isDetecting={isDetecting}
+                        error={locationError}
+                        onDetect={detectLocation}
+                        onSelect={setFromCommune}
+                      />
+                    </div>
 
-                  {/* Contenu principal */}
-                  <AnimatePresence>
-                    {hasContent && (
-                      <m.div
-                        key="content"
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.4, ease: CONTENT_EASING }}
-                        className="flex flex-col gap-3"
-                      >
-                        <RecommendCard
-                          currentScore={currentScore}
-                          indoorTemp={indoorTemp}
-                          onTempChange={handleTempChange}
-                          comfortLevel={comfortLevel}
-                          onComfortChange={handleComfortChange}
-                          scores={scores}
-                          cityName={location.city}
-                        />
+                    {/* Erreur meteo */}
+                    <AnimatePresence>
+                      {weatherError && (
+                        <m.div
+                          key="error"
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 8 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4"
+                        >
+                          <AlertCircle className="size-4 shrink-0 text-verdict-bad" />
+                          <p className="text-sm text-red-700">{weatherError}</p>
+                        </m.div>
+                      )}
+                    </AnimatePresence>
 
-                        <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-                          <VentilationTimeline
+                    {/* Contenu principal */}
+                    <AnimatePresence>
+                      {hasContent && (
+                        <m.div
+                          key="content"
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.4, ease: CONTENT_EASING }}
+                          className="flex flex-col gap-3"
+                        >
+                          <RecommendCard
+                            currentScore={currentScore}
+                            indoorTemp={indoorTemp}
+                            onTempChange={handleTempChange}
+                            comfortLevel={comfortLevel}
+                            onComfortChange={handleComfortChange}
                             scores={scores}
-                            bestHour={bestHour}
+                            cityName={location.city}
                           />
-                        </div>
 
-                        {bestHour && (
-                          <CalendarLink
-                            bestHour={bestHour}
-                            city={location.city}
-                          />
-                        )}
+                          <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+                            <VentilationTimeline
+                              scores={scores}
+                              bestHour={bestHour}
+                            />
+                          </div>
 
-                        <TipsSection />
-                      </m.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </main>
+                          {bestHour && (
+                            <CalendarLink
+                              bestHour={bestHour}
+                              city={location.city}
+                            />
+                          )}
 
-              <AppFooter />
-            </m.div>
-          )}
-        </AnimatePresence>
-      </MotionConfig>
-    </LazyMotion>
+                          <TipsSection />
+                        </m.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </main>
+
+                <AppFooter />
+              </m.div>
+            )}
+          </AnimatePresence>
+        </MotionConfig>
+      </LazyMotion>
+    </>
   );
 };
 

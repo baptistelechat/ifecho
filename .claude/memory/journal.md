@@ -1,6 +1,6 @@
 ---
 register: journal
-last_updated: 2026-06-23
+last_updated: 2026-06-24
 ---
 
 ## 2026-06-20
@@ -569,3 +569,48 @@ Toutes les entrées mémoire de cette session en local (directive : "full local"
 - [LRN-049](learnings/LRN-049.md) — PostHog MCP tile-copy : oversized ≠ échec
 - [LRN-050](learnings/LRN-050.md) — `valueRef.current` : state courant dans handler stable
 - [LRN-051](learnings/LRN-051.md) — `useOnceVisible` IntersectionObserver one-shot
+
+---
+
+## 2026-06-24
+
+Session analytics enrichissement + correction dashboard "Acquisition — Liens UTM" + layout dashboard V2.
+
+**Correction dashboard UTM (ID 769548)** : 5 insights utilisaient `$utm_source` (event property inexistante dans PostHog — les UTM sont stockés comme person properties) au lieu de `utm_source` (event property correcte). Correction des breakdowns dans les 5 insights via MCP.
+
+**Dashboard "ifecho V2 — Comportement utilisateur" (ID 769673)** :
+
+- Diagnostic initial : 30 tiles créées sans positions explicites → `layouts: {}` vide → toutes en (0,0) sans grille. Fix : `dashboard-reorder-tiles` avec `two_column` pour initialiser les positions. Découverte au passage : 3 insights vides car les events (`section_viewed`, etc.) n'ont pas encore été déclenchés suffisamment — normal en phase lancement.
+- Layout headers : après `two_column`, les 6 tiles texte de section (w=6) partageaient leur ligne avec le premier insight de leur section. Fix : `dashboard-update-text-tile` × 6 en parallèle pour passer les headers en `w=12, h=2`, puis `dashboard-reorder-tiles` avec `preserve`. PostHog recalcule les positions Y en respectant les nouvelles largeurs. Layout final vérifié via fork agent (résultat MCP de 259 k chars non chargeables en contexte principal).
+
+Découverte notable : `read-data-schema` ne listait pas `is_heatwave` comme propriété de `weather_loaded`, alors qu'elle existait bien (44 occurrences via SQL). Le schema tool PostHog a une couverture partielle — vérification SQL nécessaire avant de conclure à l'absence d'une propriété.
+
+**Entrées clés :**
+
+- [BDR-054](decisions/BDR-054.md) — Headers PostHog en pleine largeur (w=12, h=2)
+- [ZBLK-031](archive/blockers/ZBLK-031.md) — Dashboard V2 tiles sans layouts (résolu)
+- [ZBLK-032](archive/blockers/ZBLK-032.md) — Headers w=6 partagent une ligne avec insights (résolu)
+- voir aussi GLRN-148 — `dashboard-update-text-tile` + `reorder preserve` = layout mixte
+- voir aussi GLRN-149 — PostHog schema tool incomplet → vérifier via SQL
+
+---
+
+Session MAJ PWA — notification Sonner abandonnée au profit d'un rechargement silencieux.
+
+Objectif initial : ajouter un toast Sonner "Nouvelle version disponible, cliquez pour recharger" déclenché quand le Service Worker est mis à jour. Sonner installé via shadcn, composant `ui/sonner.tsx` créé, `<Toaster>` ajouté dans `App.tsx`.
+
+Première implémentation avec `useRegisterSW` (workbox-window) + état `needRefresh`. Toast fonctionnel au 1er cycle — puis invisible aux suivants. Cause : `registerType: "autoUpdate"` court-circuite workbox-window ; `onNeedRefresh` ne fire jamais après le 1er cycle car le SW passe directement à `activated` sans repasser par `waiting`. Plusieurs tentatives : état, callbacks, `reg.update()` périodique — aucune n'a résolu la non-détection multi-cycle.
+
+Deuxième blocage : StrictMode React appelait le `useEffect` deux fois → double toast. Résolu via `useRef(false)` guard. Mais rendu inutile par la suite.
+
+Revirement UX initié par Baptiste : "pourquoi rajouter un toast alors que la mise à jour se fait tout seul actuellement ?". L'app en prod avec `autoUpdate` se met déjà à jour silencieusement au rechargement — ajouter un toast nécessite un clic supplémentaire sans aucun bénéfice sur une SPA stateless (aucun état à préserver, données fraîches à chaque load).
+
+Solution finale : événement natif `controllerchange` + `window.location.reload()` silencieux, avec `hadController` guard pour éviter le reload au 1er install. `useRegisterSW` entièrement retiré, `vite.config.ts` conserve `registerType: "autoUpdate"`. Lint propre. `<Toaster>` reste importé dans `App.tsx` mais inutilisé pour l'instant.
+
+**Entrées clés :**
+
+- [BDR-055](decisions/BDR-055.md) — `controllerchange` + auto-reload silencieux pour MAJ PWA
+- [ZBLK-033](archive/blockers/ZBLK-033.md) — `useRegisterSW`/`onNeedRefresh` ne fire pas au 2e cycle SW
+- voir aussi GLRN-150 — `useRegisterSW` non fiable après 2e cycle
+- voir aussi GLRN-151 — `controllerchange` + `hadController` guard
+- voir aussi GLRN-152 — notification MAJ SW = friction inutile sur SPA stateless
