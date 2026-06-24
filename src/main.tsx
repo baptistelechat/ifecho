@@ -4,8 +4,13 @@ import posthog from "posthog-js";
 import "./index.css";
 import App from "./App.tsx";
 
+const isLocalhost =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
 const posthogEnabled =
   !!import.meta.env.VITE_POSTHOG_KEY &&
+  !isLocalhost &&
   (import.meta.env.PROD || import.meta.env.VITE_POSTHOG_DEBUG === "true");
 
 if (posthogEnabled) {

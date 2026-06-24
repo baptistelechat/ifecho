@@ -614,3 +614,14 @@ Solution finale : événement natif `controllerchange` + `window.location.reload
 - voir aussi GLRN-150 — `useRegisterSW` non fiable après 2e cycle
 - voir aussi GLRN-151 — `controllerchange` + `hadController` guard
 - voir aussi GLRN-152 — notification MAJ SW = friction inutile sur SPA stateless
+
+---
+
+Session investigation suppression données PostHog générées par `pnpm preview` (07h–08h20 CEST, ~350 events, 44 IDs distincts). Toutes les voies de suppression épuisées : `persons-bulk-delete` retourne 0 résultats (`persistence: 'memory'` → events orphelins sans person records), `execute-sql` MCP PostHog en lecture seule uniquement, Data Management EU sans UI delete-events, Danger Zone EU propose uniquement "Delete project" (rejeté — perdrait tous les insights/dashboards). Suppression abandonnée.
+
+Cause racine identifiée : `pnpm preview` sert le build prod Vite → `import.meta.env.PROD = true` sur localhost, indiscernable de Vercel par env vars seuls. Fix appliqué dans `main.tsx` : guard `isLocalhost` (`window.location.hostname === 'localhost' || '127.0.0.1'`) ajouté à `posthogEnabled`. Comportement après fix : `pnpm dev` ❌, `pnpm preview` ❌, Vercel ✅.
+
+**Entrées clés :**
+
+- [BDR-056](decisions/BDR-056.md) — Guard `isLocalhost` dans `main.tsx` pour PostHog
+- voir aussi GLRN-153 — `pnpm preview` → `PROD=true` sur localhost (global)
