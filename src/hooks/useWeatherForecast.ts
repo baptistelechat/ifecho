@@ -48,7 +48,7 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
           "temperature_2m,relativehumidity_2m,apparent_temperature,windspeed_10m,uv_index",
         );
         url.searchParams.set("daily", "sunrise,sunset");
-        url.searchParams.set("forecast_days", "2");
+        url.searchParams.set("forecast_days", "3");
         url.searchParams.set("timezone", "Europe/Paris");
 
         const response = await fetch(url.toString());
@@ -77,7 +77,9 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
         setIsLoading(false);
       } catch {
         if (!cancelled) {
-          setError("Impossible de récupérer les données météo. Vérifier votre connexion internet.");
+          setError(
+            "Impossible de récupérer les données météo. Vérifier votre connexion internet.",
+          );
           setIsLoading(false);
         }
       }

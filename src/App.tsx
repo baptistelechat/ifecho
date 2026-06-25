@@ -7,7 +7,7 @@ import ShareButton from "@/components/ShareButton";
 import TipsSection from "@/components/TipsSection";
 import { Toaster } from "@/components/ui/sonner";
 import VentilationTimeline from "@/components/VentilationTimeline";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 import { useLocation } from "@/hooks/useLocation";
 import { useUpdateNotification } from "@/hooks/useUpdateNotification";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
 import PrivacyPage from "@/pages/PrivacyPage";
+import { SPRING_EASING } from "@/lib/utils";
 import { COMFORT_LEVELS, type ComfortLevel } from "@/types";
 import {
   AnimatePresence,
@@ -31,7 +32,6 @@ const STORAGE_KEY_TEMP = "ifecho_indoor_temp";
 const STORAGE_KEY_COMFORT = "ifecho_comfort_level";
 const DEFAULT_INDOOR_TEMP = 26;
 
-const CONTENT_EASING: [number, number, number, number] = [0.23, 1, 0.32, 1];
 const PAGE_TRANSITION = {
   initial: { opacity: 0, y: 10 },
   animate: { opacity: 1, y: 0 },
@@ -84,7 +84,6 @@ const isFirstVisit = (): boolean => {
 };
 
 const App = () => {
-  const analytics = useAnalytics();
   useUpdateNotification();
   const [currentPage, setCurrentPage] = useState<"main" | "privacy">(() =>
     window.location.hash === "#confidentialite" ? "privacy" : "main",
@@ -124,7 +123,6 @@ const App = () => {
       local_hour: openedAt.getHours(),
       local_day_of_week: openedAt.getDay(),
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -162,7 +160,6 @@ const App = () => {
   useEffect(() => {
     if (!weatherError) return;
     analytics.weatherError({ message: weatherError });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [weatherError]);
 
   const tempDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -273,7 +270,7 @@ const App = () => {
                           initial={{ opacity: 0, y: 24 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
-                          transition={{ duration: 0.4, ease: CONTENT_EASING }}
+                          transition={{ duration: 0.4, ease: SPRING_EASING }}
                           className="flex flex-col gap-3"
                         >
                           <RecommendCard
@@ -288,7 +285,7 @@ const App = () => {
 
                           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                             <VentilationTimeline
-                              scores={scores}
+                              scores={scores.slice(0, 25)}
                               bestHour={bestHour}
                             />
                           </div>

@@ -1,13 +1,6 @@
 import { useMemo } from "react";
 import type { WeatherData, HourlyScore } from "@/types";
-
-// Parse l'heure locale directement depuis la string ISO sans passer par Date
-// (évite le décalage UTC/CEST de new Date().getHours() sur strings sans offset)
-const parseDateHour = (isoTime: string): { date: string; hour: number } => {
-  const [datePart, timePart] = isoTime.split("T");
-  const hour = parseInt(timePart?.split(":")[0] ?? "0", 10);
-  return { date: datePart ?? "", hour };
-};
+import { parseDateHour, todayDateString, offsetDateString } from "@/lib/utils";
 
 // Malus UV : réduit le score si le soleil entre par les vitres pendant l'aération
 const computeUvPenalty = (uvIndex: number): number => {
@@ -15,14 +8,6 @@ const computeUvPenalty = (uvIndex: number): number => {
   if (uvIndex >= 3) return 1;
   if (uvIndex >= 1) return 0.5;
   return 0;
-};
-
-const localDateString = (): string => {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
 };
 
 export const useVentilationScore = (
@@ -34,14 +19,16 @@ export const useVentilationScore = (
     if (!weather) return [];
 
     const nowHour = new Date().getHours();
-    const nowDate = localDateString();
+    const nowDate = todayDateString();
+    const tomorrowDate = offsetDateString(1);
+    const dayAfterDate = offsetDateString(2);
 
     return weather.hours.flatMap((h) => {
       const { date, hour: hourNum } = parseDateHour(h.time);
       const keep =
-        (date === nowDate && hourNum >= nowHour) ||
-        // J+1 : garder uniquement les heures qui restent dans la fenêtre 24h
-        (date > nowDate && 24 - nowHour + hourNum < 24);
+        (date === nowDate && hourNum >= nowHour) || // J depuis now
+        date === tomorrowDate || // tout J+1
+        (date === dayAfterDate && hourNum < nowHour); // J+2 jusqu'à nowHour (fenêtre 48h)
       if (!keep) return [];
 
       const feltIndoor = indoorTemp + comfortBias;
@@ -72,7 +59,7 @@ export const getBestVentilationHour = (
   scores: HourlyScore[],
 ): HourlyScore | null => {
   const nowHour = new Date().getHours();
-  const nowDate = localDateString();
+  const nowDate = todayDateString();
 
   const upcoming = scores.filter((s) => {
     if (!s.isFavorable) return false;

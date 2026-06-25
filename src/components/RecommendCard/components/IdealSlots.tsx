@@ -1,4 +1,10 @@
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  parseDateHour,
+  todayDateString,
+  offsetDateString,
+  SPRING_EASING,
+} from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 import { AnimatePresence, m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
@@ -26,12 +32,6 @@ const TIME_OF_DAY_META: Record<
   Nuit: { icon: Moon, color: "text-indigo-400" },
 };
 
-const parseDateHour = (isoTime: string): { date: string; hour: number } => {
-  const [datePart, timePart] = isoTime.split("T");
-  const hour = parseInt(timePart?.split(":")[0] ?? "0", 10);
-  return { date: datePart ?? "", hour };
-};
-
 // Convertit une string ISO locale (sans offset) en timestamp comparable
 // en supposant que la string est en heure locale du navigateur
 const localIsoToMs = (isoLocal: string): number => {
@@ -50,6 +50,8 @@ const getSlotLabel = (startHour: number): string => {
 
 const formatH = (h: number): string =>
   `${(h % 24).toString().padStart(2, "0")}h`;
+
+const WINDOW_MS = 24 * 3_600_000;
 
 const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
   const groups: HourlyScore[][] = [];
@@ -82,8 +84,10 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
     const startMs = localIsoToMs(first.time);
     const endMs = localIsoToMs(last.time) + 3_600_000;
     if (endMs <= now) return [];
+    // Ne montrer que les créneaux qui démarrent dans la fenêtre 24h
+    if (startMs >= now + WINDOW_MS) return [];
     const startHour = parseDateHour(first.time).hour;
-    const endHour = (parseDateHour(last.time).hour + 1) % 24;
+    const endHour = new Date(endMs).getHours();
     const isNow = now >= startMs && now < endMs;
     const crossesMidnight =
       parseDateHour(first.time).date !== parseDateHour(last.time).date ||
@@ -107,16 +111,10 @@ interface IdealSlotsProps {
   scores: HourlyScore[];
 }
 
-const SLOT_EASING: [number, number, number, number] = [0.23, 1, 0.32, 1];
-
-const getTodayStr = (): string => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
-
 const IdealSlots = ({ scores }: IdealSlotsProps) => {
   const slots = getIdealSlots(scores);
-  const todayStr = getTodayStr();
+  const todayStr = todayDateString();
+  const tomorrowStr = offsetDateString(1);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
@@ -139,7 +137,7 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: SLOT_EASING }}
+            transition={{ duration: 0.22, ease: SPRING_EASING }}
             className="overflow-hidden"
           >
             <p className="px-4 pb-4 text-sm text-muted-foreground">
@@ -155,11 +153,12 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
             };
             const Icon = meta.icon;
             const hasMultipleDays = slots.some((s) => s.startDate !== todayStr);
-            const isTomorrow = slot.startDate !== todayStr;
             const dayLabel = hasMultipleDays
-              ? isTomorrow
-                ? " • Demain"
-                : " • Aujourd'hui"
+              ? slot.startDate === todayStr
+                ? " • Aujourd'hui"
+                : slot.startDate === tomorrowStr
+                  ? " • Demain"
+                  : " • Après-demain"
               : "";
             const displayLabel = slot.isNow
               ? `${slot.baseLabel} • Maintenant`
@@ -174,7 +173,7 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
                 transition={{
                   duration: 0.28,
                   delay: index * 0.06,
-                  ease: SLOT_EASING,
+                  ease: SPRING_EASING,
                 }}
                 className="overflow-hidden"
               >
