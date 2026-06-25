@@ -3,7 +3,16 @@ export interface GeoLocation {
   longitude: number;
   city: string;
   department?: string;
+  departmentCode?: string;
   source?: "gps" | "search";
+}
+
+export interface VigilanceItem {
+  phenomenon: string;
+  color: "jaune" | "orange" | "rouge";
+  echeance: "J" | "J1";
+  begin_time: string;
+  end_time: string;
 }
 
 export interface CommuneResult {

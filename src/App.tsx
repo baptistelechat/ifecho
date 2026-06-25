@@ -6,10 +6,12 @@ import RecommendCard from "@/components/RecommendCard";
 import ShareButton from "@/components/ShareButton";
 import TipsSection from "@/components/TipsSection";
 import { Toaster } from "@/components/ui/sonner";
+import VigilanceBanner from "@/components/VigilanceBanner";
 import VentilationTimeline from "@/components/VentilationTimeline";
 import analytics from "@/lib/analytics";
 import { useLocation } from "@/hooks/useLocation";
 import { useUpdateNotification } from "@/hooks/useUpdateNotification";
+import { useVigilanceData } from "@/hooks/useVigilanceData";
 import {
   getBestVentilationHour,
   useVentilationScore,
@@ -105,6 +107,7 @@ const App = () => {
     error: weatherError,
   } = useWeatherForecast(location);
 
+  const vigilances = useVigilanceData(location?.departmentCode);
   const comfortBias = COMFORT_LEVELS[comfortLevel].bias;
   const scores = useVentilationScore(weather, indoorTemp, comfortBias);
   const bestHour = getBestVentilationHour(scores);
@@ -244,6 +247,21 @@ const App = () => {
                         onSelect={setFromCommune}
                       />
                     </div>
+
+                    {/* Vigilances météo */}
+                    <AnimatePresence>
+                      {vigilances.length > 0 && (
+                        <m.div
+                          key="vigilance"
+                          initial={{ opacity: 0, y: -8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                        >
+                          <VigilanceBanner vigilances={vigilances} />
+                        </m.div>
+                      )}
+                    </AnimatePresence>
 
                     {/* Erreur meteo */}
                     <AnimatePresence>

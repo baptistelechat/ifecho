@@ -79,10 +79,17 @@ export const useLocation = () => {
           };
           const feature = data.features[0];
           const city = feature?.properties.city ?? "Votre position";
-          const { department } = parseContext(
+          const { department, departmentCode } = parseContext(
             feature?.properties.context ?? "",
           );
-          setLocation({ latitude, longitude, city, department, source: "gps" });
+          setLocation({
+            latitude,
+            longitude,
+            city,
+            department,
+            departmentCode,
+            source: "gps",
+          });
           analytics.locationDetected({ source: "gps", department });
         } catch {
           setLocation({
@@ -115,6 +122,7 @@ export const useLocation = () => {
       longitude: commune.longitude,
       city: commune.city,
       department: commune.department,
+      departmentCode: commune.departmentCode,
       source: "search",
     });
     analytics.locationDetected({
