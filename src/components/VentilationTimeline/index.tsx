@@ -1,9 +1,9 @@
-import { cn } from "@/lib/utils";
+import { cn, parseDateHour, todayDateString, SPRING_EASING } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 import { m, useInView } from "framer-motion";
 import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import { useEffect, useRef } from "react";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 
 interface VentilationTimelineProps {
   scores: HourlyScore[];
@@ -25,17 +25,10 @@ const getBarColor = (score: number, isBest: boolean): string => {
   return "bg-amber-400/70";
 };
 
-const parseDateHour = (isoTime: string): { date: string; hour: number } => {
-  const [datePart, timePart] = isoTime.split("T");
-  const hour = parseInt(timePart?.split(":")[0] ?? "0", 10);
-  return { date: datePart ?? "", hour };
-};
-
 const VentilationTimeline = ({
   scores,
   bestHour,
 }: VentilationTimelineProps) => {
-  const analytics = useAnalytics();
   const scrollRef = useRef<HTMLDivElement>(null);
   const currentHourRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,14 +37,10 @@ const VentilationTimeline = ({
   useEffect(() => {
     if (isInView)
       analytics.sectionViewed({ section_id: "ventilation_timeline" });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isInView]);
 
   const currentHour = new Date().getHours();
-  const nowDate = (() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  })();
+  const nowDate = todayDateString();
   const maxAbsScore = Math.max(...scores.map((s) => Math.abs(s.score)), 0.1);
 
   useEffect(() => {
@@ -161,7 +150,7 @@ const VentilationTimeline = ({
                         transition={{
                           duration: 0.6,
                           delay: index * 0.018,
-                          ease: [0.23, 1, 0.32, 1],
+                          ease: SPRING_EASING,
                         }}
                         className={cn("w-5 rounded-t", getBarColor(s, isBest))}
                         title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
@@ -178,7 +167,7 @@ const VentilationTimeline = ({
                         transition={{
                           duration: 0.6,
                           delay: index * 0.018,
-                          ease: [0.23, 1, 0.32, 1],
+                          ease: SPRING_EASING,
                         }}
                         className={cn(
                           "w-5 rounded-b",

@@ -1,4 +1,4 @@
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 import type { HourlyScore } from "@/types";
 import { Share2 } from "lucide-react";
 import { useState } from "react";
@@ -26,7 +26,6 @@ const buildShareUrl = (method: "native" | "clipboard"): string => {
 };
 
 const ShareButton = ({ currentScore }: ShareButtonProps) => {
-  const analytics = useAnalytics();
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {

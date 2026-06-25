@@ -4,7 +4,7 @@ import { searchCommunes } from "@/hooks/useLocation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHaptics } from "@/hooks/useHaptics";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 import type { CommuneResult, GeoLocation } from "@/types";
 
 interface LocationSearchProps {
@@ -36,7 +36,6 @@ const LocationSearch = ({
   onSelect,
 }: LocationSearchProps) => {
   const haptics = useHaptics();
-  const analytics = useAnalytics();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<CommuneResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -92,7 +91,6 @@ const LocationSearch = ({
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleDetect = () => {

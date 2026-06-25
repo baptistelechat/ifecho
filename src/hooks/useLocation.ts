@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import type { CommuneResult, GeoLocation } from "@/types";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 
 interface ApiAddressFeature {
   properties: {
@@ -51,7 +51,6 @@ export const searchCommunes = async (
 };
 
 export const useLocation = () => {
-  const analytics = useAnalytics();
   const [location, setLocation] = useState<GeoLocation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

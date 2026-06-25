@@ -1,10 +1,9 @@
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 import { Download, Share, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const InstallButton = () => {
-  const analytics = useAnalytics();
   const { canInstall, isIos, isStandalone, install } = useInstallPrompt();
   const [showHint, setShowHint] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);

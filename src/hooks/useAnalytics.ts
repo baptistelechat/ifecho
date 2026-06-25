@@ -2,7 +2,7 @@ import posthog from "posthog-js";
 
 const isEnabled = () => !!import.meta.env.VITE_POSTHOG_KEY;
 
-const useAnalytics = () => ({
+const analytics = {
   appOpened: (props: {
     is_pwa: boolean;
     is_first_visit: boolean;
@@ -149,6 +149,6 @@ const useAnalytics = () => ({
     if (!isEnabled()) return;
     posthog.capture("app_shared", props);
   },
-});
+};
 
-export default useAnalytics;
+export default analytics;

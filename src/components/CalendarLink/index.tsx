@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { HourlyScore } from "@/types";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 import { useHaptics } from "@/hooks/useHaptics";
 import { CalendarPlus } from "lucide-react";
 
@@ -41,7 +41,6 @@ const generateIcs = (targetHour: HourlyScore, city: string): string => {
 };
 
 const CalendarLink = ({ bestHour, city }: CalendarLinkProps) => {
-  const analytics = useAnalytics();
   const haptics = useHaptics();
 
   const handleDownload = () => {

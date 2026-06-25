@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import useAnalytics from "@/hooks/useAnalytics";
+import analytics from "@/hooks/useAnalytics";
 import useOnceVisible from "@/hooks/useOnceVisible";
 import { useHaptics } from "@/hooks/useHaptics";
 import {
@@ -42,7 +42,6 @@ const RESUME_DELAY = 6000;
 const SWIPE_THRESHOLD = 50;
 
 const TipsSection = () => {
-  const analytics = useAnalytics();
   const haptics = useHaptics();
   const [index, setIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -51,8 +50,6 @@ const TipsSection = () => {
   const sectionRef = useOnceVisible<HTMLDivElement>(() => {
     analytics.sectionViewed({ section_id: "tips_section" });
   });
-
-  const goTo = (nextIndex: number) => setIndex(nextIndex);
 
   const pauseTemporarily = () => {
     setIsPaused(true);
@@ -76,7 +73,7 @@ const TipsSection = () => {
       tipId: TIPS[nextIndex].id,
       direction: "swipe-left",
     });
-    goTo(nextIndex);
+    setIndex(nextIndex);
   };
 
   const next = () => {
@@ -87,7 +84,7 @@ const TipsSection = () => {
       tipId: TIPS[nextIndex].id,
       direction: "swipe-right",
     });
-    goTo(nextIndex);
+    setIndex(nextIndex);
   };
 
   useEffect(() => {
@@ -175,7 +172,7 @@ const TipsSection = () => {
                 haptics.nudge();
                 pauseTemporarily();
                 analytics.tipNavigated({ tipId: t.id, direction: "dot" });
-                goTo(i);
+                setIndex(i);
               }}
               className={cn(
                 "h-1.5 rounded-full transition-all duration-300",
