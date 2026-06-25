@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import type { CommuneResult, GeoLocation } from "@/types";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 
 interface ApiAddressFeature {
   properties: {

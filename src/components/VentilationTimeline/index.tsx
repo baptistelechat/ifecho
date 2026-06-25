@@ -3,7 +3,7 @@ import type { HourlyScore } from "@/types";
 import { m, useInView } from "framer-motion";
 import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import { useEffect, useRef } from "react";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 
 interface VentilationTimelineProps {
   scores: HourlyScore[];

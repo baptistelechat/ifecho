@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import useOnceVisible from "@/hooks/useOnceVisible";
 import { useHaptics } from "@/hooks/useHaptics";
 import {

@@ -4,7 +4,7 @@ import { searchCommunes } from "@/hooks/useLocation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHaptics } from "@/hooks/useHaptics";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import type { CommuneResult, GeoLocation } from "@/types";
 
 interface LocationSearchProps {

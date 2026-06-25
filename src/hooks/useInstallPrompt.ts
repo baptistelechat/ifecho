@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;

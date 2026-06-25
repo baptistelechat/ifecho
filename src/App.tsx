@@ -7,7 +7,7 @@ import ShareButton from "@/components/ShareButton";
 import TipsSection from "@/components/TipsSection";
 import { Toaster } from "@/components/ui/sonner";
 import VentilationTimeline from "@/components/VentilationTimeline";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import { useLocation } from "@/hooks/useLocation";
 import { useUpdateNotification } from "@/hooks/useUpdateNotification";
 import {

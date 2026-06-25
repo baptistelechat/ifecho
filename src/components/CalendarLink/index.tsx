@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { HourlyScore } from "@/types";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import { useHaptics } from "@/hooks/useHaptics";
 import { CalendarPlus } from "lucide-react";
 

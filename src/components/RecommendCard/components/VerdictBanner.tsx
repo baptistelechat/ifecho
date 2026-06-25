@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 import { AnimatePresence, m } from "framer-motion";
 import { Ban, CheckCircle, Clock, Wind } from "lucide-react";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import { useEffect, useRef } from "react";
 
 interface VerdictBannerProps {

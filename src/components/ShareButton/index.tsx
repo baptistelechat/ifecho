@@ -1,4 +1,4 @@
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import type { HourlyScore } from "@/types";
 import { Share2 } from "lucide-react";
 import { useState } from "react";

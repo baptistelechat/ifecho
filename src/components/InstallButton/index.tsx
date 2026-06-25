@@ -1,5 +1,5 @@
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
-import analytics from "@/hooks/useAnalytics";
+import analytics from "@/lib/analytics";
 import { Download, Share, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

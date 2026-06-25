@@ -1,6 +1,6 @@
 ---
 register: journal
-last_updated: 2026-06-24
+last_updated: 2026-06-25
 ---
 
 ## 2026-06-20
@@ -639,3 +639,33 @@ Session courte de diagnostic OG image et nettoyage git.
 **Entrées clés :**
 
 - [ZBLK-034](archive/blockers/ZBLK-034.md) — Mauvais diagnostic : SW PWA masquait le comportement serveur
+
+## 2026-06-25
+
+Session de nettoyage post-audit ponytail. Audit `/ponytail-audit` lancé en début de session — 7 findings identifiés, tous corrigés via sous-agents parallèles avec partitionnement strict des fichiers.
+
+Trois utilitaires sans état dupliqués dans 3–4 fichiers chacun centralisés dans `src/lib/utils.ts` : `parseDateHour` (×3 noms identiques), `todayDateString` (×3 sous noms différents : `localDateString`, `getTodayStr`, `todayDateString`), `SPRING_EASING [0.23, 1, 0.32, 1]` (×4 inline). Alias `goTo` (pure wrapper de `setIndex`) supprimé dans `TipsSection`. Deux dépendances mortes supprimées : `next-themes` et `workbox-window`. `useAnalytics` converti de factory hook en module singleton exporté (`export default analytics` — objet, pas function).
+
+Point de coordination : App.tsx, VentilationTimeline et TipsSection étaient touchés par 2 axes de refacto simultanément (utils + analytics singleton) — réservés au coordonnateur après retour des agents. 4 directives `// eslint-disable-next-line react-hooks/exhaustive-deps` devenues orphelines après la conversion analytics singleton, détectées via `pnpm lint` et supprimées. Lint propre (0 erreur), build propre.
+
+**Entrées clés :**
+
+- [BDR-057](decisions/BDR-057.md) — Centralisation utils.ts : parseDateHour + todayDateString + SPRING_EASING
+- [LRN-052](learnings/LRN-052.md) — Fichiers d'overlap refacto parallèle → réserver au coordonnateur
+- voir aussi GBDR-006 — Analytics singleton vs factory hook (global)
+- voir aussi GLRN-157 — eslint-disable exhaustive-deps orphelins après singleton (global)
+
+---
+
+Session de correction de troncature des créneaux idéaux. Symptôme : le créneau "21h–11h" (nuit fraîche traversant le lendemain matin) s'affichait tronqué en "21h–9h" car la fenêtre de données 24h (`forecast_days: "2"`) se terminait à now+24h — le créneau continuait au-delà mais les données s'arrêtaient.
+
+Solution en 3 couches : (1) `useWeatherForecast` déjà à `forecast_days: "3"` — aucun changement ; (2) `useVentilationScore` étendu de 24h à 48h en assouplissant le filtre de fin sur J+2 (de `hourNum < nowHour` on filtre désormais les heures déjà passées de J+2) ; (3) `getIdealSlots` dans `IdealSlots.tsx` — guard ajouté pour exclure les créneaux dont le **début** dépasse now+24h (`startMs >= now + WINDOW_MS`), pour ne pas afficher des slots du lendemain soir dans la section "créneaux idéaux" ; (4) `App.tsx` passe `scores.slice(0, 25)` à `VentilationTimeline` (25 au lieu de 24 — Baptiste a ajusté manuellement pour inclure 1 heure extra dans la timeline sans l'étendre à 48h).
+
+Le principe retenu : fetcher + scorer sur 48h pour avoir les fins de créneaux complètes, mais n'afficher que ~24h dans la timeline et exclure les créneaux démarrant hors fenêtre d'affichage.
+
+Toutes les entrées mémoire de cette session en local (directive : "full local").
+
+**Entrées clés :**
+
+- [BDR-058](decisions/BDR-058.md) — Fenêtre données 48h / affichage ~24h pour fins de créneaux
+- [LRN-053](learnings/LRN-053.md) — Guard `startMs >= now + WINDOW_MS` dans `getIdealSlots`

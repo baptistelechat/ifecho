@@ -1,6 +1,6 @@
 ---
 register: learnings
-last_updated: 2026-06-23
+last_updated: 2026-06-25
 ---
 
 ## Index
@@ -58,3 +58,5 @@ last_updated: 2026-06-23
 | [LRN-049](learnings/LRN-049.md) | 2026-06-23 | PostHog MCP `tile-copy` : réponse oversized ≠ échec opérationnel           | #posthog #mcp #dashboard-tile-copy #oversized-response #token-limit #verification                 |
 | [LRN-050](learnings/LRN-050.md) | 2026-06-23 | `valueRef.current = value` : state courant dans handler stable             | #react #useRef #stale-closure #event-handler #useEffect #state-read #click-outside                |
 | [LRN-051](learnings/LRN-051.md) | 2026-06-23 | `useOnceVisible` : IntersectionObserver one-shot + `firedRef`              | #react #intersection-observer #analytics #hook #one-shot #firedRef #section-viewed                |
+| [LRN-052](learnings/LRN-052.md) | 2026-06-25 | Fichiers d'overlap refacto parallèle → réserver au coordonnateur           | #agents #parallel #coordination #orchestrator #file-ownership #refactoring #subagent              |
+| [LRN-053](learnings/LRN-053.md) | 2026-06-25 | Guard `startMs >= now + WINDOW_MS` dans `getIdealSlots`                    | #algorithm #IdealSlots #start-guard #sliding-window #time-slot #boundary #filter #grouping        |
