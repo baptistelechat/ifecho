@@ -1,6 +1,6 @@
 ---
 register: archive_blockers
-last_updated: 2026-06-24
+last_updated: 2026-06-25
 ---
 
 ## Index
@@ -41,3 +41,6 @@ last_updated: 2026-06-24
 | [ZBLK-032](blockers/ZBLK-032.md) | 2026-06-24 | Après `two_column`, headers texte (w=6) partagent une ligne  | #posthog #dashboard #layout #headers #text-tile #two-column #w6                                            | résolu |
 | [ZBLK-033](blockers/ZBLK-033.md) | 2026-06-24 | `useRegisterSW`/`onNeedRefresh` ne fire pas au 2e cycle SW   | #pwa #service-worker #workbox #useRegisterSW #onNeedRefresh #controllerchange #vite-plugin-pwa #autoUpdate | résolu |
 | [ZBLK-034](blockers/ZBLK-034.md) | 2026-06-24 | Mauvais diagnostic : `/og-image.png` retourne l'app (SW PWA) | #pwa #service-worker #og-image #vercel #diagnosis #navigation-privee #vercel-json                          | résolu |
+| [ZBLK-035](blockers/ZBLK-035.md) | 2026-06-25 | Portail MF inaccessible avec email Gmail                     | #meteofrance #portail #gmail #institutional-email #blocked #opendatasoft                                   | résolu |
+| [ZBLK-036](blockers/ZBLK-036.md) | 2026-06-25 | `departmentCode` non propagé dans `GeoLocation`              | #departmentCode #GeoLocation #propagation #interface #useLocation #vigilance                               | résolu |
+| [ZBLK-037](blockers/ZBLK-037.md) | 2026-06-25 | URL flux Atom MF inventée (n'existe pas)                     | #url #hallucination #atom-feed #meteofrance #research #verification                                        | résolu |

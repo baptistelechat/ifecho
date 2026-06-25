@@ -669,3 +669,35 @@ Toutes les entrées mémoire de cette session en local (directive : "full local"
 
 - [BDR-058](decisions/BDR-058.md) — Fenêtre données 48h / affichage ~24h pour fins de créneaux
 - [LRN-053](learnings/LRN-053.md) — Guard `startMs >= now + WINDOW_MS` dans `getIdealSlots`
+
+---
+
+Session courte de vérification + reorganisation du module analytics. Confirmation que PostHog fonctionne toujours après la conversion `useAnalytics` → singleton de la session précédente : `main.tsx` initialise PostHog, `src/lib/analytics.ts` appelle `posthog.capture()` via `isEnabled()` — la chaîne est intacte.
+
+Déplacement du fichier `src/hooks/useAnalytics.ts` → `src/lib/analytics.ts` : le module n'utilise aucun hook React, la convention `hooks/` = vrais hooks (`useState`/`useEffect`/etc.) doit être respectée. 10 imports mis à jour (`@/hooks/useAnalytics` → `@/lib/analytics`).
+
+**Entrées clés :**
+
+- [BDR-059](decisions/BDR-059.md) — `analytics.ts` dans `src/lib/` (pas `src/hooks/`)
+- voir aussi GLRN-160 — Convention `hooks/` vs `lib/` (global)
+
+---
+
+Session d'intégration des vigilances météo Météo-France dans ifecho.
+
+Objectif : afficher les alertes canicule, orages, pluie-inondation, crues, vent violent et vagues-submersion en bannière conditionnelle en haut de page. Deux tentatives de sourcer les données côté MF : (1) portail API MF — bloqué, email Gmail rejeté à l'authentification ("invalid tenant domain") ; (2) flux Atom proposé par l'agent (`feeds.vigilance.meteofrance.fr/...`) — URL inventée, inexistante. Research fork lancé → OpenDataSoft identifié comme miroir officiel des données MF, CORS activé, aucune clé API requise.
+
+5 fichiers créés ou modifiés : `src/types/index.ts` (interface `VigilanceItem` + champ `departmentCode?: string` dans `GeoLocation`), `src/hooks/useVigilanceData.ts` (fetch ODS + cache module-level 30 min par code département), `src/components/VigilanceBanner.tsx` (banner conditionnelle, couleur fond = criticité max, badges groupés J/J1), `src/hooks/useLocation.ts` (propagation `departmentCode` dans les deux flux GPS et search), `src/App.tsx` (appel `useVigilanceData` + rendu `AnimatePresence` conditionnel).
+
+Bug découvert en cours d'intégration : `departmentCode` correctement extrait dans `parseContext()` mais absent de l'interface `GeoLocation` — champ non stocké, non propagé → `useVigilanceData` recevait `undefined`, aucune requête ODS n'était émise. Fix : ajout `departmentCode?: string` dans l'interface + propagation explicite dans `detectLocation` (GPS) et `setFromCommune` (search).
+
+Vérification end-to-end via dev-browser : pour Lyon (dept 69), requête ODS bien déclenchée sur `weatherref-france-vigilance-meteo-departement`, banner "Vigilances météo — Aujourd'hui : Canicule / Demain : Canicule" affichée correctement. Météo 36.4°C ressenti 37°C, verdict "Ne pas aérer".
+
+Décision explicite de reporter l'app state vigilance (fond + couleurs globales de page selon criticité max) à V1 — trop large pour le scope V0, mérite un cycle de design dédié.
+
+**Entrées clés :**
+
+- [BDR-061](decisions/BDR-061.md) — Source vigilance → OpenDataSoft
+- [BDR-062](decisions/BDR-062.md) — Scope vigilance V0 (filtres + J+J1)
+- [ZBLK-035](archive/blockers/ZBLK-035.md) — Portail MF bloqué (Gmail)
+- [ZBLK-037](archive/blockers/ZBLK-037.md) — URL Atom inventée

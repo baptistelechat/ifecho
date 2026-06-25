@@ -60,3 +60,5 @@ last_updated: 2026-06-25
 | [LRN-051](learnings/LRN-051.md) | 2026-06-23 | `useOnceVisible` : IntersectionObserver one-shot + `firedRef`              | #react #intersection-observer #analytics #hook #one-shot #firedRef #section-viewed                |
 | [LRN-052](learnings/LRN-052.md) | 2026-06-25 | Fichiers d'overlap refacto parallèle → réserver au coordonnateur           | #agents #parallel #coordination #orchestrator #file-ownership #refactoring #subagent              |
 | [LRN-053](learnings/LRN-053.md) | 2026-06-25 | Guard `startMs >= now + WINDOW_MS` dans `getIdealSlots`                    | #algorithm #IdealSlots #start-guard #sliding-window #time-slot #boundary #filter #grouping        |
+| [LRN-054](learnings/LRN-054.md) | 2026-06-25 | OpenDataSoft = portail open data France, CORS, sans clé                    | #opendatasoft #open-data #france #cors #public-api #meteofrance #no-api-key                       |
+| [LRN-055](learnings/LRN-055.md) | 2026-06-25 | URL API proposée sans vérif. → hallucination d'endpoint                    | #hallucination #url-verification #api-endpoint #research #atom-feed #agent-behavior               |
