@@ -6,7 +6,7 @@ import App from "./App.tsx";
 
 const isLocalhost =
   window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1";
+  /^\d{1,3}(\.\d{1,3}){3}$/.test(window.location.hostname);
 
 const posthogEnabled =
   !!import.meta.env.VITE_POSTHOG_KEY &&
