@@ -1,5 +1,4 @@
 import type { ComfortLevel, HourlyScore } from "@/types";
-import VerdictBanner from "./components/VerdictBanner";
 import ThermalComparison from "./components/ThermalComparison";
 import ThermalDelta from "./components/ThermalDelta";
 import IdealSlots from "./components/IdealSlots";
@@ -27,7 +26,6 @@ const RecommendCard = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <VerdictBanner currentScore={currentScore} />
       <ThermalComparison
         currentScore={currentScore}
         indoorTemp={indoorTemp}

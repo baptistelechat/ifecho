@@ -1,9 +1,14 @@
-import { cn, parseDateHour, todayDateString, SPRING_EASING } from "@/lib/utils";
+import analytics from "@/lib/analytics";
+import { cn, parseDateHour, SPRING_EASING, todayDateString } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
 import { m, useInView } from "framer-motion";
 import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import { useEffect, useRef } from "react";
-import analytics from "@/lib/analytics";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface VentilationTimelineProps {
   scores: HourlyScore[];
@@ -23,6 +28,12 @@ const ARROW_BOTTOM_Y = ZONE_POSITIVE + 1 + GAP_BASELINE;
 const getBarColor = (score: number, isBest: boolean): string => {
   if (isBest || score > 2) return "bg-verdict-good";
   return "bg-amber-400/70";
+};
+
+const getVerdictLabel = (score: number): string => {
+  if (score > 2) return "Favorable";
+  if (score <= -2) return "Défavorable";
+  return "Neutre";
 };
 
 const VentilationTimeline = ({
@@ -109,88 +120,104 @@ const VentilationTimeline = ({
                   </div>
                 )}
 
-                <div
-                  ref={isNow ? currentHourRef : undefined}
-                  className="flex w-8 flex-col items-center gap-1"
-                >
-                  <div
-                    className="relative flex flex-col items-center"
-                    style={{ height: `${ZONE_POSITIVE + 1 + ZONE_NEGATIVE}px` }}
-                  >
-                    {showTopArrow && (
-                      <div
-                        className="absolute left-1/2 -translate-x-1/2"
-                        style={{ top: `${ARROW_TOP_Y}px` }}
-                      >
-                        <ArrowDown
-                          className={cn(
-                            "size-3 animate-nudge",
-                            s <= -2 ? "text-red-500" : "text-amber-400",
-                          )}
-                        />
-                      </div>
-                    )}
-
-                    {showBottomArrow && (
-                      <div
-                        className="absolute left-1/2 -translate-x-1/2"
-                        style={{ top: `${ARROW_BOTTOM_Y}px` }}
-                      >
-                        <ArrowUp className="size-3 animate-nudge text-verdict-good" />
-                      </div>
-                    )}
-
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <div
-                      className="flex items-end justify-center"
-                      style={{ height: `${ZONE_POSITIVE}px` }}
+                      ref={isNow ? currentHourRef : undefined}
+                      className="flex w-8 flex-col items-center gap-1"
                     >
-                      <m.div
-                        initial={{ height: 0 }}
-                        animate={{ height: isInView ? positiveHeight : 0 }}
-                        transition={{
-                          duration: 0.6,
-                          delay: index * 0.018,
-                          ease: SPRING_EASING,
+                      <div
+                        className="relative flex flex-col items-center"
+                        style={{
+                          height: `${ZONE_POSITIVE + 1 + ZONE_NEGATIVE}px`,
                         }}
-                        className={cn("w-5 rounded-t", getBarColor(s, isBest))}
-                        title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
-                      />
-                    </div>
-
-                    <div
-                      className="flex items-start justify-center"
-                      style={{ height: `${ZONE_NEGATIVE}px` }}
-                    >
-                      <m.div
-                        initial={{ height: 0 }}
-                        animate={{ height: isInView ? negativeHeight : 0 }}
-                        transition={{
-                          duration: 0.6,
-                          delay: index * 0.018,
-                          ease: SPRING_EASING,
-                        }}
-                        className={cn(
-                          "w-5 rounded-b",
-                          s <= -2 ? "bg-red-500/70" : "bg-amber-400/70",
+                      >
+                        {showTopArrow && (
+                          <div
+                            className="absolute left-1/2 -translate-x-1/2"
+                            style={{ top: `${ARROW_TOP_Y}px` }}
+                          >
+                            <ArrowDown
+                              className={cn(
+                                "size-3 animate-nudge",
+                                s <= -2 ? "text-red-500" : "text-amber-400",
+                              )}
+                            />
+                          </div>
                         )}
-                        title={`${formatHour(scoreHour)} - ${score.temperature.toFixed(1)}°C - score: ${s.toFixed(1)}`}
-                      />
-                    </div>
-                  </div>
 
-                  <span
-                    className={cn(
-                      "text-[9px] leading-none tabular-nums",
-                      isBest
-                        ? "font-bold text-verdict-good"
-                        : isNow
-                          ? "font-semibold text-ember"
-                          : "text-muted-foreground",
-                    )}
-                  >
-                    {scoreHour % 3 === 0 ? formatHour(scoreHour) : ""}
-                  </span>
-                </div>
+                        {showBottomArrow && (
+                          <div
+                            className="absolute left-1/2 -translate-x-1/2"
+                            style={{ top: `${ARROW_BOTTOM_Y}px` }}
+                          >
+                            <ArrowUp className="size-3 animate-nudge text-verdict-good" />
+                          </div>
+                        )}
+
+                        <div
+                          className="flex items-end justify-center"
+                          style={{ height: `${ZONE_POSITIVE}px` }}
+                        >
+                          <m.div
+                            initial={{ height: 0 }}
+                            animate={{
+                              height: isInView ? positiveHeight : 0,
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              delay: index * 0.018,
+                              ease: SPRING_EASING,
+                            }}
+                            className={cn(
+                              "w-5 rounded-t",
+                              getBarColor(s, isBest),
+                            )}
+                          />
+                        </div>
+
+                        <div
+                          className="flex items-start justify-center"
+                          style={{ height: `${ZONE_NEGATIVE}px` }}
+                        >
+                          <m.div
+                            initial={{ height: 0 }}
+                            animate={{
+                              height: isInView ? negativeHeight : 0,
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              delay: index * 0.018,
+                              ease: SPRING_EASING,
+                            }}
+                            className={cn(
+                              "w-5 rounded-b",
+                              s <= -2 ? "bg-red-500/70" : "bg-amber-400/70",
+                            )}
+                          />
+                        </div>
+                      </div>
+
+                      <span
+                        className={cn(
+                          "text-[9px] leading-none tabular-nums",
+                          isBest
+                            ? "font-bold text-verdict-good"
+                            : isNow
+                              ? "font-semibold text-ember"
+                              : "text-muted-foreground",
+                        )}
+                      >
+                        {scoreHour % 3 === 0 ? formatHour(scoreHour) : ""}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="font-semibold">{formatHour(scoreHour)}</p>
+                    <p>{score.temperature.toFixed(1)}°C</p>
+                    <p className="opacity-70">{getVerdictLabel(s)}</p>
+                  </TooltipContent>
+                </Tooltip>
               </div>
             );
           })}

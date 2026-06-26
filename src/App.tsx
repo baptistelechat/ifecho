@@ -258,7 +258,10 @@ const App = () => {
                           exit={{ opacity: 0, y: -8 }}
                           transition={{ duration: 0.25, ease: "easeOut" }}
                         >
-                          <VigilanceBanner vigilances={vigilances} />
+                          <VigilanceBanner
+                            vigilances={vigilances}
+                            departmentName={location?.department}
+                          />
                         </m.div>
                       )}
                     </AnimatePresence>

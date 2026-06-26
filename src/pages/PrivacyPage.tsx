@@ -1,4 +1,5 @@
 import AppFooter from "@/components/AppFooter";
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeft,
   BarChart2,
@@ -7,7 +8,6 @@ import {
   Shield,
   ThermometerSun,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface PrivacyPageProps {

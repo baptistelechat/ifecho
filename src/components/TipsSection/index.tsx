@@ -1,28 +1,28 @@
-import { useState, useEffect, useRef } from "react";
-import analytics from "@/lib/analytics";
-import useOnceVisible from "@/hooks/useOnceVisible";
+import { TIPS } from "@/data/tips";
 import { useHaptics } from "@/hooks/useHaptics";
+import useOnceVisible from "@/hooks/useOnceVisible";
+import analytics from "@/lib/analytics";
+import { cn } from "@/lib/utils";
+import { m } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 import {
-  Sun,
-  Clock,
-  Layers,
-  Moon,
-  Droplets,
-  Lightbulb,
-  Wind,
-  Zap,
-  Compass,
-  Footprints,
   BedDouble,
   ChevronLeft,
   ChevronRight,
-  Play,
+  Clock,
+  Compass,
+  Droplets,
+  Footprints,
+  Layers,
+  Lightbulb,
+  Moon,
   Pause,
+  Play,
+  Sun,
+  Wind,
+  Zap,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { m } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { TIPS } from "@/data/tips";
+import { useEffect, useRef, useState } from "react";
 
 const TIP_ICONS: Record<string, LucideIcon> = {
   "rule-500w": Sun,

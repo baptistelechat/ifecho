@@ -36,7 +36,7 @@ const ShareButton = ({ currentScore }: ShareButtonProps) => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: "Ifecho — Bien vivre la chaleur",
+          title: "Ifecho - Bien vivre la chaleur",
           text: SHARE_TEXT,
           url,
         });

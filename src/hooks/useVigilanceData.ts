@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
 import type { VigilanceItem } from "@/types";
+import { useEffect, useRef, useState } from "react";
 
 const EXCLUDED = new Set(["neige / verglas", "grand froid", "avalanches"]);
 const VALID_COLORS = new Set(["jaune", "orange", "rouge"]);
@@ -58,7 +58,7 @@ export const useVigilanceData = (
         setVigilances(filtered);
       })
       .catch(() => {
-        // Silent fail — vigilance is informational, not critical
+        // Silent fail - vigilance is informational, not critical
       });
   }, [departmentCode]);
 

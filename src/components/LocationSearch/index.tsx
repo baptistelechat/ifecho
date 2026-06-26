@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from "react";
-import { MapPin, Loader2, Navigation, Locate } from "lucide-react";
-import { searchCommunes } from "@/hooks/useLocation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHaptics } from "@/hooks/useHaptics";
+import { searchCommunes } from "@/hooks/useLocation";
 import analytics from "@/lib/analytics";
 import type { CommuneResult, GeoLocation } from "@/types";
+import { Loader2, Locate, MapPin, Navigation } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface LocationSearchProps {
   location: GeoLocation | null;
