@@ -1,6 +1,6 @@
 ---
 register: decisions
-last_updated: 2026-06-25
+last_updated: 2026-06-27
 ---
 
 ## Index
@@ -69,3 +69,8 @@ last_updated: 2026-06-25
 | [BDR-060](decisions/BDR-060.md) | 2026-06-25 | App state vigilance (bg + couleurs) différé V1 — banner conditionnelle V0 | #vigilance #app-state #banner #color #v0 #v1 #meteofrance #opendatasoft                                     | actif  |
 | [BDR-061](decisions/BDR-061.md) | 2026-06-25 | Source vigilance : OpenDataSoft (pas API MF directe)                      | #vigilance #opendatasoft #meteofrance #cors #open-data #api-key-free                                        | actif  |
 | [BDR-062](decisions/BDR-062.md) | 2026-06-25 | Vigilance V0 : exclure hivernaux + afficher J et J1                       | #vigilance #phenomena #filter #echeance #j-j1 #scope #v0                                                    | actif  |
+| [BDR-063](decisions/BDR-063.md) | 2026-06-26 | VigilanceBanner : transitions de niveau avec heure pivot                  | #vigilance #vigilance-banner #opendatasoft #meteofrance #transitions #react #ui                             | actif  |
+| [BDR-064](decisions/BDR-064.md) | 2026-06-26 | URL de production Vercel : ifecho.vercel.app                              | #vercel #deployment #url #production #spa #main #pwa #lighthouse                                            | actif  |
+| [BDR-065](decisions/BDR-065.md) | 2026-06-26 | Dashboard UTM : Vue globale + Partage viral (2 sections)                  | #posthog #dashboard #utm #sections #acquisition #viral #ifecho                                              | actif  |
+| [BDR-066](decisions/BDR-066.md) | 2026-06-26 | Fusion VerdictBanner → ThermalDelta                                       | #component #refactoring #ui #react #verdict #thermal-delta #dry                                             | actif  |
+| [BDR-067](decisions/BDR-067.md) | 2026-06-27 | `bulletinStale` global sur agrégat de tous les items J                    | #vigilance #vigilance-banner #bulletin #staleness #midnight #react #algorithm                               | actif  |

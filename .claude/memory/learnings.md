@@ -1,6 +1,6 @@
 ---
 register: learnings
-last_updated: 2026-06-25
+last_updated: 2026-06-27
 ---
 
 ## Index
@@ -62,3 +62,7 @@ last_updated: 2026-06-25
 | [LRN-053](learnings/LRN-053.md) | 2026-06-25 | Guard `startMs >= now + WINDOW_MS` dans `getIdealSlots`                    | #algorithm #IdealSlots #start-guard #sliding-window #time-slot #boundary #filter #grouping        |
 | [LRN-054](learnings/LRN-054.md) | 2026-06-25 | OpenDataSoft = portail open data France, CORS, sans clé                    | #opendatasoft #open-data #france #cors #public-api #meteofrance #no-api-key                       |
 | [LRN-055](learnings/LRN-055.md) | 2026-06-25 | URL API proposée sans vérif. → hallucination d'endpoint                    | #hallucination #url-verification #api-endpoint #research #atom-feed #agent-behavior               |
+| [LRN-056](learnings/LRN-056.md) | 2026-06-26 | ODS N records même phénomène = transition de niveau                        | #opendatasoft #vigilance #meteofrance #api #grouping #begin_time #multi-records #phenomenon       |
+| [LRN-057](learnings/LRN-057.md) | 2026-06-26 | ESLint global vs local → TypeError rules @typescript-eslint                | #eslint #pnpm #typescript-eslint #version-mismatch #windows #global #local #scripts               |
+| [LRN-058](learnings/LRN-058.md) | 2026-06-26 | Supprimer valeurs num. des messages si affichées par un frère              | #ui #ux #component #react #information-density #dry #message-text                                 |
+| [LRN-059](learnings/LRN-059.md) | 2026-06-27 | Bulletin météo multi-phénomènes : péremption = niveau bulletin, pas item   | #vigilance #bulletin #staleness #midnight #meteofrance #opendatasoft #algorithm #grouping         |

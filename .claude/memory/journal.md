@@ -701,3 +701,76 @@ Décision explicite de reporter l'app state vigilance (fond + couleurs globales 
 - [BDR-062](decisions/BDR-062.md) — Scope vigilance V0 (filtres + J+J1)
 - [ZBLK-035](archive/blockers/ZBLK-035.md) — Portail MF bloqué (Gmail)
 - [ZBLK-037](archive/blockers/ZBLK-037.md) — URL Atom inventée
+
+## 2026-06-26
+
+Session courte de correction de bug dans `VigilanceBanner`. Symptôme : pour le département 85 (Vendée), la bannière affichait 2 badges "Canicule" pour demain (J+1) au lieu d'un seul avec transition — car Météo-France anticipait un passage orange→jaune à 22h.
+
+Cause racine : OpenDataSoft retourne N enregistrements distincts pour le même phénomène quand il y a une transition de niveau sur la même échéance. Le code initial utilisait `key={v.phenomenon}` comme clé React → warning de clé dupliquée, et les deux badges s'affichaient côte à côte sans regroupement.
+
+Débat Rodin préalable sur l'option de supprimer J+1 entièrement. Décision : garder J+1 et traiter les multi-records par phénomène en affichant la transition avec l'heure de bascule — `[Canicule 🟠] → 22h [Canicule 🟡]`.
+
+Fix appliqué dans `VigilanceBanner.tsx` : `groupByPhenomenon` (Map phénomène → entrées triées par `begin_time`) + `renderPhenomena` (1 entrée = badge simple, N entrées = badges intercalés avec flèches horaires) + `formatHour` (`Intl.DateTimeFormat` Europe/Paris). Vérification dev-browser confirmée : dept 85 affiche `Demain : [Canicule 🟠] → 22h [Canicule 🟡] [Orages 🟡]`.
+
+ESLint version mismatch (global 9.9.0 vs local 9.39.4) détecté en passant — `pnpm exec eslint` échoue, `pnpm lint` (script) fonctionne. Pré-existing, non bloquant.
+
+**Entrées clés :**
+
+- [BDR-063](decisions/BDR-063.md) — VigilanceBanner : transitions de niveau avec heure pivot
+- [LRN-056](learnings/LRN-056.md) — ODS N records par phénomène = transition de niveau
+
+---
+
+Session de restructuration du dashboard "Acquisition — Liens UTM" (ID 769548).
+
+Point de départ : les 5 insights originaux filtraient tous `utm_source=share` — la campagne "launch" (partage via lien Twitter/X de Baptiste) n'apparaissait jamais dans le dashboard. Question initiale de Baptiste : "est-ce qu'on a assez d'insights dans UTM ou sont-ils trop spécifiques à share ?"
+
+Découverte critique : les 5 insights affichaient 0 données malgré du trafic réel. Cause : `explicitDate: true` + `date_from: "2026-06-25T10:37:25"` — fenêtre figée à l'instant de création, couvrant seulement ~1h de données. Fix : `explicitDate: false` + `date_from: "-30d"` propagé sur les 5 insights et sur le dashboard.
+
+Restructuration en 2 sections : "📊 Vue globale UTM" (3 nouveaux insights avec filtre `utm_source is_set` — toutes sources confondues : launch, share, et toute campagne future) + "🔁 Partage viral (share)" (3 insights existants réorganisés, filtrant spécifiquement `utm_source=share`). Layout : chaque section-header en `w=12, h=2`, les insights de la section en dessous.
+
+Deux incidents techniques résolus : (1) text tiles section-headers scrollaient avec `h:1` car le body contenait un titre H3 + une ligne de description — fix `h:2`, standard du dashboard ifecho V2 (ID 769673) ; (2) `insight-create` 403 Forbidden au premier call — relance immédiate identique → 200 OK, erreur transitoire OAuth.
+
+Filtre `is_set` utilisé pour la section Vue globale : `{"operator": "is_set"}` sans champ `value` — présence de la propriété quelle que soit sa valeur.
+
+**Entrées clés :**
+
+- [BDR-065](decisions/BDR-065.md) — Dashboard UTM : Vue globale + Partage viral
+- voir aussi GLRN-161 — `explicitDate: true` fige la fenêtre
+- voir aussi GLRN-162 — text tiles `h:2` pour titre + description
+- voir aussi GLRN-163 — `insight-create` 403 → relance identique suffit
+- voir aussi GLRN-164 — filtre `is_set` sans champ `value`
+
+---
+
+Session courte de nettoyage composants : fusion `VerdictBanner` → `ThermalDelta`.
+
+`VerdictBanner` et `ThermalDelta` coexistaient dans `RecommendCard` avec une redondance structurelle forte — tous deux dérivaient un verdict du score courant et l'affichaient avec icône, titre et message coloré. Fusion décidée : la logique `getVerdict` (incluant icons, couleurs, messages, analytics) absorbée dans `ThermalDelta`, `VerdictBanner.tsx` supprimé, son import retiré de `RecommendCard/index.tsx`.
+
+Détail notable : les messages de `VerdictBanner` incluaient `${delta.toFixed(1)}°C` — valeur déjà affichée en grand par `ThermalComparison` dans la même card. Valeurs numériques retirées des messages texte pour éviter la redondance informationnelle.
+
+Unification couleur : `neutral` (score 0–2, "Légèrement bénéfique") et `wait` (score -2–0, "Patientez") partagent désormais le même style amber (`bg-verdict-wait` / `text-amber-*`) — deux zones d'ambiguïté thermique traitées visuellement de la même façon.
+
+**Entrées clés :**
+
+- [BDR-066](decisions/BDR-066.md) — Fusion VerdictBanner → ThermalDelta
+- [LRN-058](learnings/LRN-058.md) — Supprimer valeurs num. des messages si affichées par un frère
+
+## 2026-06-27
+
+Session de correction du bug de péremption du bulletin de vigilance après minuit (`VigilanceBanner.tsx`).
+
+**Symptôme** : après 00h00, la bannière affichait des icônes vertes incorrectes pour certains phénomènes (Orages) alors que la canicule était correctement détectée comme expirée. Cause : la détection de péremption était calculée **par phénomène** — si un phénomène n'avait pas de records J (ex. Orages était vert vendredi, donc aucun enregistrement ODS), la logique `j.length > 0 && j.every(expired)` retournait `false` et le phénomène restait sur ses items J (vides), affichant une icône verte non pertinente.
+
+**Fix : `bulletinStale` global**. La péremption est désormais calculée une seule fois sur l'ensemble des items J de TOUS les phénomènes (`[...groups.values()].flatMap(g => g.j)`). Si la totalité est expirée, tout le bulletin bascule sur les données J1 — même les phénomènes sans items J, qui reçoivent `todayItems = j1` et `tomorrowItems = []`. La règle : péremption = propriété du bulletin entier, pas d'un phénomène individuel.
+
+**`getActiveColor` simplifié** : la logique de fallback J1 était conditionnelle par phénomène, maintenant inutile — la fonction ne prend plus qu'un argument `today: VigilanceItem[]` et retourne la couleur active en cherchant l'item en cours, puis l'item futur, puis "vert".
+
+**"Indisponible" pour J1 absent** : remplacement du tiret "-" par le texte `Indisponible` dans `DayCell` quand les items du lendemain sont vides (bulletin non stale = vrai demain ; bulletin stale = déjà utilisé pour aujourd'hui). Plus explicite qu'un simple tiret.
+
+Deux entrées globales créées : `GLRN-165` (TooltipProvider à la racine) et `GLRN-166` (`bg-primary` tooltip = accent → `bg-foreground` pour neutre) — issues d'une session précédente d'itération UI sur la bannière.
+
+**Entrées clés :**
+
+- [BDR-067](decisions/BDR-067.md) — `bulletinStale` global multi-phénomènes
+- [LRN-059](learnings/LRN-059.md) — Bulletin météo : péremption = niveau bulletin, pas item
