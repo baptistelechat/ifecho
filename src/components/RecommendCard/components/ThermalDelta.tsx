@@ -1,59 +1,142 @@
+import analytics from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import type { HourlyScore } from "@/types";
-import { ArrowUpDown, Check, Minus, X } from "lucide-react";
+import { Ban, CheckCircle, Clock, Wind } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 interface ThermalDeltaProps {
   currentScore: HourlyScore;
 }
 
-const MAX_DELTA = 15;
+type VerdictKey = "good" | "wait" | "bad" | "neutral";
 
-type ScoreLevel = "good" | "neutral" | "bad";
+interface Verdict {
+  key: VerdictKey;
+  Icon: React.ElementType;
+  title: string;
+  message: string;
+}
 
-const getLevel = (score: number): ScoreLevel => {
-  if (score > 2) return "good";
-  if (score > -2) return "neutral";
-  return "bad";
+const getVerdict = (hourlyScore: HourlyScore): Verdict => {
+  const s = hourlyScore.score;
+
+  if (s >= 4)
+    return {
+      key: "good",
+      Icon: CheckCircle,
+      title: "Aérez maintenant",
+      message:
+        "Extérieur nettement plus frais - excellent moment pour ventiler.",
+    };
+  if (s > 2)
+    return {
+      key: "good",
+      Icon: Wind,
+      title: "Bon moment pour aérer",
+      message:
+        hourlyScore.uvPenalty > 0
+          ? "Écart favorable malgré l'ensoleillement."
+          : "Bon moment pour ventiler.",
+    };
+  if (s > 0)
+    return {
+      key: "neutral",
+      Icon: Wind,
+      title: "Légèrement bénéfique",
+      message: "Aérer renouvelle l'air sans vraiment refroidir.",
+    };
+  if (s < -2)
+    return {
+      key: "bad",
+      Icon: Ban,
+      title: "Ne pas aérer",
+      message:
+        "L'extérieur est plus chaud - ouvrir les fenêtres réchaufferait votre intérieur.",
+    };
+  if (s <= 0)
+    return {
+      key: "wait",
+      Icon: Clock,
+      title: "Patientez",
+      message: "Extérieur légèrement plus chaud - attendez ce soir.",
+    };
+  return {
+    key: "neutral",
+    Icon: Wind,
+    title: "Températures égales",
+    message:
+      "Pas d'avantage thermique - aérez quelques minutes pour renouveler l'air.",
+  };
 };
 
-const LEVEL_STYLES: Record<
-  ScoreLevel,
-  { value: string; bar: string; icon: string }
+const verdictStyles: Record<
+  VerdictKey,
+  { bar: string; iconColor: string; titleColor: string; textColor: string }
 > = {
   good: {
-    value: "text-verdict-good",
     bar: "bg-verdict-good",
-    icon: "text-verdict-good",
+    iconColor: "text-verdict-good",
+    titleColor: "text-green-800",
+    textColor: "text-green-700",
   },
   neutral: {
-    value: "text-amber-500",
-    bar: "bg-amber-400",
-    icon: "text-amber-500",
+    bar: "bg-verdict-wait",
+    iconColor: "text-verdict-wait",
+    titleColor: "text-amber-800",
+    textColor: "text-amber-700",
+  },
+  wait: {
+    bar: "bg-verdict-wait",
+    iconColor: "text-verdict-wait",
+    titleColor: "text-amber-800",
+    textColor: "text-amber-700",
   },
   bad: {
-    value: "text-verdict-bad",
     bar: "bg-verdict-bad",
-    icon: "text-verdict-bad",
+    iconColor: "text-verdict-bad",
+    titleColor: "text-red-800",
+    textColor: "text-red-700",
   },
 };
 
+const MAX_DELTA = 15;
+
 const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
+  const verdict = getVerdict(currentScore);
+  const styles = verdictStyles[verdict.key];
+  const { Icon } = verdict;
   const delta = currentScore.deltaT;
   const absD = Math.abs(delta);
   const barWidth = Math.min((absD / MAX_DELTA) * 100, 100);
-  const level = getLevel(currentScore.score);
-  const styles = LEVEL_STYLES[level];
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    const payload = {
+      verdict: verdict.key,
+      score: currentScore.score,
+      delta_t: currentScore.deltaT,
+    };
+    if (isFirstRender.current) {
+      analytics.verdictSeen(payload);
+      isFirstRender.current = false;
+    } else {
+      analytics.verdictUpdated(payload);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verdict.key]);
 
   return (
     <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <ArrowUpDown className="size-3.5 text-muted-foreground" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Écart thermique
+          <Icon className={cn("size-3.5 shrink-0", styles.iconColor)} />
+          <p className={cn("text-sm font-bold", styles.titleColor)}>
+            {verdict.title}
           </p>
         </div>
-        <span className={cn("text-sm font-bold", styles.value)}>
+        <span
+          className={cn("tabular-nums text-sm font-bold", styles.iconColor)}
+        >
           {delta > 0 ? "↓" : "↑"} {absD.toFixed(1)}°C
         </span>
       </div>
@@ -69,20 +152,9 @@ const ThermalDelta = ({ currentScore }: ThermalDeltaProps) => {
         />
       </div>
 
-      <div className="mt-2 flex items-center gap-1.5">
-        {level === "good" ? (
-          <Check className={cn("size-3 shrink-0", styles.icon)} />
-        ) : level === "neutral" ? (
-          <Minus className={cn("size-3 shrink-0", styles.icon)} />
-        ) : (
-          <X className={cn("size-3 shrink-0", styles.icon)} />
-        )}
-        <p className="text-xs text-muted-foreground">
-          {delta > 0
-            ? "Extérieur plus frais - aérer refroidira l'intérieur"
-            : "Extérieur plus chaud - aérer réchaufferait l'intérieur"}
-        </p>
-      </div>
+      <p className={cn("mt-2 text-xs leading-relaxed", styles.textColor)}>
+        {verdict.message}
+      </p>
     </div>
   );
 };
