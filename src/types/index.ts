@@ -9,7 +9,7 @@ export interface GeoLocation {
 
 export interface VigilanceItem {
   phenomenon: string;
-  color: "jaune" | "orange" | "rouge";
+  color: "jaune" | "orange" | "rouge" | "vert";
   echeance: "J" | "J1";
   begin_time: string;
   end_time: string;

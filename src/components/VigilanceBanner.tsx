@@ -54,6 +54,7 @@ const DOT_BG: Record<string, string> = {
   rouge: "bg-red-500",
   orange: "bg-orange-500",
   jaune: "bg-yellow-500",
+  vert: "bg-green-400",
 };
 
 const COLOR_LABEL: Record<string, string> = {
@@ -100,7 +101,8 @@ const getActiveColor = (today: VigilanceItem[]): string => {
   );
   if (active) return active.color;
   const upcoming = today.find((item) => new Date(item.begin_time) > now);
-  return upcoming?.color ?? "vert";
+  // ponytail: if all windows passed, keep highest color seen today — icon stays colored
+  return upcoming?.color ?? getHighestColor(today);
 };
 
 type PhenomenonGroup = { j: VigilanceItem[]; j1: VigilanceItem[] };
