@@ -1,13 +1,12 @@
 import { useMemo } from "react";
 import type { WeatherData, HourlyScore } from "@/types";
-import {
-  isoLocalToMs,
-  parseDateHour,
-  todayDateString,
-  offsetDateString,
-} from "@/lib/utils";
+import { offsetDateString, parseDateHour, todayDateString } from "@/lib/utils";
 
-// Malus UV : réduit le score si le soleil entre par les vitres pendant l'aération
+// Seuil RE2020 / Plan Canicule France : au-dessus de 26°C l'intérieur est en inconfort thermique
+const COMFORT_THRESHOLD_CELSIUS = 26;
+// Plancher extérieur empirique : sous 16°C l'aération est hors-saison (trop froid)
+const OUTDOOR_MIN_CELSIUS = 16;
+
 const computeUvPenalty = (uvIndex: number): number => {
   if (uvIndex >= 6) return 1.5;
   if (uvIndex >= 3) return 1;
@@ -26,15 +25,12 @@ export const useVentilationScore = (
     const nowHour = new Date().getHours();
     const nowDate = todayDateString();
     const tomorrowDate = offsetDateString(1);
-    const dayAfterDate = offsetDateString(2);
 
     return weather.hours.flatMap((h) => {
       const { date, hour: hourNum } = parseDateHour(h.time);
-      const keep =
-        (date === nowDate && hourNum >= nowHour) || // J depuis now
-        date === tomorrowDate || // tout J+1
-        date === dayAfterDate; // tout J+2 (créneau peut dépasser 24h)
-      if (!keep) return [];
+      // Filtre strict J+J+1 : aujourd'hui dès l'heure actuelle, demain entier
+      if (!((date === nowDate && hourNum >= nowHour) || date === tomorrowDate))
+        return [];
 
       const feltIndoor = indoorTemp + comfortBias;
       const deltaT = feltIndoor - h.apparentTemperature;
@@ -50,15 +46,22 @@ export const useVentilationScore = (
           apparentTemperature: h.apparentTemperature,
           windspeed: h.windspeed,
           uvIndex: h.uvIndex,
+          weatherCode: h.weatherCode,
           score,
           deltaT,
           uvPenalty,
-          isFavorable: score > 2,
+          isFavorable:
+            indoorTemp > COMFORT_THRESHOLD_CELSIUS &&
+            h.apparentTemperature >= OUTDOOR_MIN_CELSIUS &&
+            score > 2,
         },
       ];
     });
   }, [weather, indoorTemp, comfortBias]);
 };
+
+export const getTimelineLength = (scores: HourlyScore[]): number =>
+  Math.min(24, scores.length);
 
 export const getBestVentilationHour = (
   scores: HourlyScore[],
@@ -77,32 +80,4 @@ export const getBestVentilationHour = (
   return upcoming.reduce((best, current) =>
     current.score > best.score ? current : best,
   );
-};
-
-// Nombre de scores à passer à la timeline :
-// 24h minimum + extension jusqu'à la fin du dernier créneau idéal + 1h buffer.
-export const getTimelineLength = (scores: HourlyScore[]): number => {
-  const MIN = 25;
-  const nowMs = Date.now();
-  const WINDOW_24H_MS = 24 * 3_600_000;
-
-  let inSlot = false;
-  let slotStartMs = 0;
-  let lastRelevantIdx = MIN - 1;
-
-  for (let i = 0; i < scores.length; i++) {
-    const s = scores[i]!;
-    if (s.isFavorable && !inSlot) {
-      inSlot = true;
-      slotStartMs = isoLocalToMs(s.time);
-    } else if (!s.isFavorable) {
-      inSlot = false;
-    }
-    // Inclure ce score si le créneau courant démarre dans la fenêtre 24h
-    if (inSlot && slotStartMs < nowMs + WINDOW_24H_MS) {
-      lastRelevantIdx = i + 1; // +1 : inclure la première barre non-favorable après le créneau
-    }
-  }
-
-  return Math.max(MIN, lastRelevantIdx + 1); // +1 : 1h de buffer visuel
 };

@@ -35,7 +35,7 @@ const RecommendCard = ({
         cityName={cityName}
       />
       <ThermalDelta currentScore={currentScore} />
-      <IdealSlots scores={scores} />
+      <IdealSlots scores={scores} indoorTemp={indoorTemp} />
     </div>
   );
 };

@@ -1,10 +1,11 @@
-import { Database, Heart, Lock, ThermometerSun } from "lucide-react";
+import { Brain, Database, Heart, Lock, ThermometerSun } from "lucide-react";
 
 interface AppFooterProps {
+  showAlgorithmLink?: boolean;
   showPrivacyLink?: boolean;
 }
 
-const AppFooter = ({ showPrivacyLink = true }: AppFooterProps) => (
+const AppFooter = ({ showAlgorithmLink = true, showPrivacyLink = true }: AppFooterProps) => (
   <footer className="py-4 text-center text-xs text-muted-foreground">
     <div className="mx-auto my-3 w-16 border-t border-border" />
     <p className="mt-1 flex items-center justify-center gap-1">
@@ -42,6 +43,19 @@ const AppFooter = ({ showPrivacyLink = true }: AppFooterProps) => (
           API Adresse
         </a>
       </span>
+      {showAlgorithmLink && (
+        <>
+          <span className="h-3 w-px bg-border" />
+          <span className="flex items-center gap-1">
+            <Brain className="size-3" />
+            <a
+              href="#algorithme"
+            className="underline transition-colors hover:text-ember"
+          >
+            Algorithme
+          </a>
+        </span>
+      </>)}
       {showPrivacyLink && (
         <>
           <span className="h-3 w-px bg-border" />

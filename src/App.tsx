@@ -18,6 +18,7 @@ import {
   useVentilationScore,
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
+import AlgorithmPage from "@/pages/AlgorithmPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import { SPRING_EASING } from "@/lib/utils";
 import { COMFORT_LEVELS, type ComfortLevel } from "@/types";
@@ -88,9 +89,13 @@ const isFirstVisit = (): boolean => {
 
 const App = () => {
   useUpdateNotification();
-  const [currentPage, setCurrentPage] = useState<"main" | "privacy">(() =>
-    window.location.hash === "#confidentialite" ? "privacy" : "main",
-  );
+  const [currentPage, setCurrentPage] = useState<
+    "main" | "privacy" | "algorithm"
+  >(() => {
+    if (window.location.hash === "#confidentialite") return "privacy";
+    if (window.location.hash === "#algorithme") return "algorithm";
+    return "main";
+  });
   const [indoorTemp, setIndoorTemp] = useState<number>(loadIndoorTemp);
   const [comfortLevel, setComfortLevel] =
     useState<ComfortLevel>(loadComfortLevel);
@@ -131,10 +136,14 @@ const App = () => {
 
   useEffect(() => {
     const handler = () => {
-      const page =
-        window.location.hash === "#confidentialite" ? "privacy" : "main";
-      setCurrentPage(page);
-      if (page === "privacy") analytics.privacyPageViewed();
+      if (window.location.hash === "#confidentialite") {
+        setCurrentPage("privacy");
+        analytics.privacyPageViewed();
+      } else if (window.location.hash === "#algorithme") {
+        setCurrentPage("algorithm");
+      } else {
+        setCurrentPage("main");
+      }
     };
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
@@ -204,7 +213,11 @@ const App = () => {
       <LazyMotion features={domAnimation}>
         <MotionConfig reducedMotion="user">
           <AnimatePresence mode="wait">
-            {currentPage === "privacy" ? (
+            {currentPage === "algorithm" ? (
+              <m.div key="algorithm" {...PAGE_TRANSITION}>
+                <AlgorithmPage onBack={handleBack} />
+              </m.div>
+            ) : currentPage === "privacy" ? (
               <m.div key="privacy" {...PAGE_TRANSITION}>
                 <PrivacyPage onBack={handleBack} />
               </m.div>

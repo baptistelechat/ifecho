@@ -101,7 +101,7 @@ const getActiveColor = (today: VigilanceItem[]): string => {
   );
   if (active) return active.color;
   const upcoming = today.find((item) => new Date(item.begin_time) > now);
-  // ponytail: if all windows passed, keep highest color seen today — icon stays colored
+  // ponytail: if all windows passed, keep highest color seen today - icon stays colored
   return upcoming?.color ?? getHighestColor(today);
 };
 

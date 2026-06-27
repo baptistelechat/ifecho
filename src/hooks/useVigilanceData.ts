@@ -52,9 +52,9 @@ export const useVigilanceData = (
         );
         const filtered = results
           .filter(
-            // ponytail: vert J kept for phenomena that already have a colored J alert —
+            // ponytail: vert J kept for phenomena that already have a colored J alert -
             // shows the alert-end transition (e.g. orages jaune→vert at 16h).
-            // vert J1 kept — means "bulletin published, no alert tomorrow".
+            // vert J1 kept - means "bulletin published, no alert tomorrow".
             (r) =>
               !EXCLUDED.has(r.phenomenon) &&
               (VALID_COLORS.has(r.color) ||

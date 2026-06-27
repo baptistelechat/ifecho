@@ -9,7 +9,15 @@ import {
 import type { HourlyScore } from "@/types";
 import { AnimatePresence, m } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
-import { AlarmClock, ArrowDown, ArrowUp, Moon, Sun } from "lucide-react";
+import {
+  AlarmClock,
+  ArrowDown,
+  ArrowUp,
+  Check,
+  Moon,
+  Sun,
+  X,
+} from "lucide-react";
 
 interface TimeSlot {
   startHour: number;
@@ -20,6 +28,7 @@ interface TimeSlot {
   baseLabel: string;
   isNow: boolean;
   crossesMidnight: boolean;
+  isOpen: boolean;
 }
 
 const TIME_OF_DAY_META: Record<
@@ -85,6 +94,7 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
     const crossesMidnight =
       parseDateHour(first.time).date !== parseDateHour(last.time).date ||
       endHour === 0;
+    const isOpen = endMs > now + WINDOW_MS;
     return [
       {
         startHour,
@@ -95,6 +105,7 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
         baseLabel: getSlotLabel(startHour),
         isNow,
         crossesMidnight,
+        isOpen,
       },
     ];
   });
@@ -102,9 +113,10 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
 
 interface IdealSlotsProps {
   scores: HourlyScore[];
+  indoorTemp: number;
 }
 
-const IdealSlots = ({ scores }: IdealSlotsProps) => {
+const IdealSlots = ({ scores, indoorTemp }: IdealSlotsProps) => {
   const slots = getIdealSlots(scores);
   const todayStr = todayDateString();
   const tomorrowStr = offsetDateString(1);
@@ -133,10 +145,47 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
             transition={{ duration: 0.22, ease: SPRING_EASING }}
             className="overflow-hidden"
           >
-            <p className="px-4 pb-4 text-sm text-muted-foreground">
-              Aucun créneau favorable dans les 24 prochaines heures. Gardez les
-              fenêtres fermées.
-            </p>
+            <div className="px-4 pb-4">
+              <p className="mb-3 text-sm text-muted-foreground">
+                Aucun créneau favorable dans les 24 prochaines heures. Gardez
+                les fenêtres fermées.
+              </p>
+              <ul className="space-y-1.5">
+                {(
+                  [
+                    {
+                      label: "Intérieur > 26 °C",
+                      met: indoorTemp > 26,
+                    },
+                    {
+                      label: "Écart extérieur ≥ 2 °C",
+                      met:
+                        scores.length > 0 &&
+                        Math.max(...scores.map((s) => s.score)) > 2,
+                    },
+                    {
+                      label: "Extérieur ≥ 16 °C",
+                      met: scores.some((s) => s.apparentTemperature >= 16),
+                    },
+                  ] as const
+                ).map(({ label, met }) => (
+                  <li key={label} className="flex items-center gap-2 text-xs">
+                    {met ? (
+                      <Check className="size-3.5 shrink-0 text-verdict-good" />
+                    ) : (
+                      <X className="size-3.5 shrink-0 text-red-400" />
+                    )}
+                    <span
+                      className={
+                        met ? "text-foreground" : "text-muted-foreground"
+                      }
+                    >
+                      {label}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </m.div>
         ) : (
           slots.map((slot, index) => {
@@ -183,7 +232,9 @@ const IdealSlots = ({ scores }: IdealSlotsProps) => {
                       slot.isNow ? "text-ember" : "text-foreground",
                     )}
                   >
-                    {formatH(slot.startHour)} – {formatH(slot.endHour)}
+                    {slot.isOpen
+                      ? `Dès ${formatH(slot.startHour)}`
+                      : `${formatH(slot.startHour)} – ${formatH(slot.endHour)}`}
                   </p>
                   <div className="flex items-center gap-1">
                     <span className="flex items-center">

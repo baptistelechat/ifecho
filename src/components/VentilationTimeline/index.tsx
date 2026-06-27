@@ -25,13 +25,13 @@ const ARROW_SIZE = 12;
 const ARROW_TOP_Y = ZONE_POSITIVE - GAP_BASELINE - ARROW_SIZE;
 const ARROW_BOTTOM_Y = ZONE_POSITIVE + 1 + GAP_BASELINE;
 
-const getBarColor = (score: number, isBest: boolean): string => {
-  if (isBest || score > 2) return "bg-verdict-good";
+const getBarColor = (isFavorable: boolean, isBest: boolean): string => {
+  if (isBest || isFavorable) return "bg-verdict-good";
   return "bg-amber-400/70";
 };
 
-const getVerdictLabel = (score: number): string => {
-  if (score > 2) return "Favorable";
+const getVerdictLabel = (isFavorable: boolean, score: number): string => {
+  if (isFavorable) return "Favorable";
   if (score <= -2) return "Défavorable";
   return "Neutre";
 };
@@ -99,8 +99,8 @@ const VentilationTimeline = ({
                 ? Math.max((Math.abs(s) / maxAbsScore) * ZONE_NEGATIVE, MIN_BAR)
                 : 0;
 
-            const showTopArrow = isNow && s <= 2;
-            const showBottomArrow = isNow && s > 2;
+            const showTopArrow = isNow && !score.isFavorable;
+            const showBottomArrow = isNow && score.isFavorable;
 
             return (
               <div key={score.time} className="flex gap-px">
@@ -171,7 +171,7 @@ const VentilationTimeline = ({
                             }}
                             className={cn(
                               "w-5 rounded-t",
-                              getBarColor(s, isBest),
+                              getBarColor(score.isFavorable, isBest),
                             )}
                           />
                         </div>
@@ -215,7 +215,9 @@ const VentilationTimeline = ({
                   <TooltipContent side="top">
                     <p className="font-semibold">{formatHour(scoreHour)}</p>
                     <p>{score.temperature.toFixed(1)}°C</p>
-                    <p className="opacity-70">{getVerdictLabel(s)}</p>
+                    <p className="opacity-70">
+                      {getVerdictLabel(score.isFavorable, s)}
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </div>
