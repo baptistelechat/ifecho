@@ -79,7 +79,7 @@ const PHENOMENON_LABEL: Record<string, string> = {
   "vent violent": "Vent",
   "pluie-inondation": "Pluie",
   inondations: "Inondations",
-  "vagues-submersion": "Vagues",
+  "vagues-submersion": "Submersion",
 };
 
 // --- Helpers ---
@@ -284,6 +284,29 @@ const VigilanceBanner = ({
     ? `https://vigilance.meteofrance.fr/fr/${toSlug(departmentName)}`
     : "https://vigilance.meteofrance.fr";
 
+  const allJItems = [...groups.values()].flatMap((g) => g.j);
+  const bulletinStale =
+    allJItems.length > 0 &&
+    allJItems.every((item) => new Date(item.end_time) <= new Date());
+  const PHENOMENON_ORDER: Record<string, number> = {
+    canicule: 0,
+    orages: 1,
+    "vent violent": 2,
+    "pluie-inondation": 3,
+    inondations: 4,
+    "vagues-submersion": 5,
+  };
+  const maxColor = (g: PhenomenonGroup) =>
+    Math.max(0, ...[...g.j, ...g.j1].map((i) => COLOR_PRIORITY[i.color] ?? 0));
+  const entries = [...groups.entries()]
+    .filter(([p]) => PHENOMENON_ICON[p])
+    .sort(([a, ga], [b, gb]) => {
+      const d = maxColor(gb) - maxColor(ga);
+      return d !== 0
+        ? d
+        : (PHENOMENON_ORDER[a] ?? 99) - (PHENOMENON_ORDER[b] ?? 99);
+    });
+
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       {/* Header */}
@@ -303,26 +326,29 @@ const VigilanceBanner = ({
         )}
       </div>
 
-      {/* Body - N colonnes dynamiques */}
-      <div className="flex divide-x divide-border">
-        {(() => {
-          const now = new Date();
-          // Staleness globale : si tous les items J de n'importe quel phénomène
-          // sont expirés, le bulletin J entier est périmé (après minuit)
-          const allJItems = [...groups.values()].flatMap((g) => g.j);
-          const bulletinStale =
-            allJItems.length > 0 &&
-            allJItems.every((item) => new Date(item.end_time) <= now);
-
-          return [...groups.entries()].map(([phenomenon, { j, j1 }]) => {
+      {/* Body - grille 2 colonnes */}
+      <div className="px-3">
+        <div className="grid grid-cols-2">
+          {entries.map(([phenomenon, { j, j1 }], index) => {
             const Icon = PHENOMENON_ICON[phenomenon];
-            if (!Icon) return null;
-
             const todayItems = bulletinStale ? j1 : j;
             const tomorrowItems = bulletinStale ? [] : j1;
             const iconColor = getActiveColor(todayItems);
+            const spanFull =
+              entries.length % 2 === 1 && index === entries.length - 1;
+            const lastRowStart =
+              entries.length % 2 === 0
+                ? entries.length - 2
+                : entries.length - 1;
+            const borderR =
+              !spanFull && index % 2 === 0 ? " border-r border-border" : "";
+            const borderB =
+              index < lastRowStart ? " border-b border-border" : "";
             return (
-              <div key={phenomenon} className="flex flex-1 flex-col pt-2">
+              <div
+                key={phenomenon}
+                className={`flex flex-col justify-between pt-2${borderR}${borderB}${spanFull ? " col-span-2" : ""}`}
+              >
                 <span className="px-2 text-xs font-semibold leading-tight text-foreground">
                   {PHENOMENON_LABEL[phenomenon] ?? phenomenon}
                   {" : "}
@@ -330,21 +356,41 @@ const VigilanceBanner = ({
                     {COLOR_LABEL[iconColor]}
                   </span>
                 </span>
-                <div className="flex flex-1 items-center justify-center py-3">
-                  <LoopIcon
-                    Icon={Icon}
-                    size={60}
-                    className={ICON_COLOR[iconColor]}
-                  />
-                </div>
-                <div className="flex w-full divide-x divide-border">
-                  <DayCell items={todayItems} label="Aujourd'hui" isToday />
-                  <DayCell items={tomorrowItems} label="Demain" />
-                </div>
+                {spanFull ? (
+                  /* Lone card : icon gauche | jours droits empilés */
+                  <div className="flex">
+                    <div className="flex flex-1 items-center justify-center">
+                      <LoopIcon
+                        Icon={Icon}
+                        size={60}
+                        className={ICON_COLOR[iconColor]}
+                      />
+                    </div>
+                    <div className="flex flex-1 flex-col">
+                      <DayCell items={todayItems} label="Aujourd'hui" isToday />
+                      <DayCell items={tomorrowItems} label="Demain" />
+                    </div>
+                  </div>
+                ) : (
+                  /* Carte normale : icon centré + jours en bas */
+                  <>
+                    <div className="flex items-center justify-center py-3">
+                      <LoopIcon
+                        Icon={Icon}
+                        size={60}
+                        className={ICON_COLOR[iconColor]}
+                      />
+                    </div>
+                    <div className="flex w-full divide-x divide-border">
+                      <DayCell items={todayItems} label="Aujourd'hui" isToday />
+                      <DayCell items={tomorrowItems} label="Demain" />
+                    </div>
+                  </>
+                )}
               </div>
             );
-          });
-        })()}
+          })}
+        </div>
       </div>
 
       {/* Footer global */}

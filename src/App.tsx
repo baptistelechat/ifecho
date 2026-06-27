@@ -14,6 +14,7 @@ import { useUpdateNotification } from "@/hooks/useUpdateNotification";
 import { useVigilanceData } from "@/hooks/useVigilanceData";
 import {
   getBestVentilationHour,
+  getTimelineLength,
   useVentilationScore,
 } from "@/hooks/useVentilationScore";
 import { useWeatherForecast } from "@/hooks/useWeatherForecast";
@@ -306,7 +307,10 @@ const App = () => {
 
                           <div className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                             <VentilationTimeline
-                              scores={scores.slice(0, 25)}
+                              scores={scores.slice(
+                                0,
+                                getTimelineLength(scores),
+                              )}
                               bestHour={bestHour}
                             />
                           </div>
