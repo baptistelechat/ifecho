@@ -25,3 +25,10 @@ export const offsetDateString = (days: number): string => {
 export const SPRING_EASING: [number, number, number, number] = [
   0.23, 1, 0.32, 1,
 ];
+
+// Interprète une ISO locale (sans offset, retournée par Open-Meteo) comme heure locale
+export const isoLocalToMs = (isoLocal: string): number => {
+  const { date, hour } = parseDateHour(isoLocal);
+  const [y, m, d] = date.split("-").map(Number);
+  return new Date(y!, (m ?? 1) - 1, d!, hour!, 0, 0, 0).getTime();
+};

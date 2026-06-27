@@ -1,6 +1,11 @@
 import { useMemo } from "react";
 import type { WeatherData, HourlyScore } from "@/types";
-import { parseDateHour, todayDateString, offsetDateString } from "@/lib/utils";
+import {
+  isoLocalToMs,
+  parseDateHour,
+  todayDateString,
+  offsetDateString,
+} from "@/lib/utils";
 
 // Malus UV : réduit le score si le soleil entre par les vitres pendant l'aération
 const computeUvPenalty = (uvIndex: number): number => {
@@ -28,7 +33,7 @@ export const useVentilationScore = (
       const keep =
         (date === nowDate && hourNum >= nowHour) || // J depuis now
         date === tomorrowDate || // tout J+1
-        (date === dayAfterDate && hourNum < nowHour); // J+2 jusqu'à nowHour (fenêtre 48h)
+        date === dayAfterDate; // tout J+2 (créneau peut dépasser 24h)
       if (!keep) return [];
 
       const feltIndoor = indoorTemp + comfortBias;
@@ -72,4 +77,32 @@ export const getBestVentilationHour = (
   return upcoming.reduce((best, current) =>
     current.score > best.score ? current : best,
   );
+};
+
+// Nombre de scores à passer à la timeline :
+// 24h minimum + extension jusqu'à la fin du dernier créneau idéal + 1h buffer.
+export const getTimelineLength = (scores: HourlyScore[]): number => {
+  const MIN = 25;
+  const nowMs = Date.now();
+  const WINDOW_24H_MS = 24 * 3_600_000;
+
+  let inSlot = false;
+  let slotStartMs = 0;
+  let lastRelevantIdx = MIN - 1;
+
+  for (let i = 0; i < scores.length; i++) {
+    const s = scores[i]!;
+    if (s.isFavorable && !inSlot) {
+      inSlot = true;
+      slotStartMs = isoLocalToMs(s.time);
+    } else if (!s.isFavorable) {
+      inSlot = false;
+    }
+    // Inclure ce score si le créneau courant démarre dans la fenêtre 24h
+    if (inSlot && slotStartMs < nowMs + WINDOW_24H_MS) {
+      lastRelevantIdx = i + 1; // +1 : inclure la première barre non-favorable après le créneau
+    }
+  }
+
+  return Math.max(MIN, lastRelevantIdx + 1); // +1 : 1h de buffer visuel
 };

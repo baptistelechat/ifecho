@@ -1,5 +1,6 @@
 import {
   cn,
+  isoLocalToMs,
   offsetDateString,
   parseDateHour,
   SPRING_EASING,
@@ -32,14 +33,6 @@ const TIME_OF_DAY_META: Record<
   Nuit: { icon: Moon, color: "text-indigo-400" },
 };
 
-// Convertit une string ISO locale (sans offset) en timestamp comparable
-// en supposant que la string est en heure locale du navigateur
-const localIsoToMs = (isoLocal: string): number => {
-  const { date, hour } = parseDateHour(isoLocal);
-  const [y, m, d] = date.split("-").map(Number);
-  return new Date(y!, (m ?? 1) - 1, d!, hour!, 0, 0, 0).getTime();
-};
-
 const getSlotLabel = (startHour: number): string => {
   if (startHour >= 5 && startHour < 11) return "Matin frais";
   if (startHour >= 11 && startHour < 14) return "Midi";
@@ -62,7 +55,7 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
       const last = current[current.length - 1];
       const isConsecutive =
         !last ||
-        localIsoToMs(score.time) - localIsoToMs(last.time) <= 3_601_000;
+        isoLocalToMs(score.time) - isoLocalToMs(last.time) <= 3_601_000;
       if (isConsecutive) {
         current.push(score);
       } else {
@@ -81,8 +74,8 @@ const getIdealSlots = (scores: HourlyScore[]): TimeSlot[] => {
   return groups.flatMap((group) => {
     const first = group[0]!;
     const last = group[group.length - 1]!;
-    const startMs = localIsoToMs(first.time);
-    const endMs = localIsoToMs(last.time) + 3_600_000;
+    const startMs = isoLocalToMs(first.time);
+    const endMs = isoLocalToMs(last.time) + 3_600_000;
     if (endMs <= now) return [];
     // Ne montrer que les créneaux qui démarrent dans la fenêtre 24h
     if (startMs >= now + WINDOW_MS) return [];
