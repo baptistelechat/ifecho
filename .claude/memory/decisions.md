@@ -1,6 +1,5 @@
 ---
 register: decisions
-last_updated: 2026-06-27
 ---
 
 ## Index
@@ -75,3 +74,14 @@ last_updated: 2026-06-27
 | [BDR-066](decisions/BDR-066.md) | 2026-06-26 | Fusion VerdictBanner → ThermalDelta                                       | #component #refactoring #ui #react #verdict #thermal-delta #dry                                             | actif  |
 | [BDR-067](decisions/BDR-067.md) | 2026-06-27 | `bulletinStale` global sur agrégat de tous les items J                    | #vigilance #vigilance-banner #bulletin #staleness #midnight #react #algorithm                               | actif  |
 | [BDR-068](decisions/BDR-068.md) | 2026-06-27 | Two-pass filter vert J pour phénomènes actifs                             | #vigilance #opendatasoft #filter #two-pass #vert #transition #useVigilanceData                              | actif  |
+| [BDR-069](decisions/BDR-069.md) | 2026-06-27 | VigilanceBanner : label haut-gauche + couleur + icône 60px                | #vigilance-banner #layout #label #icon-size #ui #react                                                      | actif  |
+| [BDR-070](decisions/BDR-070.md) | 2026-06-27 | J+2 filter : toutes les 24h (pas `< nowHour`)                             | #useVentilationScore #filter #data-window #J-plus-2 #algorithm #open-meteo                                  | actif  |
+| [BDR-071](decisions/BDR-071.md) | 2026-06-27 | VigilanceBanner multi-vigilance : grid 2-col + sort + spanFull            | #vigilance-banner #grid #layout #multi-vigilance #tailwind #css #react #ui                                  | actif  |
+| [BDR-072](decisions/BDR-072.md) | 2026-06-27 | Tooltip shadcn/ui : override Context + touch mobile                       | #tooltip #mobile #touch #radix-ui #shadcn #react #context #pointer-coarse                                   | actif  |
+| [BDR-073](decisions/BDR-073.md) | 2026-06-27 | `weatherCode` WMO dans HourlyScore + WeatherIcon ThermalComparison        | #weathercode #wmo #open-meteo #weather-icon #thermal-comparison #pipeline #react #icons                     | actif  |
+| [BDR-074](decisions/BDR-074.md) | 2026-06-27 | `lucide-animated.com` via shadcn CLI + pattern `LoopIcon`                 | #lucide-animated #shadcn #animation #loop-icon #animhandle #autonomous-animation #react #icons              | actif  |
+| [BDR-075](decisions/BDR-075.md) | 2026-06-27 | Gate `isFavorable` à 3 conditions (fix trou hivernal)                     | #isFavorable #algorithm #winter-hole #threshold #ventilation #outdoor-min #re2020                           | actif  |
+| [BDR-076](decisions/BDR-076.md) | 2026-06-27 | `forecast_days: "2"` + filtre date J/J+1 strict                           | #forecast-days #open-meteo #date-filter #J-plus-1 #sliding-window #algorithm #data-window                   | actif  |
+| [BDR-077](decisions/BDR-077.md) | 2026-06-27 | Page `#algorithme` avec sources scientifiques                             | #algorithm-page #hash-routing #scientific-sources #re2020 #iso7730 #transparency #ux                        | actif  |
+| [BDR-078](decisions/BDR-078.md) | 2026-06-27 | Timeline 24h exactes + `isOpen` → "Dès Xh"                                | #timeline #24h #isOpen #des-xh #open-ended #IdealSlots #ux #algorithm                                       | actif  |
+| [BDR-079](decisions/BDR-079.md) | 2026-06-27 | Checklist diagnostique dans état vide `IdealSlots`                        | #empty-state #diagnostic #checklist #IdealSlots #ux #conditions #lucide                                     | actif  |

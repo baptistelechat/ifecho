@@ -1,6 +1,5 @@
 ---
 register: journal
-last_updated: 2026-06-25
 ---
 
 ## 2026-06-20
@@ -792,3 +791,96 @@ Point opérationnel : le cache `useRef` de 30min persiste à travers le HMR Vite
 - [BDR-068](decisions/BDR-068.md) — Two-pass filter vert J pour phénomènes actifs
 - [LRN-060](learnings/LRN-060.md) — `useRef` cache persiste via HMR → hard reload
 - [LRN-061](learnings/LRN-061.md) — Fallback `getHighestColor` après expiration alerte
+
+---
+
+Session courte de refonte du layout `VigilanceBanner`. Label phénomène déplacé du bas-centré vers le haut-gauche de chaque case, avec un suffixe couleur (`": Rouge"`, `": Jaune"`, `": Vert"`) coloré pour lire le niveau actif sans scanner les barres. Icône animée agrandie de 48→60px pour occuper l'espace libéré. Un seul edit sur `VigilanceBanner.tsx`, confirmé via dev-browser (Paris : "Canicule : Rouge" + "Orages : Jaune").
+
+**Entrées clés :**
+
+- [BDR-069](decisions/BDR-069.md) — VigilanceBanner layout label haut-gauche + couleur + icône 60px
+
+---
+
+Session ultra-courte de polish UI sur `VigilanceBanner`. Deux retouches :
+(1) Suppression des 3 bordures horizontales internes (header, DayCell, footer) pour alléger l'interface.
+(2) `text-[10px]` → `text-xs` sur le nom de département ("Vendée") et les labels phénomènes ("Canicule : Orange") pour aligner leur taille avec les lignes équivalentes de `ThermalComparison` (Ressenti, humidité, vent).
+
+---
+
+Session de correction du bug de fenêtre de données J+2 tronquée (`useVentilationScore`).
+
+**Symptôme** : créneau "18h–16h" avec fin qui se décalait de +1h à chaque heure écoulée — à 17h04, fin = "17h". `IdealSlots` (full data) et `VentilationTimeline` (slice 25) montraient le même horodatage tronqué.
+
+**Diagnostic** : deux composants avec des sources différentes montrant la même fin suspecte → cause upstream dans le hook. Le filtre J+2 `hourNum < nowHour` dans `useVentilationScore` bornait les données de J+2 à l'heure courante. Chaque heure écoulée effaçait une heure de données, et `endMs = lastScore.time + 1h` se recalculait donc à `nowHour`.
+
+**Fix en deux couches** :
+
+1. `useVentilationScore` : filtre J+2 simplifié → `date === dayAfterDate` (toutes les 24h, plus de restriction `hourNum`)
+2. `App.tsx` : `scores.slice(0, 25)` → `scores.slice(0, getTimelineLength(scores))` — timeline étendue jusqu'à la fin du dernier créneau idéal démarrant dans les 24h + 1h de buffer
+
+`isoLocalToMs` extrait de `IdealSlots.tsx` vers `lib/utils.ts` pour être partagé avec `getTimelineLength`.
+
+**Entrées clés :**
+
+- [BDR-070](decisions/BDR-070.md) — J+2 filter correction
+- [LRN-062](learnings/LRN-062.md) — Fin +1h/heure = fenêtre données glissante
+- [ZBLK-038](archive/blockers/ZBLK-038.md) — Fix display-only sans effet (résolu)
+
+---
+
+Session de refonte layout multi-vigilance dans `VigilanceBanner`. Passage d'un layout `flex divide-x` (2 colonnes fixes) à un `grid grid-cols-2` capable de gérer 1 à 6 vigilances sur plusieurs lignes. Séparateurs via `gap-px bg-border` initialement — retiré car le grid s'étendait flush aux bords de la card sans padding latéral. Fix final : wrapper `px-3` + bordures conditionnelles cell-level (`border-r` pour colonne gauche, `border-b` pour lignes non-finales). Tri : `maxColor` desc puis `PHENOMENON_ORDER` fixe pour garantir canicule avant orages. Dernier item impair : `col-span-2` avec layout horizontal `icon | days`. Label "Vagues" → "Submersion" pour `vagues-submersion`. `ConstructionIcon` pour `inondations` essayé puis revert → `DropletIcon`. Validation visuelle via dev-browser abandonnée (nécessite mock API ODS pour voir la bannière) — Baptiste a tranché que dev-browser est inutile pour ce projet.
+
+**Entrées clés :**
+
+- [BDR-071](decisions/BDR-071.md) — VigilanceBanner multi-vigilance : grid 2-col + sort + spanFull
+- [LRN-063](learnings/LRN-063.md) — `gap-px bg-border` grid CSS flush aux bords de card
+
+---
+
+Session courte de fix tooltip mobile. `tooltip.tsx` (shadcn/ui) modifié pour supporter le tap sur mobile : `Tooltip` wrappé avec `TooltipContext` (open/setOpen/isTouch), détection `(pointer: coarse)`, mode controlled uniquement sur touch, `TooltipTrigger` intercepte le click pour toggler l'état. Fermeture au tap extérieur via `document.addEventListener('click', close)` en bubble phase (sans `{ capture: true }`) — garantit que le handler du trigger fire avant le document listener, évitant la collision toggle+close. `setTimeout(0)` pour différer l'enregistrement du listener et ne pas capturer le clic d'ouverture. `pnpm lint` : 0 erreur. Baptiste a confirmé fonctionnel.
+
+**Entrées clés :**
+
+- [BDR-072](decisions/BDR-072.md) — Tooltip mobile : Context + pointer:coarse + controlled open
+
+---
+
+Session d'ajout de l'icône météo animée dans `ThermalComparison` (card Extérieur).
+
+**Pipeline `weatherCode`** : champ `weathercode` (WMO) ajouté dans la requête Open-Meteo, propagé `WeatherHour.weatherCode` → `HourlyScore.weatherCode` via `useWeatherForecast` et `useVentilationScore`. Aucune rupture d'interface — `currentScore` existant portait déjà tout.
+
+**WeatherIcon.tsx** : composant mappant les codes WMO (0–99) vers des icônes lucide-animated ou lucide-react statiques. Première implémentation avec animations Tailwind custom (`animate-spin`, `animate-bounce`, `animate-pulse`) — refusée par Baptiste : "il fallait utiliser lucide-animated.com". Icônes installées via shadcn CLI : `sun`, `cloud-sun`, `cloud-rain`, `cloud-snow`, `cloud-lightning`. Codes sans équivalent animé (3=couvert, 45/48=brouillard, 51–57=bruine) → fallback `lucide-react` statiques.
+
+Deuxième correction : animations hover-only par défaut. Fix en copiant exactement le pattern `LoopIcon` de `VigilanceBanner.tsx` : `useRef<AnimHandle>` + `useEffect` cycle 1600ms play / 2500ms pause / repeat. Cast `as unknown as AnimIcon` requis car les composants lucide-animated sont des `div` wrappers, pas des `LucideIcon` (SVG).
+
+Page temporaire `WeatherIconsPage` créée pour vérification visuelle des codes WMO — supprimée aussitôt après validation.
+
+**Entrées clés :**
+
+- [BDR-073](decisions/BDR-073.md) — `weatherCode` WMO dans HourlyScore + WeatherIcon
+- [BDR-074](decisions/BDR-074.md) — lucide-animated shadcn CLI + LoopIcon
+- [LRN-064](learnings/LRN-064.md) — lucide-animated div wrappers AnimHandle ≠ LucideIcon
+
+---
+
+Seconde session de la journée — corrections algo ventilation et améliorations UX.
+
+**Trois bugs corrigés :**
+
+- **Trou hivernal** : outdoor 8°C + indoor 28°C → ΔT 20°C → conseil d'aération absurde en plein hiver. Fix : 3e condition `outdoor ≥ 16°C` dans `isFavorable` (plancher empirique).
+- **Données J+2** : `forecast_days: "3"` + fenêtre ms de 28h depuis un samedi soir = heures de lundi affichées. Fix : `forecast_days: "2"` + filtre par date string J/J+1 strict, immunisé aux décalages ms.
+- **`getTimelineLength` supprimée** : restaurée sous forme simplifiée `Math.min(24, scores.length)`.
+
+**Deux améliorations UX :**
+
+- Créneau ouvert : si `endMs > now + 24h`, afficher "Dès Xh" au lieu d'une plage tronquée ou inventée.
+- État vide `IdealSlots` : checklist diagnostique ✓/✗ des 3 conditions bloquantes avec icônes `Check`/`X` Lucide.
+
+**Page `#algorithme`** : `AlgorithmPage.tsx` avec formule, seuils sourcés (RE2020, ISO 7730:2005, OMS, Plan Canicule), accessible depuis le footer.
+
+**Entrées clés :**
+
+- [BDR-075](decisions/BDR-075.md) — gate `isFavorable` 3 conditions (fix trou hivernal)
+- [BDR-076](decisions/BDR-076.md) — `forecast_days: "2"` + filtre J/J+1
+- [BDR-079](decisions/BDR-079.md) — checklist diagnostique état vide

@@ -1,6 +1,5 @@
 ---
 register: archive_blockers
-last_updated: 2026-06-25
 ---
 
 ## Index
@@ -44,3 +43,4 @@ last_updated: 2026-06-25
 | [ZBLK-035](blockers/ZBLK-035.md) | 2026-06-25 | Portail MF inaccessible avec email Gmail                     | #meteofrance #portail #gmail #institutional-email #blocked #opendatasoft                                   | résolu |
 | [ZBLK-036](blockers/ZBLK-036.md) | 2026-06-25 | `departmentCode` non propagé dans `GeoLocation`              | #departmentCode #GeoLocation #propagation #interface #useLocation #vigilance                               | résolu |
 | [ZBLK-037](blockers/ZBLK-037.md) | 2026-06-25 | URL flux Atom MF inventée (n'existe pas)                     | #url #hallucination #atom-feed #meteofrance #research #verification                                        | résolu |
+| [ZBLK-038](blockers/ZBLK-038.md) | 2026-06-27 | Fix display-only `getTimelineLength` sans effet              | #data-window #display #diagnosis #getTimelineLength #debug                                                 | résolu |

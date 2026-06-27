@@ -1,6 +1,5 @@
 ---
 register: archive-journal
-last_updated: 2026-06-21
 ---
 
 ## Index
