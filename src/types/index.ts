@@ -31,6 +31,7 @@ export interface WeatherHour {
   apparentTemperature: number;
   windspeed: number;
   uvIndex: number;
+  weatherCode: number;
 }
 
 export interface WeatherData {
@@ -49,6 +50,7 @@ export interface HourlyScore {
   apparentTemperature: number;
   windspeed: number;
   uvIndex: number;
+  weatherCode: number;
   score: number;
   deltaT: number;
   uvPenalty: number;

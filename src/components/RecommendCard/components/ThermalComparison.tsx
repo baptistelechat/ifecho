@@ -1,6 +1,7 @@
 ﻿import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useHaptics } from "@/hooks/useHaptics";
+import { WeatherIcon } from "@/components/WeatherIcon";
 import { COMFORT_LEVELS, type ComfortLevel, type HourlyScore } from "@/types";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -87,9 +88,12 @@ const ThermalComparison = ({
             Extérieur
           </p>
         </div>
-        <p className="tabular-nums text-5xl font-black leading-none text-foreground">
-          {currentScore.temperature.toFixed(1)}°
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="tabular-nums text-5xl font-black leading-none text-foreground">
+            {currentScore.temperature.toFixed(1)}°
+          </p>
+          <WeatherIcon code={currentScore.weatherCode} size={36} />
+        </div>
         <div className="mt-3 space-y-1">
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
             <Thermometer className="size-3 shrink-0 text-ember/70" />

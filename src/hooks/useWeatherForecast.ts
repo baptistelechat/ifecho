@@ -9,6 +9,7 @@ interface OpenMeteoResponse {
     apparent_temperature: number[];
     windspeed_10m: number[];
     uv_index: number[];
+    weathercode: number[];
   };
   daily: {
     sunrise: string[];
@@ -45,10 +46,10 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
         url.searchParams.set("longitude", lon.toString());
         url.searchParams.set(
           "hourly",
-          "temperature_2m,relativehumidity_2m,apparent_temperature,windspeed_10m,uv_index",
+          "temperature_2m,relativehumidity_2m,apparent_temperature,windspeed_10m,uv_index,weathercode",
         );
         url.searchParams.set("daily", "sunrise,sunset");
-        url.searchParams.set("forecast_days", "3");
+        url.searchParams.set("forecast_days", "2");
         url.searchParams.set("timezone", "Europe/Paris");
 
         const response = await fetch(url.toString());
@@ -65,6 +66,7 @@ export const useWeatherForecast = (location: GeoLocation | null) => {
           apparentTemperature: json.hourly.apparent_temperature[index] ?? 0,
           windspeed: json.hourly.windspeed_10m[index] ?? 0,
           uvIndex: json.hourly.uv_index[index] ?? 0,
+          weatherCode: json.hourly.weathercode[index] ?? 0,
         }));
 
         setData({
