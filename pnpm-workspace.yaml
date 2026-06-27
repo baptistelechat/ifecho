@@ -1,4 +1,14 @@
 packages:
   - "."
-minimumReleaseAge: 10080
-trustPolicy: allow-downgrade
+minimumReleaseAge: 7200
+minimumReleaseAgeStrict: false
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - "semver@6.3.1"
+  - "@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1"
+blockExoticSubdeps: true
+engineStrict: true
+allowBuilds:
+  core-js: true
+  esbuild: true
+  sharp: true
