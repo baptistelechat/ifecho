@@ -256,7 +256,7 @@ const DayCell = ({
   label: string;
   isToday?: boolean;
 }) => (
-  <div className="flex flex-1 flex-col items-center gap-1 border-t border-border px-1 py-2">
+  <div className="flex flex-1 flex-col items-center gap-1 px-1 py-2">
     <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
       {label}
     </span>
@@ -287,7 +287,7 @@ const VigilanceBanner = ({
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+      <div className="flex items-center justify-between px-4 py-2.5">
         <div className="flex items-center gap-1.5">
           <TriangleAlert
             className={`size-3.5 shrink-0 ${TRIANGLE_COLOR[topColor]}`}
@@ -322,19 +322,22 @@ const VigilanceBanner = ({
             const tomorrowItems = bulletinStale ? [] : j1;
             const iconColor = getActiveColor(todayItems);
             return (
-              <div
-                key={phenomenon}
-                className="flex flex-1 flex-col items-center gap-1.5 px-1 pt-4"
-              >
-                <LoopIcon
-                  Icon={Icon}
-                  size={48}
-                  className={ICON_COLOR[iconColor]}
-                />
-                <span className="px-1 text-center text-[10px] font-semibold leading-tight text-foreground">
+              <div key={phenomenon} className="flex flex-1 flex-col pt-2">
+                <span className="px-2 text-xs font-semibold leading-tight text-foreground">
                   {PHENOMENON_LABEL[phenomenon] ?? phenomenon}
+                  {" : "}
+                  <span className={ICON_COLOR[iconColor]}>
+                    {COLOR_LABEL[iconColor]}
+                  </span>
                 </span>
-                <div className="mt-1 flex w-full divide-x divide-border">
+                <div className="flex flex-1 items-center justify-center py-3">
+                  <LoopIcon
+                    Icon={Icon}
+                    size={60}
+                    className={ICON_COLOR[iconColor]}
+                  />
+                </div>
+                <div className="flex w-full divide-x divide-border">
                   <DayCell items={todayItems} label="Aujourd'hui" isToday />
                   <DayCell items={tomorrowItems} label="Demain" />
                 </div>
@@ -345,7 +348,7 @@ const VigilanceBanner = ({
       </div>
 
       {/* Footer global */}
-      <div className="flex justify-end border-t border-border px-4 py-2">
+      <div className="flex justify-end px-4 py-2">
         <Button
           variant="link"
           size="sm"
