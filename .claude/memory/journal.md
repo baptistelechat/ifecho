@@ -774,3 +774,21 @@ Deux entrées globales créées : `GLRN-165` (TooltipProvider à la racine) et `
 
 - [BDR-067](decisions/BDR-067.md) — `bulletinStale` global multi-phénomènes
 - [LRN-059](learnings/LRN-059.md) — Bulletin météo : péremption = niveau bulletin, pas item
+
+---
+
+Session de corrections UI sur `VigilanceBanner` — deux bugs résiduels résolus après compaction de contexte.
+
+**Bug 1 — Icône verte après expiration alerte** : `getActiveColor` retournait `"vert"` quand toutes les plages J étaient expirées, même si une alerte avait existé ce jour. Fix : fallback `getHighestColor(today)` — l'icône garde la couleur de l'alerte qui a existé.
+
+**Bug 2 — Transition jaune→vert invisible** : le record `orages J vert (16h-00h)` était systématiquement exclu par le filtre `VALID_COLORS` dans `useVigilanceData.ts`. Fix : two-pass filter — un Set `alertPhenom` identifie d'abord les phénomènes avec ≥1 record coloré J, puis leurs records vert J sont inclus pour afficher la fin d'alerte.
+
+Diagnostic technique : l'API OpenDataSoft retourne bien le record vert J pour les phénomènes dont l'alerte expire dans la journée — c'était le filtre côté client qui l'écartait. Confirmé via la question de Baptiste sur `vigilance.meteofrance.fr/fr/vendee`.
+
+Point opérationnel : le cache `useRef` de 30min persiste à travers le HMR Vite — hard reload (`Ctrl+Shift+R`) nécessaire pour voir les corrections de filtre.
+
+**Entrées clés :**
+
+- [BDR-068](decisions/BDR-068.md) — Two-pass filter vert J pour phénomènes actifs
+- [LRN-060](learnings/LRN-060.md) — `useRef` cache persiste via HMR → hard reload
+- [LRN-061](learnings/LRN-061.md) — Fallback `getHighestColor` après expiration alerte

@@ -66,3 +66,5 @@ last_updated: 2026-06-27
 | [LRN-057](learnings/LRN-057.md) | 2026-06-26 | ESLint global vs local → TypeError rules @typescript-eslint                | #eslint #pnpm #typescript-eslint #version-mismatch #windows #global #local #scripts               |
 | [LRN-058](learnings/LRN-058.md) | 2026-06-26 | Supprimer valeurs num. des messages si affichées par un frère              | #ui #ux #component #react #information-density #dry #message-text                                 |
 | [LRN-059](learnings/LRN-059.md) | 2026-06-27 | Bulletin météo multi-phénomènes : péremption = niveau bulletin, pas item   | #vigilance #bulletin #staleness #midnight #meteofrance #opendatasoft #algorithm #grouping         |
+| [LRN-060](learnings/LRN-060.md) | 2026-06-27 | `useRef` cache 30min persiste via HMR Vite → hard reload nécessaire        | #useRef #cache #hmr #vite #debugging #vigilance                                                   |
+| [LRN-061](learnings/LRN-061.md) | 2026-06-27 | Fallback `getHighestColor` dans `getActiveColor` : icône colorée après exp | #vigilance #getActiveColor #getHighestColor #fallback #icon-color #ux                             |
